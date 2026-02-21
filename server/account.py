@@ -105,6 +105,23 @@ def SyncData():
             }
         }
     }
+
+    # 角色模组补齐
+    equip_dict = equip_table["equipDict"]
+    for char_data in player_data["user"]["troop"]["chars"].values():
+        equip_list = equip_table["charEquip"].get(char_data["charId"])
+        if equip_list:
+            if "equip" not in char_data or len(char_data["equip"]) < len(equip_list):
+                char_data["equip"] = {}
+                for equip in equip_list:
+                    equip_data = equip_dict[equip]
+                    item_cost = equip_data.get("itemCost")
+                    char_data["equip"][equip] = {
+                        "hide": 0,
+                        "locked": 0,
+                        "level": len(item_cost) if item_cost else 1
+                    }
+
     try:
         player_data["user"].get("charRotation")
     except Exception:
@@ -229,7 +246,6 @@ def SyncData():
 
         # 模组处理
         equip_list = equip_table["charEquip"].get(char_id)
-        equip_dict = equip_table["equipDict"]
         if equip_list:
             operator["equip"] = {
                 equip: {
