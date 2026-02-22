@@ -15,10 +15,9 @@ jobs:
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          ref: main
+        run: |
+          git clone http://jiellll1219:${{ secrets.WORKFLOW_TOKEN }}@host.docker.internal:3000/jiellll1219/OpenDoctoratePy-EX-Public.git .
+          git checkout main
 
       - name: Install jq
         run: sudo apt-get update && sudo apt-get install -y jq
@@ -80,7 +79,7 @@ jobs:
           git config --global user.name "gitea-actions"
           git config --global user.email "actions@local"
 
-          git remote set-url origin http://jiellll1219:$GITEA_TOKEN@host.docker.internal:3000/jiellll1219/OpenDoctoratePy-EX-Public.git
+          git remote set-url origin http://jiellll1219:${{ secrets.WORKFLOW_TOKEN }}@host.docker.internal:3000/jiellll1219/OpenDoctoratePy-EX-Public.git
 
           git checkout main
           git pull --rebase --autostash origin main

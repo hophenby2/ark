@@ -419,6 +419,18 @@ def singleBattleFinish():
 
     rankList = json_body["settle"]["rankList"]
 
+    rank_lst = [
+        {"id": "1", "rank": 1, "score": 1919810, "isPlayer": 1},
+    ]
+    activity_table = get_memory("activity_table")
+    activity_id = json_body["activityId"]
+    for npc_id in activity_table["activity"]["ENEMY_DUEL"][activity_id]["npcData"]:
+        if len(rank_lst) >= 8:
+            break
+        rank_lst.append(
+            {"id": npc_id, "rank": 2, "score": 114514, "isPlayer": 0},
+        )
+
     result = {
         "result": 0,
         "apFailReturn": 0,
@@ -442,8 +454,8 @@ def singleBattleFinish():
             "normal": 5,
             "allIn": 1
         },
-        "commentId": "Comment_Operation_7",
-        "isHighScore": False,
+        "commentId": "Comment_Operation_1",
+        "isHighScore": True,
         "rankList": rankList,
         "dailyMission": {
             "add": 0,
