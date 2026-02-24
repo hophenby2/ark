@@ -6,10 +6,10 @@ from constants import (
 )
 import random
 
-class CheckInReward():
+class checkInReward:
     # 这个类用于处理签到奖励
-
-    def getCheckInReward():
+        
+    def GetCheckInReward():
         json_body = request.get_json()
         user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
         access_id = json_body["activityId"]
@@ -17,32 +17,36 @@ class CheckInReward():
         items = []
         modified = {}
 
-        if access_id == "act2access":
-            rewardsCnt = user_data["user"]["activity"]["CHECKIN_ACCESS"]["act2access"]["rewardsCount"]
-            items = [
-                {
-                    "type": "AP_SUPPLY",
-                    "id": "ap_supply_lt_80",
-                    "count": 1
-                },
-                {
-                    "type": "DIAMOND_SHD",
-                    "id": "4003",
-                    "count": 200
-                }
-            ]
-            
-            modified = {
-                "activity": {
-                    "CHECKIN_ACCESS": {
-                        access_id: {
-                            "currentStatus": 0,
-                            "lastTs": time(),
-                            "rewardsCount": rewardsCnt + 1
+        match access_id:
+            case "act2access":
+                rewardsCnt = user_data["user"]["activity"]["CHECKIN_ACCESS"]["act2access"]["rewardsCount"]
+                items = [
+                    {
+                        "type": "AP_SUPPLY",
+                        "id": "ap_supply_lt_80",
+                        "count": 1
+                    },
+                    {
+                        "type": "DIAMOND_SHD",
+                        "id": "4003",
+                        "count": 200
+                    }
+                ]
+                
+                modified = {
+                    "activity": {
+                        "CHECKIN_ACCESS": {
+                            access_id: {
+                                "currentStatus": 0,
+                                "lastTs": time(),
+                                "rewardsCount": rewardsCnt + 1
+                            }
                         }
                     }
                 }
-            }
+            case _:
+                modified = {}
+                items = []
 
         result = {
             "playerDataDelta": {
@@ -54,11 +58,9 @@ class CheckInReward():
 
         return result
 
-    def getActivityCheckInReward():
+    def GetActivityCheckInReward():
 
         json_body = request.get_json()
-        
-        items = []
 
         activity_id = json_body["activityId"]
         target_index = json_body["index"]
@@ -79,8 +81,7 @@ class CheckInReward():
                     }
                 },
                 "deleted": {}
-            },
-            "items": items
+            }
         }
 
         run_after_response(write_json, user_data, SYNC_DATA_TEMPLATE_PATH)
@@ -90,9 +91,11 @@ class CheckInReward():
     def _act53sign():
         pass
     
-    def getReward():
+    def GetReward():
 
         json_body = request.get_json()
+        # {'prayArray': [0, 1], 'activityId': 'act11pray'}
+        # {'activityId': 'act24login'}
 
         user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
         activity_id = json_body["activityId"]
@@ -152,10 +155,9 @@ class CheckInReward():
             },
             "items": items
         }
-
         return result
 
-    def sign():
+    def Sign():
         json_body = request.get_json()
         user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
         # {'actId': 'act3signvs', 'tasteChoice': 2} 咸粽子
@@ -206,10 +208,10 @@ class CheckInReward():
             ]
         }
 
-        return result
+        return result 
 
-class SwitchOnly:
-    def getSwitchOnlyReward():
+class switchOnly:
+    def GetSwitchOnlyReward():
         json_body = request.get_json()
 
         user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
@@ -237,7 +239,7 @@ class SwitchOnly:
         return result
 
 class enemyDuel():
-    def singleBattleStart():
+    def SingleBattleStart():
 
         return{
             "pushMessage": [],
@@ -245,7 +247,7 @@ class enemyDuel():
             "battleId": "abcdefgh-1234-5678-a1b2c3d4e5f6",
         }
 
-    def singleBattleFinish():
+    def SingleBattleFinish():
 
         json_body = request.get_json()
 
@@ -285,12 +287,12 @@ class enemyDuel():
         }
 
         return result
-    
-class act35side():
 
-    from data.act_data import round_data_map, Initial_card, prepared_card_data, material_price, material_list, shop_data, coin_data, card_data
+class act35side:
+    # public class Torappu.UI.Carving.Carving
+    from data.act_data import ROUND_DATA, INITIAL_CARD, PREPARED_CARD_DATA, MATERIAL_PRICE, MATERIAL_LIST, SHOP_DATA, COIN_DATA, CARD_DATA
 
-    def _build_prepared_card_data() -> dict:
+    def _BuildPreparedCardData() -> dict:
 
         data = {}
 
@@ -350,7 +352,7 @@ class act35side():
 
         return data
     
-    def _random_card(carving_data):
+    def _RandomCard(carving_data):
         max_lv_card = []
         # 获取满级卡信息
         card_info = carving_data["card"]
@@ -359,18 +361,18 @@ class act35side():
                 max_lv_card.append(card)
 
         # 随机选卡
-        def pick_random(max_lv_card1, pool_name=None, count=3):
+        def _PickRandom(max_lv_card1, pool_name=None, count=3):
             if pool_name is None:
                 return [None] * count
             if pool_name == "all":
                 card_data = (
-                    act35side.card_data["fire"] +
-                    act35side.card_data["leaf"] +
-                    act35side.card_data["clst"] +
-                    act35side.card_data["sand"]
+                    act35side.CARD_DATA["fire"] +
+                    act35side.CARD_DATA["leaf"] +
+                    act35side.CARD_DATA["clst"] +
+                    act35side.CARD_DATA["sand"]
                 )
             else:
-                card_data = act35side.card_data[pool_name]
+                card_data = act35side.CARD_DATA[pool_name]
             random_list = list(set(card_data) - set(max_lv_card1))
             random.shuffle(random_list)
             return random_list[:count]
@@ -392,13 +394,13 @@ class act35side():
         if cid == "challenge_1":
             good = [{"id": "card_fire_3", "price": 0}, None, None]
         elif cid in challenge_map:
-            good = pick_random(max_lv_card, challenge_map[cid])
+            good = _PickRandom(max_lv_card, challenge_map[cid])
         else:
             good = [None, None, None]
 
         return good
 
-    def act35sideCreate():
+    def act35SideCreate():
         json_body = request.get_json()
         activity_id = json_body["activityId"]
         challenge_id = json_body["challengeId"]
@@ -413,7 +415,7 @@ class act35side():
             "material_clst_1": 0,
             "material_sand": 0
         }
-        if act35side.round_data_map[challenge_id + "_r1"] is None:
+        if act35side.ROUND_DATA[challenge_id + "_r1"] is None:
             keys = list(material.keys())
             n = len(keys)
 
@@ -463,7 +465,7 @@ class act35side():
                 material[key] = values[i]
 
         else:
-            material = act35side.round_data_map[challenge_id + "_r1"]
+            material = act35side.ROUND_DATA[challenge_id + "_r1"]
 
 
         # 特殊关卡卡牌处理
@@ -495,8 +497,8 @@ class act35side():
                 free_cnt = 2
         
         good = []
-        if act35side.Initial_card[challenge_id] is not None:
-            for card_id in act35side.Initial_card[challenge_id]:
+        if act35side.INITIAL_CARD[challenge_id] is not None:
+            for card_id in act35side.INITIAL_CARD[challenge_id]:
                 good.append({
                     "id": card_id,
                     "price": 0
@@ -545,7 +547,7 @@ class act35side():
         run_after_response(write_json, user_data, SYNC_DATA_TEMPLATE_PATH)
         return result
 
-    def act35sidesettle():
+    def act35SideSettle():
         json_body = request.get_json()
         activity_id = json_body["activityId"]
 
@@ -583,14 +585,14 @@ class act35side():
         run_after_response(write_json, user_data, SYNC_DATA_TEMPLATE_PATH)
         return result
     
-    def act35sideToBuy():
+    def act35SideToBuy():
         json_body = request.get_json()
         activity_id = json_body["activityId"]
         user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
         carving_data = user_data["user"]["activity"]["TYPE_ACT35SIDE"][activity_id]["carving"]
         
         # 商店卡牌刷新
-        good_list = act35side._random_card(carving_data)
+        good_list = act35side._RandomCard(carving_data)
         good = []
         if carving_data["shop"]["freeCardCnt"] > 0:
             for card_id in good_list:
@@ -625,7 +627,7 @@ class act35side():
 
         # 操作台槽位
         if carving_data["slotCnt"] < 8:
-            carving_data["shop"]["slotPrice"] = act35side.shop_data["slot"][carving_data["slotCnt"] - 2]
+            carving_data["shop"]["slotPrice"] = act35side.SHOP_DATA["slot"][carving_data["slotCnt"] - 2]
 
 
         result = {
@@ -649,13 +651,13 @@ class act35side():
         run_after_response(write_json, user_data, SYNC_DATA_TEMPLATE_PATH)
         return result
     
-    def act35siderefreshShop():
+    def act35SidereFreshShop():
         json_body = request.get_json()
         activity_id = json_body["activityId"]
 
         user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
         carving_data = user_data["user"]["activity"]["TYPE_ACT35SIDE"][activity_id]["carving"]
-        good_list = act35side._random_card(carving_data)
+        good_list = act35side._RandomCard(carving_data)
         good = []
         if carving_data["shop"]["freeCardCnt"] > 0:
             for card_id in good_list:
@@ -691,7 +693,7 @@ class act35side():
 
         return result
     
-    def act35sidebuySlot():
+    def act35SideBuySlot():
         json_body = request.get_json()
         activity_id = json_body["activityId"]
 
@@ -723,7 +725,7 @@ class act35side():
         run_after_response(write_json, user_data, SYNC_DATA_TEMPLATE_PATH)
         return result
 
-    def act35sidebuyCard():
+    def act35SideBuyCard():
         json_body = request.get_json()
         # {'activityId': 'act35sre', 'slot': 0}
         activity_id = json_body["activityId"]
@@ -782,7 +784,7 @@ class act35side():
         run_after_response(write_json, user_data, SYNC_DATA_TEMPLATE_PATH)
         return result
     
-    def act35sidetoProcess():
+    def act35SideToProcess():
         json_body = request.get_json()
         activity_id = json_body["activityId"]
 
@@ -810,7 +812,7 @@ class act35side():
         run_after_response(write_json, user_data, SYNC_DATA_TEMPLATE_PATH)
         return result
 
-    def act35sideprocess_old():
+    def act35SideProcess_old():
         json_body = request.get_json()
         activity_id = json_body["activityId"]
         cards = json_body["cards"]
@@ -823,8 +825,8 @@ class act35side():
         slot_cnt = carving_data["slotCnt"]
         empty_slots = slot_cnt - len(cards)
 
-        card_data_map = act35side.prepared_card_data
-        material_data_map = act35side.material_price
+        card_data_map = act35side.PREPARED_CARD_DATA
+        material_data_map = act35side.MATERIAL_PRICE
 
         frames = []
 
@@ -901,7 +903,7 @@ class act35side():
         carving_data["score"] = total_score
 
         # 加钱
-        coin = act35side.coin_data[carving_data["id"]][carving_data["round"] - 1]
+        coin = act35side.COIN_DATA[carving_data["id"]][carving_data["round"] - 1]
         carving_data["shop"]["coin"] += coin
         carving_data["roundCoinAdd"] += coin
 
@@ -929,14 +931,18 @@ class act35side():
         # run_after_response(write_json, user_data, SYNC_DATA_TEMPLATE_PATH)
         return result
     
-    def act35sideprocess():
+    def act35SideProcess():
+        """
+        处理活动35侧边流程的函数
+        负责处理卡牌合成、材料管理和分数计算等功能
+        """
         json_body = request.get_json()
         activity_id = json_body["activityId"]
         cards:list[str] = json_body["cards"]
 
         # 读取数据
-        card_data_map = act35side.prepared_card_data
-        material_data_map = act35side.material_price
+        card_data_map = act35side.PREPARED_CARD_DATA
+        material_data_map = act35side.MATERIAL_PRICE
         user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
         carving_data = dict(user_data["user"]["activity"]["TYPE_ACT35SIDE"][activity_id]["carving"])
 
@@ -1101,7 +1107,7 @@ class act35side():
         carving_data["score"] = total_score
 
         # 加钱
-        coin = act35side.coin_data[carving_data["id"]][carving_data["round"] - 1]
+        coin = act35side.COIN_DATA[carving_data["id"]][carving_data["round"] - 1]
         carving_data["shop"]["coin"] += coin
         carving_data["roundCoinAdd"] += coin
 
@@ -1126,8 +1132,7 @@ class act35side():
         # run_after_response(write_json, user_data, SYNC_DATA_TEMPLATE_PATH)
         return result
 
-
-    def act35nextRound():
+    def act35NextRound():
         json_body = request.get_json()
         activity_id = json_body["activityId"]
 
@@ -1145,7 +1150,7 @@ class act35side():
             "material_clst_1": 0,
             "material_sand": 0
         }
-        if act35side.round_data_map[challenge_id + "_r" + str(carving_data["round"])] is None:
+        if act35side.ROUND_DATA[challenge_id + "_r" + str(carving_data["round"])] is None:
             keys = list(material.keys())
             n = len(keys)
 
@@ -1194,7 +1199,7 @@ class act35side():
             for i, key in enumerate(keys):
                 material[key] = values[i]
         else:
-            material = act35side.round_data_map[challenge_id + "_r" + str(carving_data["round"])]
+            material = act35side.ROUND_DATA[challenge_id + "_r" + str(carving_data["round"])]
 
         result = {
             "playerDataDelta": {
@@ -1218,12 +1223,62 @@ class act35side():
 
         run_after_response(write_json, user_data, SYNC_DATA_TEMPLATE_PATH)
         return result
-
+ 
 class vhalfidle:
-    from data.level import evolve_0, evolve_1, evolve_2
-    from data.act_data import spec_char, vhalfidle_pools
+    from data.act_data import SPEC_CHAR, VHALFIDLE_POOLS, E_0, E_1, E_2
 
-    def refreshProduct():
+    def _AddCharToActivity(activity_data, user_data, char_id):
+        """
+        角色添加逻辑
+        将角色添加到活动数据中，如果角色已存在则不添加
+        """
+        # 确保 troop/char 结构存在
+        troop = activity_data.get("troop", {})
+        troop.get("char", {})
+
+        # ① 检查是否已有相同角色（防止重复添加）
+        for char_info in troop["char"].values():
+            if char_info.get("charId") == char_id:
+                return  # 已存在则直接跳过
+
+        # ② 从用户主数据中查找对应角色
+        chars_from_sync = user_data.get("user", {}).get("troop", {}).get("chars", {})
+        target_char_info = next(
+            (info for info in chars_from_sync.values() if info.get("charId") == char_id),
+            None
+        )
+        if not target_char_info:
+            return  # 找不到对应角色则跳过
+
+        inst_id = str(target_char_info["instId"])
+
+        # ③ 构建活动角色信息
+        new_char_info = {
+            "instId": target_char_info["instId"],
+            "charId": target_char_info["charId"],
+            "level": target_char_info.get("level", 1),
+            "evolvePhase": target_char_info.get("evolvePhase", 0),
+            "skillLvl": 10 if target_char_info.get("evolvePhase", 0) == 2 else 7,
+            "isAssist": False,
+            "defaultSkillId": "",
+            "defaultEquipId": "",
+        }
+
+        # ④ 处理默认技能
+        default_skill_index = target_char_info.get("defaultSkillIndex", -1)
+        if default_skill_index != -1 and "skills" in target_char_info:
+            skills = target_char_info["skills"]
+            if len(skills) > default_skill_index:
+                new_char_info["defaultSkillId"] = skills[default_skill_index].get("skillId", "")
+
+        # ⑤ 处理默认模组
+        if target_char_info.get("currentEquip"):
+            new_char_info["defaultEquipId"] = target_char_info["currentEquip"]
+
+        # ⑥ 添加到活动数据
+        troop["char"][inst_id] = new_char_info
+
+    def RefreshProduct():
         json_body = request.get_json()
         activity_id = json_body["activityId"]
         sync_data = read_json(SYNC_DATA_TEMPLATE_PATH)
@@ -1259,7 +1314,7 @@ class vhalfidle:
 
         return result
 
-    def harvest():
+    def Harvest():
         json_body = request.get_json()
         activity_id = json_body["activityId"]
         sync_data = read_json(SYNC_DATA_TEMPLATE_PATH)
@@ -1313,7 +1368,7 @@ class vhalfidle:
 
         return result
 
-    def unlockTech():
+    def UnlockTech():
         json_body = request.get_json()
         activity_id = json_body["activityId"]
         # {'activityId': 'act1vhalfidle', 'techId': 'node_1_2'}
@@ -1345,8 +1400,7 @@ class vhalfidle:
 
         return result
 
-
-    def recruitNormal():
+    def RecruitNormal():
         json_body = request.get_json()
         activity_id = json_body["activityId"]
         pool_id = json_body["poolId"]
@@ -1358,8 +1412,8 @@ class vhalfidle:
         act_chars = act_info["troop"]["char"]
         poolTimes = act_info["recruit"]["poolTimes"]
 
-        vhalfidle_pools = vhalfidle.vhalfidle_pools
-        spec_char = vhalfidle.spec_char
+        vhalfidle_pools = vhalfidle.VHALFIDLE_POOLS
+        spec_char = vhalfidle.SPEC_CHAR
 
         # 资源检查
         if act_info["inventory"]["gacha_normal"] >= count * 20:
@@ -1384,7 +1438,7 @@ class vhalfidle:
             for char_id in pool_set:
                 if char_id not in have_chars:
                     newChar.append(char_id)
-                    vhalfidle._add_char_to_activity(act_info, sync_data, char_id)
+                    vhalfidle._AddCharToActivity(act_info, sync_data, char_id)
                     have_chars.add(char_id)
                 else:
                     oldChar.append(char_id)
@@ -1405,7 +1459,7 @@ class vhalfidle:
             for char_id in random_char:
                 if char_id not in have_chars:
                     newChar.append(char_id)
-                    vhalfidle._add_char_to_activity(act_info, sync_data, char_id)
+                    vhalfidle._AddCharToActivity(act_info, sync_data, char_id)
                     have_chars.add(char_id)
                 else:
                     oldChar.append(char_id)
@@ -1422,7 +1476,7 @@ class vhalfidle:
                     selected_char = random.choice(char_data)
                     if selected_char not in have_chars:
                         newChar.append(selected_char)
-                        vhalfidle._add_char_to_activity(act_info, sync_data, selected_char)
+                        vhalfidle._AddCharToActivity(act_info, sync_data, selected_char)
                         have_chars.add(selected_char)
                     else:
                         oldChar.append(selected_char)
@@ -1462,7 +1516,7 @@ class vhalfidle:
 
         return result
 
-    def recruitDirect():
+    def RecruitDirect():
         json_body = request.get_json()
 
         sync_data = read_json(SYNC_DATA_TEMPLATE_PATH)
@@ -1482,7 +1536,7 @@ class vhalfidle:
         newChar.append(char_id)
 
 
-        vhalfidle._add_char_to_activity(act_info, sync_data, char_id)
+        vhalfidle._AddCharToActivity(act_info, sync_data, char_id)
 
         poolTimes["directionGachaPool"] += 1
 
@@ -1512,7 +1566,7 @@ class vhalfidle:
 
         return result
 
-    def vhalfidlebattleStart():
+    def VhalfidlebattleStart():
         json_body = request.get_json()
 
         global stage_id
@@ -1530,7 +1584,7 @@ class vhalfidle:
 
         return result
 
-    def vhalfidlebattleFinish():
+    def VhalfidlebattleFinish():
         json_body = request.get_json()
 
         activity_id = json_body["activityId"]
@@ -1609,7 +1663,7 @@ class vhalfidle:
 
         return result
 
-    def upgradeChar():
+    def UpgradeChar():
         json_body = request.get_json()
         cahr_id = json_body["charId"]
         dest_level = json_body["destLvl"]
@@ -1628,9 +1682,9 @@ class vhalfidle:
                 break
 
         level_list_map = {
-            0: vhalfidle.evolve_0,
-            1: vhalfidle.evolve_1,
-            2: vhalfidle.evolve_2
+            0: vhalfidle.E_0,
+            1: vhalfidle.E_1,
+            2: vhalfidle.E_2
         }
 
         level_list = level_list_map[char_info["evolvePhase"]]
@@ -1671,7 +1725,7 @@ class vhalfidle:
 
         return result
 
-    def upgradeSkill():
+    def UpgradeSkill():
         json_body = request.get_json()
         sync_data = read_json(SYNC_DATA_TEMPLATE_PATH)
         activity_id = json_body["activityId"]
@@ -1709,7 +1763,7 @@ class vhalfidle:
 
         return result
 
-    def evolveChar():
+    def EvolveChar():
         json_body = request.get_json()
 
         activity_id = json_body["activityId"]
@@ -1749,7 +1803,7 @@ class vhalfidle:
 
         return result
 
-    def replaceRate():
+    def ReplaceRate():
         """数据替换"""
         # 获取请求数据
         json_body = request.get_json()
@@ -1798,58 +1852,7 @@ class vhalfidle:
 
         return data
 
-    def _add_char_to_activity(activity_data, user_data, char_id):
-        """
-        角色添加逻辑
-        将角色添加到活动数据中，如果角色已存在则不添加
-        """
-        # 确保 troop/char 结构存在
-        troop = activity_data.get("troop", {})
-        troop.get("char", {})
-
-        # ① 检查是否已有相同角色（防止重复添加）
-        for char_info in troop["char"].values():
-            if char_info.get("charId") == char_id:
-                return  # 已存在则直接跳过
-
-        # ② 从用户主数据中查找对应角色
-        chars_from_sync = user_data.get("user", {}).get("troop", {}).get("chars", {})
-        target_char_info = next(
-            (info for info in chars_from_sync.values() if info.get("charId") == char_id),
-            None
-        )
-        if not target_char_info:
-            return  # 找不到对应角色则跳过
-
-        inst_id = str(target_char_info["instId"])
-
-        # ③ 构建活动角色信息
-        new_char_info = {
-            "instId": target_char_info["instId"],
-            "charId": target_char_info["charId"],
-            "level": target_char_info.get("level", 1),
-            "evolvePhase": target_char_info.get("evolvePhase", 0),
-            "skillLvl": 10 if target_char_info.get("evolvePhase", 0) == 2 else 7,
-            "isAssist": False,
-            "defaultSkillId": "",
-            "defaultEquipId": "",
-        }
-
-        # ④ 处理默认技能
-        default_skill_index = target_char_info.get("defaultSkillIndex", -1)
-        if default_skill_index != -1 and "skills" in target_char_info:
-            skills = target_char_info["skills"]
-            if len(skills) > default_skill_index:
-                new_char_info["defaultSkillId"] = skills[default_skill_index].get("skillId", "")
-
-        # ⑤ 处理默认模组
-        if target_char_info.get("currentEquip"):
-            new_char_info["defaultEquipId"] = target_char_info["currentEquip"]
-
-        # ⑥ 添加到活动数据
-        troop["char"][inst_id] = new_char_info
-
-    def setAssistChar():
+    def SetAssistChar():
         """助战逻辑"""
         json_body = request.get_json()
         sync_data = read_json(SYNC_DATA_TEMPLATE_PATH)
@@ -1871,7 +1874,7 @@ class vhalfidle:
         # 跟踪被删除的角色实例ID
         deleted_char_inst_ids = []
 
-        # ========== 情况 1：清除助战位 ==========
+        # 情况 1：清除助战位
         if assist_friend is None:
             old_assist_char = troop["assist"][index] if index < len(troop["assist"]) else None
 
@@ -1891,7 +1894,7 @@ class vhalfidle:
             if index < len(troop["assist"]):
                 troop["assist"][index] = None
 
-        # ========== 情况 2：设置新的助战角色 ==========
+        # 情况 2：设置新的助战角色
         else:
             assist_char = assist_friend.get("assistChar", {})
             char_id = assist_char.get("charId", "")
@@ -1924,7 +1927,7 @@ class vhalfidle:
             troop["assist"][index] = assist_char
 
             # 添加该角色（函数内部已自动去重）
-            vhalfidle._add_char_to_activity(activity_data, sync_data, char_id)
+            vhalfidle._AddCharToActivity(activity_data, sync_data, char_id)
 
             # 将添加的角色标记为 isAssist = True
             for char_info in troop["char"].values():
@@ -1966,40 +1969,118 @@ class vhalfidle:
         run_after_response(write_json, sync_data, SYNC_DATA_TEMPLATE_PATH)
 
         return result
-
+    
 class multiplayer:
 
-    def refreshInfo():
+    def RefreshInfo():
 
         return {}
     
-    def refreshInviteList():
+    def RefreshInviteList():
 
         return {}
     
-    def getInfo():
-
-        return{}
+    def GetInfo():
+        result = {}
+        return result
     
-    def guideBattleStart():
-        data = {
-            "apFailReturn": 0,
-            "battleId": "abcdefgh-1234-5678-a1b2c3d4e5f6",
-            "inApProtectPeriod": False,
-            "isApProtect": 0,
-            "notifyPowerScoreNotEnoughIfFailed": False,
-            "playerDataDelta": {"modified": {}, "deleted": {}},
+    def ChangeTitle():
+        request_json = request.get_json()
+        user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
+
+        activity_id = request_json["activityId"]
+
+        user_data["activity"]["MULTIPLAY_V3"][activity_id]["collection"]["title"]["select"] = request_json["select"]
+
+        result = {}
+        return result
+    
+    def SetBuff():
+        request_json = request.get_json()
+        user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
+
+        activity_id = request_json["activityId"]
+
+        mode_id = request_json["modeType"]
+
+        user_data["activity"]["MULTIPLAY_V3"][activity_id]["troop"]["squads"][mode_id]["buffId"] = request_json["buffId"]
+
+        result = {}
+        return result
+    
+    def SetSquads():
+        request_json = request.get_json()
+        user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
+
+        activity_id = request_json["activityId"]
+
+        mode_id = request_json["modeType"]
+
+        user_data["activity"]["MULTIPLAY_V3"][activity_id]["troop"]["squads"][mode_id]["prefer"] = request_json["prefer"]
+        user_data["activity"]["MULTIPLAY_V3"][activity_id]["troop"]["squads"][mode_id]["backup"] = request_json["backup"]
+
+        result = {}
+        return result
+    
+    def GuideBattleStart():
+        result = {
             "result": 0,
         }
         
-        return data
+        return result
 
-    def guideBattleFinish():
-        json_body = request.get_json()
+    def GuideBattleFinish():
 
-        return {
-            "playerDataDelta": {
-                "modified": {},
-                "deleted": {}
-            }
-        }
+        result = {
+        "data": {
+            "result": 0,
+            "mateQuit": False,
+            "normal": {
+                "failTip": False,
+                "targets": [
+                    {
+                        "complete": True,
+                        "progressShow": ["30", "30"],
+                        "progressValue": [30, 30],
+                    },
+                    {
+                        "complete": True,
+                        "progressShow": ["5", "3"],
+                        "progressValue": [5, 3],
+                    },
+                    {
+                        "complete": True,
+                        "progressShow": ["5", "5"],
+                        "progressValue": [5, 5],
+                    },
+                ],
+                "newStar": False,
+            },
+            "raft": {"score": 10000, "newScore": False},
+            "defence": {
+                "targets": [
+                    {"complete": True, "progressValue": [4, 1]},
+                    {"complete": True, "progressValue": [4, 2]},
+                    {"complete": True, "progressValue": [4, 4]},
+                ],
+                "damage": 10000,
+                "damagePct": 100,
+                "bossKill": True,
+                "newStar": False,
+                "newDamage": False,
+            },
+            "star": 3,
+            "reward": {
+                "item": [],
+                "milestoneAdd": 0,
+                "gainDailyReward": False,
+            },
+            "newPhoto": False,
+            "newPhotoId": "",
+            "sameChannel": True,
+            "isFriend": False,
+            "reverse": 0,
+            "ts": time(),
+        },
+    }
+        return result
