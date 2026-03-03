@@ -1,12 +1,14 @@
 import json
 from datetime import datetime
 
+import os
+import base64
 import requests
-from flask import request
+from flask import request, Response
 from random import random
 
-from constants import USER_JSON_PATH, SYNC_DATA_TEMPLATE_PATH, SERVER_DATA_PATH
-from utils import read_json, write_json, run_after_response
+from constants import USER_JSON_PATH, SYNC_DATA_TEMPLATE_PATH, SERVER_DATA_PATH, JPG_BASE_PATH
+from utils import read_json, write_json, run_after_response, get_memory, writeLog
 from mission import mission_manger
 
 import time
@@ -142,7 +144,7 @@ class checkin:
         run_after_response(write_json ,sync_data, SYNC_DATA_TEMPLATE_PATH)
 
 
-def ChangeSecretary():
+def changeSecretary():
     data = request.data
     request_data = request.get_json()
     charInstId = request_data["charInstId"]
@@ -173,7 +175,7 @@ def ChangeSecretary():
     return data
 
 
-def Login():
+def login():
 
     data = request.data
     data = {
@@ -239,7 +241,7 @@ def V1getToken():
     return data
 
 
-def Auth():
+def auth():
 
     data = request.data
     data = {
@@ -254,7 +256,7 @@ def Auth():
     return data
 
 
-def ChangeAvatar():
+def changeAvatar():
 
     data = request.data
     avatar = request.get_json()
@@ -305,7 +307,7 @@ def YostarCreatelogin():
 
     return data
 
-def Agreement():
+def agreement():
 
     data = request.data
     data = {
@@ -317,7 +319,7 @@ def Agreement():
 
     return data
 
-def auth_v1_token_by_phone_password():
+def token_by_phone_password():
     return {
         "status": 0,
         "msg": "OK",
@@ -326,7 +328,7 @@ def auth_v1_token_by_phone_password():
         }
     }
 
-def auth_v2_token_by_phone_code():
+def token_by_phone_code():
     return {
         "status": 0,
         "msg": "OK",
@@ -426,7 +428,7 @@ def app_v1_config():
 
 
 
-def general_v1_server_time():
+def server_time():
     return {
         "status": 0,
         "msg": "OK",
@@ -436,7 +438,7 @@ def general_v1_server_time():
         }
     }
 
-def userSend_phone_code():
+def send_phone_code():
     return {
         "msg": "OK",
         "status": 0,
@@ -737,3 +739,152 @@ def agreement_version():
             "isLatestUserAgreement": True,
         },
     }
+
+class gallery:
+    def getFirstRewards():
+        json_body = request.get_json()
+        sync_data = read_json(SYNC_DATA_TEMPLATE_PATH)
+        gallery_data = sync_data["user"]["gallery"]
+
+        gallery_data["firstRewards"] = True
+        gallery_data["leafMap"]["leaf_default2"] = {
+            "charSkin": None,
+            "decorList": [],
+            "getTs": 1770781230,
+            "leafId": "leaf_default2",
+            "version": 0
+        }
+
+        result = {
+            "playerDataDelta": {
+                "modified": {
+                    "gallery": gallery_data
+                },
+                "deleted": {}
+            }
+        }
+        run_after_response(write_json, sync_data, SYNC_DATA_TEMPLATE_PATH)
+        return result
+
+    def getThumbnailUrl():
+        json_body = request.get_json()
+        # {'idList': ['leaf_default', 'leaf_default2']}
+        id_list:list = json_body["idList"]
+        sync_data = read_json(SYNC_DATA_TEMPLATE_PATH)
+        config = get_memory("config")
+        gallery_data = sync_data["user"]["gallery"]
+        uid = sync_data["user"]["status"]["uid"]
+        if config["server"]["adaptive"]:
+            url = request.host_url[:-1]
+        else:
+            url = config["server"]["host"]
+
+        url_list = []
+        for leaf_id in id_list:
+            if gallery_data["leafMap"][leaf_id]["charSkin"] is not None or \
+                gallery_data["leafMap"][leaf_id]["decorList"]  != []:
+                    jpg_name = f"{uid}_magazine_{leaf_id}.jpg"
+                    url_list.append(url + "/gallery/jpg/" + jpg_name)
+            else:
+                url_list.append(None)
+
+        result = {
+            "playerDataDelta": {
+                "modified": {
+                    "gallery": gallery_data
+                },
+                "deleted": {}
+            },
+            "url": url_list
+        }
+        run_after_response(write_json, sync_data, SYNC_DATA_TEMPLATE_PATH)
+        return result
+
+    def changeMagazineSquad():
+        json_body = request.get_json()
+        print(json_body)
+        sync_data = read_json(SYNC_DATA_TEMPLATE_PATH)
+        gallery_data = sync_data["user"]["gallery"]
+
+        result = {
+            "playerDataDelta": {
+                "modified": {
+                    "gallery": gallery_data
+                },
+                "deleted": {}
+            }
+        }
+        run_after_response(write_json, sync_data, SYNC_DATA_TEMPLATE_PATH)
+        return result
+
+    def saveDiyMagazineV1():
+        json_body = request.get_json()
+        leaf_id:str = json_body["magazine"]["leafId"]
+        decor_list:list[dict] = json_body["magazine"]["decorList"]
+        char_skin:dict = json_body["magazine"]["charSkin"]
+        jpg_b64:str = json_body["thumbnail"]
+        sync_data:dict = read_json(SYNC_DATA_TEMPLATE_PATH)
+        gallery_data:dict = sync_data["user"]["gallery"]
+        uid:str = sync_data["user"]["status"]["uid"]
+
+        def _b64_to_jpg(b64_code:str):
+            filepath:str = JPG_BASE_PATH + f"{uid}_magazine_{leaf_id}.jpg"
+            os.makedirs(os.path.dirname(filepath), exist_ok=True)
+
+            # 处理base64
+            if ',' in b64_code:
+                b64_code = b64_code.split(',')[1]
+            b64_code = ''.join(b64_code.split())
+            
+            # 添加填充
+            padding = 4 - (len(b64_code) % 4)
+            if padding != 4:
+                b64_code += '=' * padding
+
+            # 保存图片
+            with open(filepath, "wb") as f:
+                try:
+                    f.write(base64.b64decode(b64_code))
+                except:
+                    writeLog("图片保存失败")
+
+                    
+        def _del_jpg(filepath):
+            if os.path.exists(filepath):
+                os.remove(filepath)
+            else:
+                writeLog(f"{filepath} 图片文件不存在")  
+
+        gallery_data["leafMap"][leaf_id]["decorList"] = decor_list
+        gallery_data["leafMap"][leaf_id]["charSkin"] = char_skin
+        if gallery_data["leafMap"][leaf_id]["charSkin"] is not None or \
+            gallery_data["leafMap"][leaf_id]["decorList"] != []:
+                _b64_to_jpg(jpg_b64)
+        if gallery_data["leafMap"][leaf_id]["charSkin"] is None and \
+            gallery_data["leafMap"][leaf_id]["decorList"] != []:
+                _del_jpg(JPG_BASE_PATH + f"{uid}_magazine_{leaf_id}.jpg")
+
+        result = {
+            "playerDataDelta": {
+                "modified": {
+                    "gallery": gallery_data
+                },
+                "deleted": {}
+            }
+        }
+        run_after_response(write_json, sync_data, SYNC_DATA_TEMPLATE_PATH)
+        return result
+
+    def getJpg(jpg_name):
+        filepath = os.path.join(JPG_BASE_PATH, jpg_name)
+
+        try:
+            f = open(filepath, "rb")
+        except FileNotFoundError:
+            writeLog(f"{filepath} 图片文件不存在")
+            return "", 204
+
+        return Response(
+            f.read(),
+            mimetype="image/jpeg"
+        )

@@ -1,15 +1,17 @@
 from flask import request, jsonify
 from virtualtime import time
-from utils import read_json, write_json, run_after_response
+from utils import read_json, write_json, run_after_response, get_memory, decrypt_battle_data
+from quest import questBattleStart
 from constants import (
-    SYNC_DATA_TEMPLATE_PATH
+    SYNC_DATA_TEMPLATE_PATH,
+    SERVER_DATA_PATH
 )
 import random
 
 class checkInReward:
     # 这个类用于处理签到奖励
         
-    def GetCheckInReward():
+    def getCheckInReward():
         json_body = request.get_json()
         user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
         access_id = json_body["activityId"]
@@ -18,8 +20,10 @@ class checkInReward:
         modified = {}
 
         match access_id:
-            case "act2access":
-                rewardsCnt = user_data["user"]["activity"]["CHECKIN_ACCESS"]["act2access"]["rewardsCount"]
+            case access_id if access_id.endswith("access"):
+                activity_data = user_data["user"]["activity"]["CHECKIN_ACCESS"][access_id]
+                activity_data["rewardsCount"] += 1
+                activity_data["lastTs"] = time()
                 items = [
                     {
                         "type": "AP_SUPPLY",
@@ -36,11 +40,23 @@ class checkInReward:
                 modified = {
                     "activity": {
                         "CHECKIN_ACCESS": {
-                            access_id: {
-                                "currentStatus": 0,
-                                "lastTs": time(),
-                                "rewardsCount": rewardsCnt + 1
-                            }
+                            access_id: activity_data
+                        }
+                    }
+                }
+            case access_id if access_id.endswith("blessing"):
+                activity_data = user_data["user"]["activity"]["BLESS_ONLY"][access_id]
+                index = json_body["index"]
+
+                if json_body["isFestival"] == 1:
+                    activity_data["festivalHistory"][index]["state"] = 0
+                else:
+                    activity_data["history"][index] = 0
+
+                modified = {
+                    "activity": {
+                        "BLESS_ONLY": {
+                            access_id: activity_data
                         }
                     }
                 }
@@ -56,9 +72,11 @@ class checkInReward:
             "items": items
         }
 
+        run_after_response(write_json, user_data, SYNC_DATA_TEMPLATE_PATH)
+
         return result
 
-    def GetActivityCheckInReward():
+    def getActivityCheckInReward():
 
         json_body = request.get_json()
 
@@ -88,14 +106,12 @@ class checkInReward:
 
         return result
     
-    def _act53sign():
-        pass
-    
-    def GetReward():
+    def getReward():
 
         json_body = request.get_json()
         # {'prayArray': [0, 1], 'activityId': 'act11pray'}
         # {'activityId': 'act24login'}
+        # {'activityId': 'act3unique'}
 
         user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
         activity_id = json_body["activityId"]
@@ -142,6 +158,20 @@ class checkInReward:
                 activity_data = user_data["user"]["activity"][activity_type][activity_id]
                 activity_data["reward"] = 0
 
+            case activity_id if activity_id.endswith("unique"):
+                activity_type = "UNIQUE_ONLY"
+                activity_data = user_data["user"]["activity"][activity_type][activity_id]
+                activity_data["reward"] = 0
+
+            case _:
+                result = {
+                    "playerDataDelta":{
+                        "modified": {},
+                        "deleted": {}
+                    }
+                }
+                return result
+
         result = {
             "playerDataDelta": {
                 "modified": {
@@ -155,9 +185,40 @@ class checkInReward:
             },
             "items": items
         }
+
+        run_after_response(write_json, user_data, SYNC_DATA_TEMPLATE_PATH)
+
+        return result
+    
+    def changeFestivalChar():
+        json_body = request.get_json()
+        # {'activityId': 'act3blessing', 'index': 0, 'newChar': 'act1blessing_festival_1_1'}
+        activity_id = json_body["activityId"]
+        index = json_body["index"]
+        new_char = json_body["newChar"]
+        user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
+        activity_data = user_data["user"]["activity"]["BLESS_ONLY"][activity_id]
+
+        activity_data["festivalHistory"][index]["charId"] = new_char
+
+        result = {
+            "playerDataDelta":{
+                "modified": {
+                    "activity": {
+                        "BLESS_ONLY": {
+                            activity_id: activity_data
+                        }
+                    }
+                },
+                "deleted": {}
+            }
+        }
+
+        run_after_response(write_json, user_data, SYNC_DATA_TEMPLATE_PATH)
+
         return result
 
-    def Sign():
+    def sign():
         json_body = request.get_json()
         user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
         # {'actId': 'act3signvs', 'tasteChoice': 2} 咸粽子
@@ -211,7 +272,7 @@ class checkInReward:
         return result 
 
 class switchOnly:
-    def GetSwitchOnlyReward():
+    def getSwitchOnlyReward():
         json_body = request.get_json()
 
         user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
@@ -238,8 +299,10 @@ class switchOnly:
 
         return result
 
-class enemyDuel():
-    def SingleBattleStart():
+class enemyDuel:
+    def singleBattleStart():
+        
+        #{"activityId": "act1enemyduel", "modeId": "soloOperation"}
 
         return{
             "pushMessage": [],
@@ -247,11 +310,23 @@ class enemyDuel():
             "battleId": "abcdefgh-1234-5678-a1b2c3d4e5f6",
         }
 
-    def SingleBattleFinish():
+    def singleBattleFinish():
 
         json_body = request.get_json()
+        # run_after_response(write_json ,json_body, "debug.json")
 
         rankList = json_body["settle"]["rankList"]
+        rank_lst = [
+            {"id": "1", "rank": 1, "score": 1919810, "isPlayer": 1},
+        ]
+        activity_table = get_memory("activity_table")
+        activity_id = json_body["activityId"]
+        for npc_id in activity_table["activity"]["ENEMY_DUEL"][activity_id]["npcData"]:
+            if len(rank_lst) >= 8:
+                break
+            rank_lst.append(
+                {"id": npc_id, "rank": 2, "score": 114514, "isPlayer": 0},
+            )
 
         result = {
             "result": 0,
@@ -277,7 +352,7 @@ class enemyDuel():
                 "allIn": 1
             },
             "commentId": "Comment_Operation_7",
-            "isHighScore": False,
+            "isHighScore": False, # 是否为最高记录
             "rankList": rankList,
             "dailyMission": {
                 "add": 0,
@@ -400,7 +475,7 @@ class act35side:
 
         return good
 
-    def act35SideCreate():
+    def act35create():
         json_body = request.get_json()
         activity_id = json_body["activityId"]
         challenge_id = json_body["challengeId"]
@@ -547,7 +622,7 @@ class act35side:
         run_after_response(write_json, user_data, SYNC_DATA_TEMPLATE_PATH)
         return result
 
-    def act35SideSettle():
+    def act35settle():
         json_body = request.get_json()
         activity_id = json_body["activityId"]
 
@@ -585,7 +660,7 @@ class act35side:
         run_after_response(write_json, user_data, SYNC_DATA_TEMPLATE_PATH)
         return result
     
-    def act35SideToBuy():
+    def act35toBuy():
         json_body = request.get_json()
         activity_id = json_body["activityId"]
         user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
@@ -651,7 +726,7 @@ class act35side:
         run_after_response(write_json, user_data, SYNC_DATA_TEMPLATE_PATH)
         return result
     
-    def act35SidereFreshShop():
+    def act35refreshShop():
         json_body = request.get_json()
         activity_id = json_body["activityId"]
 
@@ -693,7 +768,7 @@ class act35side:
 
         return result
     
-    def act35SideBuySlot():
+    def act35buySlot():
         json_body = request.get_json()
         activity_id = json_body["activityId"]
 
@@ -725,7 +800,7 @@ class act35side:
         run_after_response(write_json, user_data, SYNC_DATA_TEMPLATE_PATH)
         return result
 
-    def act35SideBuyCard():
+    def act35buyCard():
         json_body = request.get_json()
         # {'activityId': 'act35sre', 'slot': 0}
         activity_id = json_body["activityId"]
@@ -784,7 +859,7 @@ class act35side:
         run_after_response(write_json, user_data, SYNC_DATA_TEMPLATE_PATH)
         return result
     
-    def act35SideToProcess():
+    def act35toProcess():
         json_body = request.get_json()
         activity_id = json_body["activityId"]
 
@@ -812,126 +887,126 @@ class act35side:
         run_after_response(write_json, user_data, SYNC_DATA_TEMPLATE_PATH)
         return result
 
-    def act35SideProcess_old():
-        json_body = request.get_json()
-        activity_id = json_body["activityId"]
-        cards = json_body["cards"]
+    # def act35SideProcess_old():
+    #     json_body = request.get_json()
+    #     activity_id = json_body["activityId"]
+    #     cards = json_body["cards"]
 
-        user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
-        carving_data = user_data["user"]["activity"]["TYPE_ACT35SIDE"][activity_id]["carving"]
+    #     user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
+    #     carving_data = user_data["user"]["activity"]["TYPE_ACT35SIDE"][activity_id]["carving"]
 
-        card_info = carving_data["card"]
-        materials = carving_data["material"]
-        slot_cnt = carving_data["slotCnt"]
-        empty_slots = slot_cnt - len(cards)
+    #     card_info = carving_data["card"]
+    #     materials = carving_data["material"]
+    #     slot_cnt = carving_data["slotCnt"]
+    #     empty_slots = slot_cnt - len(cards)
 
-        card_data_map = act35side.PREPARED_CARD_DATA
-        material_data_map = act35side.MATERIAL_PRICE
+    #     card_data_map = act35side.PREPARED_CARD_DATA
+    #     material_data_map = act35side.MATERIAL_PRICE
 
-        frames = []
+    #     frames = []
 
-        # 上一回合总分
-        base_score = carving_data["score"]
-        total_score = base_score
+    #     # 上一回合总分
+    #     base_score = carving_data["score"]
+    #     total_score = base_score
 
-        # 非工艺区生效卡处理
-        pre_exec_cards = []
-        for card, lv in card_info.items():
-            lv = str(lv)
-            if card in card_data_map and card_data_map[card][lv]["pre_exec"]:
-                if card not in cards:
-                    pre_exec_cards.append(card)
+    #     # 非工艺区生效卡处理
+    #     pre_exec_cards = []
+    #     for card, lv in card_info.items():
+    #         lv = str(lv)
+    #         if card in card_data_map and card_data_map[card][lv]["pre_exec"]:
+    #             if card not in cards:
+    #                 pre_exec_cards.append(card)
 
-        ordered_cards = pre_exec_cards + cards
+    #     ordered_cards = pre_exec_cards + cards
 
-        # 遍历卡列表
-        for card in ordered_cards:
-            lv = str(card_info[card])
-            card_cfg = card_data_map[card][lv]
-            if not card_cfg:
-                continue
+    #     # 遍历卡列表
+    #     for card in ordered_cards:
+    #         lv = str(card_info[card])
+    #         card_cfg = card_data_map[card][lv]
+    #         if not card_cfg:
+    #             continue
 
-            inputs = card_cfg["inputs"]
-            outputs = card_cfg["outputs"]
-            multiplier = card_cfg["multiplier"]
-            extra_outputs = card_cfg["extra_outputs"]
-            flat_score = card_cfg["flat_score"]
-            series_bonus = card_cfg["series_bonus"]
+    #         inputs = card_cfg["inputs"]
+    #         outputs = card_cfg["outputs"]
+    #         multiplier = card_cfg["multiplier"]
+    #         extra_outputs = card_cfg["extra_outputs"]
+    #         flat_score = card_cfg["flat_score"]
+    #         series_bonus = card_cfg["series_bonus"]
 
-            product = {}
-            # 如果材料足够，则循环合成
-            while all(materials.get(mat, 0) >= need for mat, need in inputs.items()):
-                # 扣输入
-                for mat, need in inputs.items():
-                    materials[mat] -= need
+    #         product = {}
+    #         # 如果材料足够，则循环合成
+    #         while all(materials.get(mat, 0) >= need for mat, need in inputs.items()):
+    #             # 扣输入
+    #             for mat, need in inputs.items():
+    #                 materials[mat] -= need
 
-                # 正常产出
-                for mat, out in outputs.items():
-                    amount = int(out * multiplier)
-                    materials[mat] = materials.get(mat, 0) + amount
-                    product[mat] = product.get(mat, 0) + amount
+    #             # 正常产出
+    #             for mat, out in outputs.items():
+    #                 amount = int(out * multiplier)
+    #                 materials[mat] = materials.get(mat, 0) + amount
+    #                 product[mat] = product.get(mat, 0) + amount
 
-                # 额外产出
-                for mat, out in extra_outputs.items():
-                    materials[mat] = materials.get(mat, 0) + out
-                    product[mat] = product.get(mat, 0) + out
+    #             # 额外产出
+    #             for mat, out in extra_outputs.items():
+    #                 materials[mat] = materials.get(mat, 0) + out
+    #                 product[mat] = product.get(mat, 0) + out
 
-            # 计算当前库存的估值
-            step_score = 0
-            for mat, num in materials.items():
-                base_val = material_data_map.get(mat, 0)
-                for prefix, bonus in series_bonus.items():
-                    if mat.startswith(prefix):
-                        base_val += bonus
-                        break
-                step_score += base_val * num
+    #         # 计算当前库存的估值
+    #         step_score = 0
+    #         for mat, num in materials.items():
+    #             base_val = material_data_map.get(mat, 0)
+    #             for prefix, bonus in series_bonus.items():
+    #                 if mat.startswith(prefix):
+    #                     base_val += bonus
+    #                     break
+    #             step_score += base_val * num
 
-            # 空槽位加分
-            step_score += empty_slots * flat_score
+    #         # 空槽位加分
+    #         step_score += empty_slots * flat_score
 
-            # 基础分 + 当前估值
-            total_score = base_score + step_score
+    #         # 基础分 + 当前估值
+    #         total_score = base_score + step_score
 
-            frames.append({
-                "card": card,
-                "product": product,
-                "score": total_score,  
-                "type": 0
-            })
+    #         frames.append({
+    #             "card": card,
+    #             "product": product,
+    #             "score": total_score,  
+    #             "type": 0
+    #         })
 
-        # 更新 carving_data 的 总分
-        carving_data["score"] = total_score
+    #     # 更新 carving_data 的 总分
+    #     carving_data["score"] = total_score
 
-        # 加钱
-        coin = act35side.COIN_DATA[carving_data["id"]][carving_data["round"] - 1]
-        carving_data["shop"]["coin"] += coin
-        carving_data["roundCoinAdd"] += coin
+    #     # 加钱
+    #     coin = act35side.COIN_DATA[carving_data["id"]][carving_data["round"] - 1]
+    #     carving_data["shop"]["coin"] += coin
+    #     carving_data["roundCoinAdd"] += coin
 
-        result = {
-            "playerDataDelta": {
-                "modified": {
-                    "activity": {
-                        "TYPE_ACT35SIDE": {
-                            activity_id: {
-                                "carving": {
-                                    "score": frames[-1]["score"],
-                                    "shop": carving_data["shop"],
-                                    "roundCoinAdd": carving_data["roundCoinAdd"],
-                                    "state": 3
-                                }
-                            }
-                        }
-                    }
-                },
-                "deleted": {}
-            },
-            "frames": frames
-        }
+    #     result = {
+    #         "playerDataDelta": {
+    #             "modified": {
+    #                 "activity": {
+    #                     "TYPE_ACT35SIDE": {
+    #                         activity_id: {
+    #                             "carving": {
+    #                                 "score": frames[-1]["score"],
+    #                                 "shop": carving_data["shop"],
+    #                                 "roundCoinAdd": carving_data["roundCoinAdd"],
+    #                                 "state": 3
+    #                             }
+    #                         }
+    #                     }
+    #                 }
+    #             },
+    #             "deleted": {}
+    #         },
+    #         "frames": frames
+    #     }
 
-        # run_after_response(write_json, user_data, SYNC_DATA_TEMPLATE_PATH)
-        return result
+    #     # run_after_response(write_json, user_data, SYNC_DATA_TEMPLATE_PATH)
+    #     return result
     
-    def act35SideProcess():
+    def act35process():
         """
         处理活动35侧边流程的函数
         负责处理卡牌合成、材料管理和分数计算等功能
@@ -1132,7 +1207,7 @@ class act35side:
         # run_after_response(write_json, user_data, SYNC_DATA_TEMPLATE_PATH)
         return result
 
-    def act35NextRound():
+    def act35nextRound():
         json_body = request.get_json()
         activity_id = json_body["activityId"]
 
@@ -1223,7 +1298,7 @@ class act35side:
 
         run_after_response(write_json, user_data, SYNC_DATA_TEMPLATE_PATH)
         return result
- 
+  
 class vhalfidle:
     from data.act_data import SPEC_CHAR, VHALFIDLE_POOLS, E_0, E_1, E_2
 
@@ -1278,7 +1353,7 @@ class vhalfidle:
         # ⑥ 添加到活动数据
         troop["char"][inst_id] = new_char_info
 
-    def RefreshProduct():
+    def refreshProduct():
         json_body = request.get_json()
         activity_id = json_body["activityId"]
         sync_data = read_json(SYNC_DATA_TEMPLATE_PATH)
@@ -1314,7 +1389,7 @@ class vhalfidle:
 
         return result
 
-    def Harvest():
+    def harvest():
         json_body = request.get_json()
         activity_id = json_body["activityId"]
         sync_data = read_json(SYNC_DATA_TEMPLATE_PATH)
@@ -1368,7 +1443,7 @@ class vhalfidle:
 
         return result
 
-    def UnlockTech():
+    def unlockTech():
         json_body = request.get_json()
         activity_id = json_body["activityId"]
         # {'activityId': 'act1vhalfidle', 'techId': 'node_1_2'}
@@ -1400,7 +1475,7 @@ class vhalfidle:
 
         return result
 
-    def RecruitNormal():
+    def recruitNormal():
         json_body = request.get_json()
         activity_id = json_body["activityId"]
         pool_id = json_body["poolId"]
@@ -1516,7 +1591,7 @@ class vhalfidle:
 
         return result
 
-    def RecruitDirect():
+    def recruitDirect():
         json_body = request.get_json()
 
         sync_data = read_json(SYNC_DATA_TEMPLATE_PATH)
@@ -1566,7 +1641,7 @@ class vhalfidle:
 
         return result
 
-    def VhalfidlebattleStart():
+    def vhalfidlebattleStart():
         json_body = request.get_json()
 
         global stage_id
@@ -1584,7 +1659,7 @@ class vhalfidle:
 
         return result
 
-    def VhalfidlebattleFinish():
+    def vhalfidlebattleFinish():
         json_body = request.get_json()
 
         activity_id = json_body["activityId"]
@@ -1663,7 +1738,7 @@ class vhalfidle:
 
         return result
 
-    def UpgradeChar():
+    def upgradeChar():
         json_body = request.get_json()
         cahr_id = json_body["charId"]
         dest_level = json_body["destLvl"]
@@ -1725,7 +1800,7 @@ class vhalfidle:
 
         return result
 
-    def UpgradeSkill():
+    def upgradeSkill():
         json_body = request.get_json()
         sync_data = read_json(SYNC_DATA_TEMPLATE_PATH)
         activity_id = json_body["activityId"]
@@ -1763,7 +1838,7 @@ class vhalfidle:
 
         return result
 
-    def EvolveChar():
+    def evolveChar():
         json_body = request.get_json()
 
         activity_id = json_body["activityId"]
@@ -1803,7 +1878,7 @@ class vhalfidle:
 
         return result
 
-    def ReplaceRate():
+    def replaceRate():
         """数据替换"""
         # 获取请求数据
         json_body = request.get_json()
@@ -1852,7 +1927,7 @@ class vhalfidle:
 
         return data
 
-    def SetAssistChar():
+    def setAssistChar():
         """助战逻辑"""
         json_body = request.get_json()
         sync_data = read_json(SYNC_DATA_TEMPLATE_PATH)
@@ -1972,19 +2047,19 @@ class vhalfidle:
     
 class multiplayer:
 
-    def RefreshInfo():
+    def refreshInfo():
 
         return {}
     
-    def RefreshInviteList():
+    def refreshInviteList():
 
         return {}
     
-    def GetInfo():
+    def getInfo():
         result = {}
         return result
     
-    def ChangeTitle():
+    def changeTitle():
         request_json = request.get_json()
         user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
 
@@ -1995,7 +2070,7 @@ class multiplayer:
         result = {}
         return result
     
-    def SetBuff():
+    def setBuff():
         request_json = request.get_json()
         user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
 
@@ -2008,7 +2083,7 @@ class multiplayer:
         result = {}
         return result
     
-    def SetSquads():
+    def setSquads():
         request_json = request.get_json()
         user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
 
@@ -2022,14 +2097,14 @@ class multiplayer:
         result = {}
         return result
     
-    def GuideBattleStart():
+    def guideBattleStart():
         result = {
             "result": 0,
         }
         
         return result
 
-    def GuideBattleFinish():
+    def guideBattleFinish():
 
         result = {
         "data": {
@@ -2084,3 +2159,387 @@ class multiplayer:
         },
     }
         return result
+
+class vecbreak:
+
+    def getSeasonRecord():
+        json_body = request.get_json()
+        sync_data = read_json(SYNC_DATA_TEMPLATE_PATH)
+        server_data = read_json(SERVER_DATA_PATH)
+
+        stage_info = {}
+
+        for keys in sync_data["user"]["dungeon"]["stages"].keys():
+            if keys.startswith("act1break_"):
+                one_stage_info = {
+                    keys: {
+                        "stageId": keys,
+                        "state": "COMPLETE"
+                    }
+                }
+                stage_info.update(one_stage_info)
+
+        buff = server_data["vecbreakV2"]["buff"]
+        squad = server_data["vecbreakV2"]["squad"]
+        assistChar = server_data["vecbreakV2"]["assistChar"]
+
+        result = {
+        "playerDataDelta": {
+            "modified": {},
+            "deleted": {}
+        },
+        "pushMessage": [],
+        "seasons": {
+            "act1break": {
+            "bestRecord": {
+                "stageId": "act1break_12",
+                "buff": buff,
+                "showTs": time(),
+                "squad": squad,
+                "assistChar": assistChar
+            },
+            "stageInfo": stage_info
+            }
+        }
+        }
+        return result
+
+    def rewardAllMilestone():
+        json_body = request.get_json()
+        print (json_body)
+
+        return {}
+
+    def rewardMilestone():
+        json_body = request.get_json()
+        print (json_body)
+
+        return {}
+
+    def vecV2changeBuffList():
+        json_body = request.get_json()
+        # {"activityId": "act1break", "buffList": ["act1break_rune01", "act1break_rune04"]}
+        print(json_body)
+
+        sync_data = read_json(SYNC_DATA_TEMPLATE_PATH)
+        activity_id = json_body["activityId"]
+        buff_list = json_body["buffList"]
+
+        activity_data = sync_data["user"]["activity"]["VEC_BREAK_V2"][activity_id]
+        activity_data["activatedBuff"] = buff_list
+
+        result = {
+            "playerDataDelta": {
+                "modified": {
+                    "activity": {
+                        "VEC_BREAK_V2": {
+                            activity_id: activity_data
+                        }
+                    }
+                },
+                "deleted": {},
+            }
+        }
+
+        run_after_response(write_json, sync_data, SYNC_DATA_TEMPLATE_PATH)
+        # print(result)
+        return result
+
+    def defendBattleStart():
+        json_body = request.get_json()
+        # {
+        #     "activityId": "act1break",
+        #     "stageId": "act1break_sp02",
+        #     "squad": {
+        #         "squadId": "",
+        #         "name": "",
+        #         "slots": [
+        #             {
+        #                 "charInstId": 4133,
+        #                 "skillIndex": 2,
+        #                 "currentEquip": "uniequip_002_logos"
+        #             }
+        #         ]
+        #     }
+        # }
+        global battle_data
+        battle_data = json_body
+        result = questBattleStart()
+
+        return result
+
+    def defendBattleFinish():
+        json_body = request.get_json()
+        global battle_data
+        sync_data = read_json(SYNC_DATA_TEMPLATE_PATH)
+
+        # battle_data = json_body["data"]
+        # decrypt_data = decrypt_battle_data(battle_data)
+
+        # 基础信息
+        activity_data_id = battle_data["activityId"]
+        slots_data = battle_data["squad"]["slots"]
+        stage_id = battle_data["stageId"]
+        activity_data = sync_data["user"]["activity"]["VEC_BREAK_V2"][activity_data_id]
+
+        # 通关信息更新
+        defend_stages_data = activity_data["defendStages"].get(stage_id)
+        if defend_stages_data is None:
+            defend_squad = [
+                {
+                    "charInstId": slot["charInstId"],
+                    "currentTmpl": None
+                }
+                for slot in slots_data
+            ]
+            defend_stages_data = {
+                "stageId": stage_id,
+                "defendSquad": defend_squad,
+                "recvTimeLimited": True,
+                "recvNormal": True
+            }
+            activity_data["defendStages"][stage_id] = defend_stages_data
+            activated_buff = activity_data["activatedBuff"]
+            activated_buff.append(stage_id)
+        else:
+            defend_stages_data["defendSquad"] = defend_squad
+
+        # 等级点数
+        ponit = activity_data["milestone"]["point"]
+
+        #构建响应内容
+        result = {
+            "playerDataDelta": {
+                "modified": {
+                    "activity": {
+                        "VEC_BREAK_V2": {
+                            activity_data_id: {
+                                "milestone": {
+                                    "point": ponit
+                                },
+                                "defendStages": {
+                                    stage_id: defend_stages_data
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "pushMessage": [],
+            "result": 0,
+            "apFailReturn": 0,
+            "goldScale": 0.0,
+            "expScale": 0.0,
+            "suggestFriend": False,
+            "msBefore": ponit,
+            "msAfter": ponit,
+            "finTs": time()
+        }
+
+        battle_data = None
+        run_after_response(write_json, sync_data, SYNC_DATA_TEMPLATE_PATH)
+        return result
+
+    def setDefend():
+        # 换驻防编队、清空驻防编队
+        json_body = request.get_json()
+        sync_data = read_json(SYNC_DATA_TEMPLATE_PATH)
+        activity_data = sync_data["user"]["activity"]["VEC_BREAK_V2"][json_body["activityId"]]
+        stage_id = json_body["stageId"]
+        squad_slots = json_body["squadSlots"]
+
+        activity_data["defendStages"][stage_id]["defendSquad"] = squad_slots
+
+        result = {
+            "PlayerDataDelta": {
+                "modified": {
+                    "activity": {
+                        "VEC_BREAK_V2": {
+                            json_body["activityId"]: {
+                                "defendStages": {
+                                    stage_id: {
+                                        "defendSquad": squad_slots
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        run_after_response(write_json, sync_data, SYNC_DATA_TEMPLATE_PATH)
+        return result
+
+    def vecV2BattleStart():
+        json_body = request.get_json()
+        global battle_data
+        battle_data = json_body
+        result = questBattleStart()
+
+        return result
+
+    def vecV2battleFinish1():
+        json_body = request.get_json()
+        sync_data = read_json(SYNC_DATA_TEMPLATE_PATH)
+        server_data = read_json(SERVER_DATA_PATH)
+        char_equip_dict = {}
+        global battle_data
+
+        decrypt_data = decrypt_battle_data(json_body["data"])
+        if decrypt_data["percent"] == 100:
+            write_in = True
+        else:
+            write_in = False
+        activity_data_id = battle_data["activityId"]
+        activity_data = sync_data["user"]["activity"]["VEC_BREAK_V2"][activity_data_id]
+        ponit = activity_data["milestone"]["point"]
+
+        if battle_data["stageId"].startswith(("act1break_0", "act1break_1")):
+            if write_in:
+                server_data["vecbreakV2"]["buff"] = sync_data["user"]["activity"]["VEC_BREAK_V2"]["act1break"]["activatedBuff"]
+                # if battle_data["assistFriend"] is not None:
+                #   server_data["vecbreakV2"]["assistChar"] = battle_data["assistFriend"]
+                
+                char_equip_dict = battle_data["squad"]["slots"]
+                for char_id in sync_data["user"]["troop"]["chars"].keys():
+                    matched_slot = next(
+                        (slot for slot in char_equip_dict if str(slot["charInstId"]) == char_id),
+                        None
+                    )
+                    
+                    if matched_slot is not None:
+                        char_data = sync_data["user"]["troop"]["chars"][char_id]
+                        if matched_slot["currentEquip"] is not None:
+                            equip = {
+                                "id": matched_slot["currentEquip"],
+                                "level": char_data["equip"][matched_slot["currentEquip"]]["level"]
+                            }
+                        else:
+                            equip = {
+                                "id": char_data["currentEquip"],
+                                "level": 1
+                            }
+                        
+                        template = {
+                            "charInstId": char_data["charId"],
+                            "currentTmpl": None,
+                            "potentialRank": char_data["potentialRank"],
+                            "level": char_data["level"],
+                            "mainSkillLvl": char_data["mainSkillLvl"],
+                            "evolvePhase": char_data["evolvePhase"],
+                            "skin": char_data["skin"],
+                            "skill": {
+                                "skillIndex": matched_slot["skillIndex"],
+                                "specializeLevel": char_data["skills"][str(matched_slot["skillIndex"])]["specializeLevel"]
+                            },
+                            "equip": equip
+                        }
+                        
+                        server_data["vecbreakV2"]["squad"].update(template)
+
+        result = {
+            "playerDataDelta": {
+                "modified": {},
+                "deleted": {}
+            },
+            "pushMessage": [],
+            "result": 0,
+            "apFailReturn": 0,
+            "goldScale": 0.0,
+            "expScale": 0.0,
+            "suggestFriend": False,
+            "msBefore": ponit,
+            "msAfter": ponit,
+            "finTs": time()
+        }
+
+        battle_data = None
+        return result
+
+    def vecV2battleFinish():
+
+        json_body = request.get_json()
+        sync_data = read_json(SYNC_DATA_TEMPLATE_PATH) 
+        server_data = read_json(SERVER_DATA_PATH)
+        global battle_data
+
+        # 解密战斗数据
+        decrypt_data = decrypt_battle_data(json_body["data"])
+        # 判断是否写入
+        write_in = decrypt_data["percent"] == 100
+        # 获取关卡编号
+        stage_num = int(battle_data["stageId"].split("_")[-1])
+        # 判断是否达到最大关卡
+        is_max_level = stage_num >= server_data["vecbreakV2"].get("MaxLevel", 0)
+        # 获取活动数据
+        activity_data = sync_data["user"]["activity"]["VEC_BREAK_V2"][battle_data["activityId"]]
+        # 获取当前积分
+        current_point = activity_data["milestone"]["point"]
+
+        # 如果关卡编号不是act1break_0或act1break_1，或未达到100完成度，或不是记录中最高的关卡，则不写入记录
+        run = write_in and not is_max_level and battle_data["stageId"].startswith(("act1break_0", "act1break_1"))
+
+        def run_after(stage_num):
+            sync_data = read_json(SYNC_DATA_TEMPLATE_PATH) 
+            server_data = read_json(SERVER_DATA_PATH)
+            global battle_data
+            # 生成新的队伍记录
+            new_squad = []
+            for slot in battle_data["squad"]["slots"]:
+                # 获取对应的角色ID
+                char_inst_id = str(slot["charInstId"])
+                
+                if char_inst_id not in sync_data["user"]["troop"]["chars"]:
+                    continue
+
+                # 获取角色基础数据
+                char_data = sync_data["user"]["troop"]["chars"][char_inst_id]
+                
+                # 处理装备数据
+                equip_id = slot["currentEquip"] or char_data["currentEquip"]
+                equip_level = char_data["equip"].get(equip_id, 1) if equip_id else 1
+                
+                # 构建角色完整数据
+                char_template = {
+                    "charId": char_data["charId"],
+                    "currentTmpl": None,
+                    "potentialRank": char_data["potentialRank"],
+                    "level": char_data["level"],
+                    "mainSkillLvl": char_data["mainSkillLvl"],
+                    "evolvePhase": char_data["evolvePhase"],
+                    "skin": char_data["skin"],
+                    "skill": {
+                        "skillIndex": slot["skillIndex"],
+                        "specializeLevel": char_data["skills"][slot["skillIndex"]]["specializeLevel"]
+                    },
+                    "equip": {
+                        "id": equip_id,
+                        "level": equip_level
+                    }
+                }
+                new_squad.append(char_template)
+
+            assistChar = None #TODO:助战问题暂不处理
+
+            # 更新服务器数据
+            server_data["vecbreakV2"] = {
+                "maxLevel": stage_num,
+                "buff": sync_data["user"]["activity"]["VEC_BREAK_V2"]["act1break"]["activatedBuff"],
+                "squad": new_squad,
+                "assistChar": assistChar
+            }
+
+            battle_data = None
+            run_after_response(write_json ,server_data, SERVER_DATA_PATH)
+
+        if run:
+            run_after_response(run_after, stage_num)
+
+        return {
+            "playerDataDelta": {"modified": {}, "deleted": {}},
+            "result": 0,
+            "msBefore": current_point,
+            "msAfter": current_point,
+            "finTs": time()
+        }

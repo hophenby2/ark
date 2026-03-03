@@ -6,6 +6,16 @@
 <details>
 <summary><strong>最近三条更新日志(点击展开)：</strong></summary>
 
+- 2026 年 3 月 3 日
+
+    添加：  
+    1、特辑系统初步支持  
+    2、二期矢量突破支持
+
+    修改：  
+    1、回滚activity的命名操作，修改命名规范  
+    2、校准签到月份
+
 - 2026 年 2 月 24 日
 
     添加：  
@@ -33,17 +43,6 @@
     3、删除 Giveitem 模块
 
     本次更新的内容已进行过测试，保证已有功能可正常使用
-
-- 2026 年 2 月 10 日
-
-    修复：  
-    1、启动时出现 **AttributeError: 'function' object has no attribute 'getLogger'** 错误  
-    2、肉鸽不期而遇处理函数（第363行）语法不正确的问题  
-    3、部分设备在使用时会出现 **FileNotFoundError : [Errno 2] No such file or directory: 'data/crisisV2/cc?.json '** 的问题
-
-    更新：  
-    1、卡池文件  
-    2、部分商店数据
 
 </details>
 

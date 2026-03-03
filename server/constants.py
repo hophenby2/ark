@@ -20,6 +20,7 @@ RLV2_USER_SETTINGS_PATH = "data/user/rlv2UserSettings.json"
 RLV2_SETTINGS_PATH = "data/user/rlv2Settings.json"
 CRISIS_JSON_BASE_PATH = "data/crisis/"
 CRISIS_V2_JSON_BASE_PATH = "data/crisisv2/"
+JPG_BASE_PATH = "data/user/jpeg/"
 RUNE_JSON_PATH = "data/user/rune.json"
 
 # RLV2 Options
