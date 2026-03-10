@@ -44,7 +44,20 @@ def SyncData():
     mail_data = read_json(MAILLIST_PATH)
     player_data = read_json(SYNC_DATA_TEMPLATE_PATH)
     config = memory_cache["config"]
+    # 如果配置为使用已有数据，则直接返回用户存档数据
+    if config.get("userConfig").get("useUserData", False) and "user" in user_data:
+        # 只更新必要的时间戳和配置信息
+        user_data["user"]["status"]["lastRefreshTs"] = ts
+        # user_data["user"]["status"]["lastApAddTime"] = ts
+        # user_data["user"]["status"]["lastOnlineTs"] = ts
+        user_data["ts"] = ts
 
+        # write_json(user_data, SYNC_DATA_TEMPLATE_PATH)
+        # b = datetime.now()
+        # writeLog(f"syncdata耗时: {b - a}")
+        # with open("sync_time.txt", "w", encoding="utf-8") as file:
+        #     file.write(str(b - a))
+        return user_data
     # 从内存中获取table
     skin_table = get_memory("skin_table")
     character_table = get_memory("character_table")
@@ -629,6 +642,9 @@ def SyncData():
         rune = read_json(f"{CRISIS_V2_JSON_BASE_PATH}{selected_crisis}.json")
         season = rune["info"]["seasonId"]
         player_data["user"]["crisisV2"]["current"] = season
+
+    config["userConfig"]["useUserData"] = True
+    run_after_response(write_json, config, memory_cache["config"])
 
     run_after_response(write_json, player_data, USER_JSON_PATH)
 
