@@ -106,6 +106,7 @@
     "season": "tower_season_5"
   },
   "userConfig": {
+    "useUserData": True
     "activityMinStartTs": 1756353600,
     "activityMaxStartTs": 1758743999,
     "fakeTime": -1,
