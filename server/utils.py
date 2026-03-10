@@ -62,7 +62,7 @@ def logging(data):
         return sha3_512(seed.encode()).hexdigest()[:len]
     name = rand_name(8)
     log_message = f"[{datetime.now(UTC).isoformat()}] {data}"
-    print(log_message)
+    writeLog(log_message)
     with open(f"logs/{name}.log", "w") as f:
         f.write(log_message)
 
@@ -84,8 +84,8 @@ def run_after_response(func, *args, on_error=None):
                 if on_error:
                     on_error(e, tb_str)
                 else:
-                    print(f"[处理异常] {e}", file=sys.stderr)
-                    print(tb_str, file=sys.stderr)
+                    writeLog(f"[处理异常] {e}", file=sys.stderr)
+                    writeLog(tb_str, file=sys.stderr)
 
         asyncio.run_coroutine_threadsafe(task(), global_loop)
         return response
@@ -112,7 +112,7 @@ def preload_json_data():
             try:
                 memory_cache[key] = read_json(file_path)
             except Exception as e:
-                print(f"加载 {filename} 时出错: {str(e)}")
+                writeLog(f"加载 {filename} 时出错: {str(e)}")
 
 global_loop: Optional[asyncio.AbstractEventLoop] = None
 def start_global_event_loop() -> asyncio.AbstractEventLoop:
@@ -145,7 +145,7 @@ def get_memory(key: str) -> dict:
         try:
             return memory_cache[key]
         except KeyError:
-            print(f"警告: {key} 未在缓存中找到，正在尝试从文件中加载")
+            writeLog(f"警告: {key} 未在缓存中找到，正在尝试从文件中加载")
             file_path = f"data/excel/{key}.json"
             try:
                 # 将加载的数据存入缓存以备后续使用
@@ -176,7 +176,7 @@ def load_data():
             name = os.path.basename(data_path).split(".")[0]
             memory_cache[name] = read_json(data_path)
         except Exception as e:
-            print(f"加载 {data_path} 时出错: {str(e)}")
+            writeLog(f"加载 {data_path} 时出错: {str(e)}")
 
 def load_config() -> None:
     global memory_cache

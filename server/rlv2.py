@@ -309,7 +309,6 @@ def rlv2ChooseInitialRelic():
 
 def rlv2SelectChoice():
     json_body = request.get_json()
-    print(json_body)
     # 数据
     choice:str = json_body["choice"]
     is_bat = False
@@ -529,6 +528,7 @@ def rlv2SelectChoice():
                                                         item_list.append(item_id)
                                         item_id = random.choice(item_list)
                                         # _new_data = _rlv2.add_item(rlv2, item_id)
+                            # int类型，给多少个藏品，和 get_id（list类型） 一起出现
                             elif isinstance(get, int):
                                 match theme:
                                     case "rouge_1":
@@ -556,6 +556,13 @@ def rlv2SelectChoice():
                                 item_list = get
                                 item_id = random.choice(item_list)
                                 # _new_data = _rlv2.add_item(rlv2, item_id)
+                    # 数值越界检查
+                    if rlv2["player"]["property"]["hp"]["current"] > rlv2["player"]["property"]["hp"]["max"]:
+                        rlv2["player"]["property"]["hp"]["current"] = rlv2["player"]["property"]["hp"]["max"]
+                    if rlv2["player"]["property"]["level"] > rlv2["player"]["property"]["maxLevel"]:
+                        rlv2["player"]["property"]["level"] = rlv2["player"]["property"]["maxLevel"]
+                    if rlv2["player"]["property"]["gold"] < 0:
+                        rlv2["player"]["property"]["gold"] = 0
                     # --------------------
                     add_scene_event(scene_id, event_choices[theme]["choices"][choice]["choices"])
                     add_data({

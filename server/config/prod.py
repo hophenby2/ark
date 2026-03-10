@@ -25,7 +25,7 @@ def prodRefreshConfig():
     return data, 200
 
 
-def prodAndroidVersion():
+def prodAndroidVersion(subpath=None):
 
     server_config = get_memory("config")
     version = server_config["version"]["android"]
@@ -139,6 +139,7 @@ def get_latest_game_info():
         "version": f"{main_version}.0.0",
         "action": 0,
         "update_type": 0,
+        "state": 0,
         "update_info": {
             "package": None,
             "patch": None,

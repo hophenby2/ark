@@ -7,7 +7,7 @@ from constants import (
     GACHA_HISTORY_PATH,
     SERVER_DATA_PATH
 )
-from utils import read_json, write_json, get_memory, run_after_response
+from utils import read_json, write_json, get_memory, run_after_response, writeLog
 
 import json
 import random
@@ -251,6 +251,7 @@ def getPoolDetail():
         pool = read_json(f"data/gacha/{pool_Id}.json")
     except:
         pool = read_json(f"data/gacha/DEFAULT.json")
+        writeLog(f"卡池 {pool_Id} 数据未找到")
     return pool
 
 def boostNormalGacha():

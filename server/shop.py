@@ -3,7 +3,7 @@ from datetime import datetime
 from flask import request
 
 from constants import SHOP_PATH, SYNC_DATA_TEMPLATE_PATH
-from utils import read_json, write_json, run_after_response, get_memory
+from utils import read_json, write_json, run_after_response, get_memory, writeLog
 
 
 def getGoodPurchaseState():
@@ -22,7 +22,12 @@ def getGoodPurchaseState():
 # 获取json的内容并返回
 
 def getShopGoodList(shop_type):
-    return read_json(SHOP_PATH)[shop_type.lower()]
+    try:
+        result = get_memory("shop")[shop_type.lower()]
+        return result
+    except:
+        writeLog(f"{shop_type} 数据未找到")
+        return {}
   
 def buyShopGood(shop_type: str):
     # 皮肤购买

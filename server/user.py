@@ -802,7 +802,6 @@ class gallery:
 
     def changeMagazineSquad():
         json_body = request.get_json()
-        print(json_body)
         sync_data = read_json(SYNC_DATA_TEMPLATE_PATH)
         gallery_data = sync_data["user"]["gallery"]
 

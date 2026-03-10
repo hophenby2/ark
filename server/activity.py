@@ -2206,20 +2206,17 @@ class vecbreak:
 
     def rewardAllMilestone():
         json_body = request.get_json()
-        print (json_body)
 
         return {}
 
     def rewardMilestone():
         json_body = request.get_json()
-        print (json_body)
 
         return {}
 
     def vecV2changeBuffList():
         json_body = request.get_json()
         # {"activityId": "act1break", "buffList": ["act1break_rune01", "act1break_rune04"]}
-        print(json_body)
 
         sync_data = read_json(SYNC_DATA_TEMPLATE_PATH)
         activity_id = json_body["activityId"]
@@ -2242,7 +2239,6 @@ class vecbreak:
         }
 
         run_after_response(write_json, sync_data, SYNC_DATA_TEMPLATE_PATH)
-        # print(result)
         return result
 
     def defendBattleStart():

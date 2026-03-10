@@ -16,7 +16,7 @@ from constants import (
     SQUADS_PATH
 )
 from user import checkin
-from utils import read_json, write_json, get_memory, run_after_response, memory_cache
+from utils import read_json, write_json, get_memory, run_after_response, memory_cache, writeLog
 from virtualtime import time
 
 
@@ -633,7 +633,7 @@ def SyncData():
     run_after_response(write_json, player_data, USER_JSON_PATH)
 
     b = datetime.now()
-    print(f"syncdata耗时: {b - a}")
+    writeLog(f"syncdata耗时: {b - a}")
     return player_data
 
 
