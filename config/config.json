@@ -32,7 +32,7 @@
       "content": {
         "configVer": "5",
         "configs": {
-          "V071": {
+          "V070": {
             "network": {
               "an": "{server}/config/prod/announce_meta/{0}/announcement.meta.json",
               "as": "{server}",
@@ -51,7 +51,7 @@
             "override": true
           }
         },
-        "funcVer": "V071"
+        "funcVer": "V070"
       },
       "sign": "Yu9qJf+JL6E8rwO/RiQu3Bq4en4tr4+wpfHfg9cPc1jtWlA2FDaf+Hh8H1wibz/K3yaHeN0r6NeWp5/wpX01OXssqCw0pAA34ypPcBq03GdsGbHPjOOdD27QTS7bE5ymXhfLJkHyXfB9ejK65xyHwFw6ceRFUOx+dEfJUdT8QhA="
     },
@@ -59,7 +59,7 @@
       "content": {
         "configVer": "1",
         "configs": {
-          "V044": {
+          "V066": {
             "network": {
               "an": "{server}/config/prod/announce_meta/{0}/announcement.meta.json",
               "as": "{server}",
@@ -78,7 +78,7 @@
             "override": true
           }
         },
-        "funcVer": "V044"
+        "funcVer": "V066"
       },
       "sign": "sign"
     }
@@ -106,7 +106,7 @@
     "season": "tower_season_5"
   },
   "userConfig": {
-    "useUserData": true,
+    "useUserData": false,
     "activityMinStartTs": 1756353600,
     "activityMaxStartTs": 1758743999,
     "fakeTime": -1,
@@ -123,12 +123,16 @@
     "windows": {
       "clientVersion": "2.7.01",
       "resVersion": "26-02-06-13-36-34_a73b7c"
+    },
+    "Windows": {
+      "resVersion": "26-03-09-09-45-56_fd97a4",
+      "clientVersion": "2.7.11"
     }
   },
   "versionGlobal": {
     "android": {
-      "clientVersion": "22.1.21",
-      "resVersion": "24-04-12-10-37-11-be18f0"
+      "clientVersion": "33.6.61",
+      "resVersion": "26-03-05-06-16-43_c1f10f"
     }
   }
 }
