@@ -38,6 +38,25 @@ def prodAndroidVersion(subpath=None):
 def redirect_rote():
     return redirect("/config/prod/official/network_config")
 
+def prodNetworkConfig_new():
+    server_config = get_memory("config")
+    if server_config["server"]["adaptive"]:
+        server = request.host_url[:-1]
+    else:
+        server = (
+            "http://"
+            + server_config["server"]["host"]
+            + ":"
+            + str(server_config["server"]["port"])
+        )
+
+    result = server_config["networkConfig"]["cn_new"]
+    for index in result:
+        if isinstance(result[index], str) and result[index].find("{server}") >= 0:
+            result[index] = re.sub("{server}", server, result[index])
+
+    return result
+
 def prodNetworkConfig():
 
     server_config = get_memory("config")

@@ -32,7 +32,7 @@
       "content": {
         "configVer": "5",
         "configs": {
-          "V071": {
+          "V070": {
             "network": {
               "an": "{server}/config/prod/announce_meta/{0}/announcement.meta.json",
               "as": "{server}",
@@ -51,7 +51,7 @@
             "override": true
           }
         },
-        "funcVer": "V071"
+        "funcVer": "V070"
       },
       "sign": "Yu9qJf+JL6E8rwO/RiQu3Bq4en4tr4+wpfHfg9cPc1jtWlA2FDaf+Hh8H1wibz/K3yaHeN0r6NeWp5/wpX01OXssqCw0pAA34ypPcBq03GdsGbHPjOOdD27QTS7bE5ymXhfLJkHyXfB9ejK65xyHwFw6ceRFUOx+dEfJUdT8QhA="
     },
@@ -81,6 +81,21 @@
         "funcVer": "V044"
       },
       "sign": "sign"
+    },
+    "cn_new": {
+      "an": "{server}/config/prod/announce_meta/{0}/announcement.meta.json",
+      "as": "{server}",
+      "gs": "{server}",
+      "hu": "{server}/official",
+      "hv": "{server}/config/prod/official/{0}/version",
+      "of": "{server}/index.html",
+      "sl": "{server}/protocol/service",
+      "u8": "{server}/u8",
+      "pkgAd": "https://ak.hypergryph.com/download",
+      "prean": "https://ak-webview.hypergryph.com",
+      "devsdk": false,
+      "pkgIOS": "https://apps.apple.com/cn/app/id1454663939",
+      "configVer": 5
     }
   },
   "remote": {

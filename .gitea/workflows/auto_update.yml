@@ -27,16 +27,16 @@ jobs:
         run: |
           # 获取远程版本信息
           curl -s "https://ak-conf.hypergryph.com/config/prod/official/Android/version" -o android_version.json
-          curl -s "https://ak-conf.hypergryph.com/config/prod/official/network_config" -o network_config.json
+          # curl -s "https://ak-conf.hypergryph.com/config/prod/official/network_config" -o network_config.json
 
           # 提取字段
           resVersion=$(jq -r '.resVersion' android_version.json)
           clientVersion=$(jq -r '.clientVersion' android_version.json)
-          funcVer=$(jq -r '.content' network_config.json | jq -r '.funcVer')
+          # funcVer=$(jq -r '.content' network_config.json | jq -r '.funcVer')
 
           echo "resVersion=$resVersion" >> $GITHUB_ENV
           echo "clientVersion=$clientVersion" >> $GITHUB_ENV
-          echo "funcVer=$funcVer" >> $GITHUB_ENV
+          # echo "funcVer=$funcVer" >> $GITHUB_ENV
 
       - name: Update config.json
         id: update
@@ -46,7 +46,7 @@ jobs:
           # 原始数据
           old_res=$(jq -r '.version.android.resVersion' $file)
           old_client=$(jq -r '.version.android.clientVersion' $file)
-          old_func=$(jq -r '.networkConfig.cn.content.funcVer' $file)
+          # old_func=$(jq -r '.networkConfig.cn.content.funcVer' $file)
 
           changed=false
 
@@ -62,14 +62,14 @@ jobs:
           fi
 
           # 更新 funcVer 并迁移 configs
-          if [ "$old_func" != "$funcVer" ]; then
-            jq --arg new "$funcVer" --arg old "$old_func" '
-              .networkConfig.cn.content.funcVer = $new |
-              .networkConfig.cn.content.configs[$new] = .networkConfig.cn.content.configs[$old] |
-              del(.networkConfig.cn.content.configs[$old])
-            ' $file > tmp && mv tmp $file
-            changed=true
-          fi
+          # if [ "$old_func" != "$funcVer" ]; then
+          #   jq --arg new "$funcVer" --arg old "$old_func" '
+          #     .networkConfig.cn.content.funcVer = $new |
+          #     .networkConfig.cn.content.configs[$new] = .networkConfig.cn.content.configs[$old] |
+          #     del(.networkConfig.cn.content.configs[$old])
+          #   ' $file > tmp && mv tmp $file
+          #   changed=true
+          # fi
 
           echo "changed=$changed" >> $GITHUB_ENV
 
@@ -85,7 +85,7 @@ jobs:
           git pull --rebase --autostash origin main
 
           git add config/config.json
-          git commit -m "自动更新 config.json (resVer=${{ env.resVersion }}, clientVer=${{ env.clientVersion }}, funcVer=${{ env.funcVer }})" || echo "No changes"
+          git commit -m "自动更新 config.json (resVer=${{ env.resVersion }}, clientVer=${{ env.clientVersion }})" || echo "No changes"
           git push origin main
 
       - name: No changes
