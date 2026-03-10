@@ -762,3 +762,45 @@ def getClueFriendList():
     return {
         "result": []
     }
+
+
+def confirmPrivateDormIntimacy():
+    json_body = request.get_json()
+
+    user_data = read_json(USER_JSON_PATH)
+    building_data = user_data["user"]["building"]
+    troop = user_data["user"]["troop"]
+    charInstId = str(json_body.get("charInstId"))  # 转换为字符串以匹配键
+
+    char_info = user_data["user"]["troop"]["chars"].get(charInstId)
+
+    char_id = char_info["charId"]
+
+    modified = {
+        "building": {
+            "roomSlots": building_data["roomSlots"],
+            "rooms": building_data["rooms"],
+            "chars": building_data["chars"],
+            "status": building_data["status"]
+        },
+        "troop": {
+            "charGroup": {
+                char_id: {
+                    "favorPoint": 25570
+                }
+            },
+            "chars": {
+                charInstId: {
+                    "favorPoint": 25570
+                }
+            }
+        }
+    }
+    result = {
+        "palyerDataDelta":{
+            "modified": modified,
+            "deleted": {}
+        }
+    }
+
+    return result

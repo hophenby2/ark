@@ -740,6 +740,31 @@ def agreement_version():
         },
     }
 
+def useRenameCard():
+    request_json = request.get_json()
+    new_nick_name = request_json["nickName"]
+    # 读取并更新数据
+    saved_data = read_json(SYNC_DATA_TEMPLATE_PATH)
+    saved_data["user"]["status"]["nickName"] = new_nick_name
+
+    # 保存数据
+    run_after_response(write_json, saved_data, SYNC_DATA_TEMPLATE_PATH)
+
+    # 返回结果
+    result = {
+        "result": 0,
+        "playerDataDelta": {
+            "deleted": {},
+            "modified": {
+                "status": {
+                    "nickName": new_nick_name
+                }
+            }
+        }
+    }
+
+    return result
+
 class gallery:
     def getFirstRewards():
         json_body = request.get_json()

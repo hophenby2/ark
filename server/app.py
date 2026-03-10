@@ -113,6 +113,7 @@ app.add_url_rule("/building/getClueBox", methods=["POST"], view_func=building.ge
 app.add_url_rule("/building/getClueFriendList", methods=["POST"], view_func=building.getClueFriendList)
 app.add_url_rule("/building/changeBGM", methods=["POST"], view_func=building.changeBGM)
 app.add_url_rule("/building/setPrivateDormOwner", methods=["POST"], view_func=building.setPrivateDormOwner)
+app.add_url_rule('/building/confirmPrivateDormIntimacy', methods=['POST'], view_func=building.confirmPrivateDormIntimacy)
 
 app.add_url_rule("/campaignV2/battleStart", methods=["POST"], view_func=campaignV2.campaignV2BattleStart)
 app.add_url_rule("/campaignV2/battleFinish", methods=["POST"], view_func=campaignV2.campaignV2BattleFinish)
@@ -253,6 +254,8 @@ app.add_url_rule("/shop/getGoodPurchaseState", methods=["POST"], view_func=shop.
 app.add_url_rule("/shop/get<string:shop_type>GoodList", methods=["POST"], view_func=shop.getShopGoodList)
 app.add_url_rule("/shop/buy<string:shop_type>Good", methods=["POST"], view_func=shop.buyShopGood)
 
+app.add_url_rule('/depot/getVoucherDetail', methods=['POST'], view_func=depot.getVoucherDetail)
+
 app.add_url_rule("/templateShop/getGoodList", methods=["POST"], view_func=templateShop.getGoodList)
 app.add_url_rule("/templateShop/BuyGood", methods=["POST"], view_func=templateShop.buyGood)
 
@@ -289,7 +292,7 @@ app.add_url_rule("/app/v1/config", methods=["GET"], view_func=user.app_v1_config
 app.add_url_rule("/u8/user/auth/v1/agreement_version", methods=["GET"], view_func=user.agreement_version)
 app.add_url_rule("/general/v1/server_time", methods=["GET"], view_func=user.server_time)
 app.add_url_rule("/user/exchangeDiamondShard", methods=["POST"], view_func=user.exchangeDiamondShard)
-
+app.add_url_rule("/user/useRenameCard", methods=["POST"], view_func=user.useRenameCard)
 app.add_url_rule("/sandboxPerm/sandboxV2/createGame", methods=["POST"], view_func=sandbox.createGame)
 app.add_url_rule("/sandboxPerm/sandboxV2/battleStart", methods=["POST"], view_func=sandbox.battleStart)
 app.add_url_rule("/sandboxPerm/sandboxV2/battleFinish", methods=["POST"], view_func=sandbox.battleFinish)
