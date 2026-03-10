@@ -26,49 +26,97 @@ jobs:
       - name: Fetch latest versions
         id: fetch
         run: |
-          # 获取远程版本信息
-          curl -s "https://ak-conf.hypergryph.com/config/prod/official/Android/version" -o android_version.json
-          curl -s "https://ak-conf.hypergryph.com/config/prod/official/network_config" -o network_config.json
+          # 国服 Android
+          curl -s "https://ak-conf.hypergryph.com/config/prod/official/Android/version" -o cn_android.json
+          echo "cn_android_resVersion=$(jq -r '.resVersion' cn_android.json)" >> $GITHUB_ENV
+          echo "cn_android_clientVersion=$(jq -r '.clientVersion' cn_android.json)" >> $GITHUB_ENV
 
-          # 提取字段
-          resVersion=$(jq -r '.resVersion' android_version.json)
-          clientVersion=$(jq -r '.clientVersion' android_version.json)
-          funcVer=$(jq -r '.content' network_config.json | jq -r '.funcVer')
+          # 国服 Windows
+          curl -s "https://ak-conf.hypergryph.com/config/prod/official/Windows/version" -o cn_windows.json
+          echo "cn_windows_resVersion=$(jq -r '.resVersion' cn_windows.json)" >> $GITHUB_ENV
+          echo "cn_windows_clientVersion=$(jq -r '.clientVersion' cn_windows.json)" >> $GITHUB_ENV
 
-          echo "resVersion=$resVersion" >> $GITHUB_ENV
-          echo "clientVersion=$clientVersion" >> $GITHUB_ENV
-          echo "funcVer=$funcVer" >> $GITHUB_ENV
+          # 国际服 Android
+          curl -s "https://ark-us-static-online.yo-star.com/assetbundle/official/Android/version" -o global_android.json
+          echo "global_android_resVersion=$(jq -r '.resVersion' global_android.json)" >> $GITHUB_ENV
+          echo "global_android_clientVersion=$(jq -r '.clientVersion' global_android.json)" >> $GITHUB_ENV
+
+          # 国服网络配置
+          curl -s "https://ak-conf.hypergryph.com/config/prod/official/network_config" -o cn_network.json
+          echo "cn_funcVer=$(jq -r '.content' cn_network.json | jq -r '.funcVer')" >> $GITHUB_ENV
+
+          # 国际服网络配置
+          curl -s "https://ak-conf.arknights.global/config/prod/official/network_config" -o global_network.json
+          echo "global_funcVer=$(jq -r '.content' global_network.json | jq -r '.funcVer')" >> $GITHUB_ENV
 
       - name: Update config.json
         id: update
         run: |
           file="config/config.json"
-
-          # 原始数据
-          old_res=$(jq -r '.version.android.resVersion' $file)
-          old_client=$(jq -r '.version.android.clientVersion' $file)
-          old_func=$(jq -r '.networkConfig.cn.content.funcVer' $file)
-
           changed=false
+          res_version_changed=false
 
-          # 更新 resVersion 和 clientVersion
-          if [ "$old_res" != "$resVersion" ]; then
-            jq --arg v "$resVersion" '.version.android.resVersion = $v' $file > tmp && mv tmp $file
+          # ----- 国服 Android -----
+          old=$(jq -r '.version.android.resVersion' $file)
+          if [ "$old" != "$cn_android_resVersion" ]; then
+            jq --arg v "$cn_android_resVersion" '.version.android.resVersion = $v' $file > tmp && mv tmp $file
+            res_version_changed=true; changed=true
+          fi
+          old=$(jq -r '.version.android.clientVersion' $file)
+          if [ "$old" != "$cn_android_clientVersion" ]; then
+            jq --arg v "$cn_android_clientVersion" '.version.android.clientVersion = $v' $file > tmp && mv tmp $file
             changed=true
           fi
 
-          if [ "$old_client" != "$clientVersion" ]; then
-            jq --arg v "$clientVersion" '.version.android.clientVersion = $v' $file > tmp && mv tmp $file
+          # ----- 国服 Windows -----
+          old=$(jq -r '.version.Windows.resVersion' $file)
+          if [ "$old" != "$cn_windows_resVersion" ]; then
+            jq --arg v "$cn_windows_resVersion" '.version.Windows.resVersion = $v' $file > tmp && mv tmp $file
+            res_version_changed=true; changed=true
+          fi
+          old=$(jq -r '.version.Windows.clientVersion' $file)
+          if [ "$old" != "$cn_windows_clientVersion" ]; then
+            jq --arg v "$cn_windows_clientVersion" '.version.Windows.clientVersion = $v' $file > tmp && mv tmp $file
             changed=true
           fi
 
-          # 更新 funcVer 并迁移 configs
-          if [ "$old_func" != "$funcVer" ]; then
-            jq --arg new "$funcVer" --arg old "$old_func" '
+          # ----- 国际服 Android -----
+          old=$(jq -r '.versionGlobal.android.resVersion' $file)
+          if [ "$old" != "$global_android_resVersion" ]; then
+            jq --arg v "$global_android_resVersion" '.versionGlobal.android.resVersion = $v' $file > tmp && mv tmp $file
+            res_version_changed=true; changed=true
+          fi
+          old=$(jq -r '.versionGlobal.android.clientVersion' $file)
+          if [ "$old" != "$global_android_clientVersion" ]; then
+            jq --arg v "$global_android_clientVersion" '.versionGlobal.android.clientVersion = $v' $file > tmp && mv tmp $file
+            changed=true
+          fi
+
+          # ----- 国服 funcVer 迁移 -----
+          old_func=$(jq -r '.networkConfig.cn.content.funcVer' $file)
+          if [ "$old_func" != "$cn_funcVer" ]; then
+            jq --arg new "$cn_funcVer" --arg old "$old_func" '
               .networkConfig.cn.content.funcVer = $new |
               .networkConfig.cn.content.configs[$new] = .networkConfig.cn.content.configs[$old] |
               del(.networkConfig.cn.content.configs[$old])
             ' $file > tmp && mv tmp $file
+            changed=true
+          fi
+
+          # ----- 国际服 funcVer 迁移 -----
+          old_func=$(jq -r '.networkConfig.global.content.funcVer' $file)
+          if [ "$old_func" != "$global_funcVer" ]; then
+            jq --arg new "$global_funcVer" --arg old "$old_func" '
+              .networkConfig.global.content.funcVer = $new |
+              .networkConfig.global.content.configs[$new] = .networkConfig.global.content.configs[$old] |
+              del(.networkConfig.global.content.configs[$old])
+            ' $file > tmp && mv tmp $file
+            changed=true
+          fi
+
+          # ----- 如果有任何 resVersion 更新，则设置 useUserData = false -----
+          if [ "$res_version_changed" = true ]; then
+            jq '.userConfig.useUserData = false' $file > tmp && mv tmp $file
             changed=true
           fi
 
@@ -84,7 +132,7 @@ jobs:
           git pull --rebase --autostash origin main
 
           git add config/config.json
-          git commit -m "自动更新 config.json (resVer=${{ env.resVersion }}, clientVer=${{ env.clientVersion }}, funcVer=${{ env.funcVer }})" || echo "No changes"
+          git commit -m "自动更新 config.json (resVer=${{ env.cn_android_resVersion }}, clientVer=${{ env.cn_android_clientVersion }}, funcVer=${{ env.cn_funcVer }})" || echo "No changes"
           git push origin main
 
       - name: No changes
