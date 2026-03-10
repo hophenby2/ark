@@ -13,7 +13,8 @@ from constants import (
     SYNC_DATA_TEMPLATE_PATH,
     CRISIS_V2_JSON_BASE_PATH,
     MAILLIST_PATH,
-    SQUADS_PATH
+    SQUADS_PATH,
+    CONFIG_PATH
 )
 from user import checkin
 from utils import read_json, write_json, get_memory, run_after_response, memory_cache, writeLog
@@ -644,7 +645,7 @@ def SyncData():
         player_data["user"]["crisisV2"]["current"] = season
 
     config["userConfig"]["useUserData"] = True
-    run_after_response(write_json, config, memory_cache["config"])
+    run_after_response(write_json, config, CONFIG_PATH)
 
     run_after_response(write_json, player_data, USER_JSON_PATH)
 
