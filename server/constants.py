@@ -11,6 +11,8 @@ ASSIST_PATH = "config/assist.json"
 NORMALGACHA_PATH = "data/gacha/normalGacha.json"
 GACHA_HISTORY_PATH = "data/user/gachaHistory.json"
 
+DEPOT_PATH = "data/depot/"
+
 # User Data
 USER_JSON_PATH = "data/user/user.json"
 BATTLE_REPLAY_JSON_PATH = "data/user/battleReplays.json"
