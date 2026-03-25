@@ -1,13 +1,10 @@
 import os
-import socket
-import hashlib
 import requests
 
-from datetime import datetime
 from flask import Response, stream_with_context, redirect, send_file, send_from_directory
 from constants import CONFIG_PATH
 from core.function.loadMods import loadMods
-from utils import read_json, write_json
+from utils import read_json, write_json, writeLog
 
 from threading import Thread, Event, Lock
 
@@ -18,13 +15,6 @@ MODS_LIST = {
     "path": [],
     "download": []
 }
-
-
-def writeLog(data):
-
-    time = datetime.now().strftime("%d/%b/%Y %H:%M:%S")
-    clientIp = socket.gethostbyname(socket.gethostname())
-    print(f'{clientIp} - - [{time}] {data}')
 
 
 def getFile(assetsHash, fileName):

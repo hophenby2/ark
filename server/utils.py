@@ -3,6 +3,8 @@ import hashlib
 import asyncio
 import threading
 import traceback
+import socket
+import uuid
 import sys
 import os
 
@@ -184,7 +186,10 @@ def load_config() -> None:
     
 
 def writeLog(data):
-    print(Style.RESET_ALL + f'[{datetime.now()}] {data}')
+
+    time = datetime.now().strftime("%d/%b/%Y %H:%M:%S")
+    clientIp = socket.gethostbyname(socket.gethostname())
+    print(Style.RESET_ALL + f'{clientIp} - - [{time}] {data}')
 
 
 def character_star_calculate() -> None:
@@ -208,3 +213,16 @@ def character_star_calculate() -> None:
             max_level = value["phases"][-1]["maxLevel"]
             star = star_dict[str(max_level)]
         memory_cache["character_star"][key] = star
+
+def load_admin_key():
+
+    config = get_memory("config")
+
+    if config["server"].get("dynamicKey", True):
+        config["server"]["adminKey"] = uuid.uuid4()
+    elif config["server"]["adminKey"] is None:
+        config["server"]["adminKey"] = uuid.uuid4()
+
+    admin_key = config["server"]["adminKey"]
+
+    writeLog(f"[SERVER] 当前管理密钥 {admin_key}")

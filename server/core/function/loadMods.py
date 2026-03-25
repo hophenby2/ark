@@ -1,16 +1,7 @@
 import os
-import socket
 import zipfile
 import hashlib
-from datetime import datetime
-
-
-def writeLog(data):
-
-    time = datetime.now().strftime("%d/%b/%Y %H:%M:%S")
-    clientIp = socket.gethostbyname(socket.gethostname())
-    print(f'{clientIp} - - [{time}] {data}')
-
+from utils import writeLog
 
 def loadMods(log: bool = True):
 

@@ -8,7 +8,8 @@ from utils import *
 import account, background, building, campaignV2, char, charBuild, charm, \
         crisis, deepsea, gacha, mail, online, tower, quest, pay, rlv2, shop, story, \
         user, asset.assetbundle, config.prod, social, templateShop, other, sandbox, charrotation, \
-        activity, mission
+        activity, mission, depot
+from admin import admin
 
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -80,6 +81,7 @@ app.add_url_rule("/account/yostar_auth_submit", methods=["POST"], view_func=acco
 app.add_url_rule("/account/syncPushMessage", methods=["POST"], view_func=account.syncPushMessage)
 
 app.add_url_rule("/assetbundle/official/Android/assets/<string:assetsHash>/<string:fileName>", methods = ["GET"], view_func=asset.assetbundle.getFile)
+app.add_url_rule("/official/Android/assets/<string:assetsHash>/<string:fileName>", methods=["GET"], view_func=asset.assetbundle.getFile)
 
 app.add_url_rule("/background/setBackground", methods=["POST"], view_func=background.SetBackground)
 app.add_url_rule("/homeTheme/change", methods=["POST"], view_func=background.homeThemeChange)
@@ -253,6 +255,7 @@ app.add_url_rule("/rlv2/copper/redraw", methods=["POST"], view_func=rlv2.rlv2Cop
 app.add_url_rule("/shop/getGoodPurchaseState", methods=["POST"], view_func=shop.getGoodPurchaseState)
 app.add_url_rule("/shop/get<string:shop_type>GoodList", methods=["POST"], view_func=shop.getShopGoodList)
 app.add_url_rule("/shop/buy<string:shop_type>Good", methods=["POST"], view_func=shop.buyShopGood)
+app.add_url_rule("/shop/buy<string:shop_type>GoodWithTicket", methods=["POST"], view_func=shop.buyShopGoodWithTicket)
 
 app.add_url_rule('/depot/getVoucherDetail', methods=['POST'], view_func=depot.getVoucherDetail)
 
@@ -344,6 +347,10 @@ app.add_url_rule('/recalRune/battleStart', methods=['POST'], view_func=crisis.re
 app.add_url_rule('/recalRune/battleFinish', methods=['POST'], view_func=crisis.recalRune_battleFinish)
 
 
+# 以下为远程管理路由，如果你不打算使用我的管理app，请不要抄过去
+app.add_url_rule("/admin/verify", methods=["GET","POST"], view_func=admin.adminVerify)
+app.add_url_rule("/admin/saveUserData", methods=["POST"], view_func=admin.adminSaveUserData)
+
 if __name__ == "__main__":
     print(Fore.YELLOW + \
     "──────────────────────────\n" + \
@@ -365,5 +372,6 @@ if __name__ == "__main__":
     start_global_event_loop()
     writeLog("[SERVER] 预处理数据")
     character_star_calculate()
+    load_admin_key()
     writeLog('[SERVER] 服务器启动于 http://' + host + ":" + str(port))
     app.run(host=host, port=port, debug=True, threaded=True)

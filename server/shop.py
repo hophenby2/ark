@@ -30,6 +30,16 @@ def getShopGoodList(shop_type):
         return {}
   
 def buyShopGood(shop_type: str):
+
+    json_body = request.get_json()
+    # 商品ID
+    good_id = str(json_body["goodId"])
+    # 购买数量
+    count = int(json_body["count"])
+
+    if shop_type == "Classic":
+        return {}
+
     # 皮肤购买
     if shop_type == "Skin":
         good_id = json_body["goodId"]
@@ -55,8 +65,7 @@ def buyShopGood(shop_type: str):
                 "modified": {
                     "skin": sync_data_data["user"]["skin"],
                     "status": {
-                        "androidDiamond": sync_data_data["user"]["status"]["androidDiamond"],
-                        "iosDiamond": sync_data_data["user"]["status"]["iosDiamond"]
+                        "androidDiamond": sync_data_data["user"]["status"]["androidDiamond"]
                     }
                 }
             },
@@ -65,12 +74,6 @@ def buyShopGood(shop_type: str):
         
         # run_after_response(write_json, sync_data_data, SYNC_DATA_TEMPLATE_PATH)
         return result
-    
-    json_body = request.get_json()
-    # 商品ID
-    good_id = str(json_body["goodId"])
-    # 购买数量
-    count = int(json_body["count"])
 
     def bomb():
         return {}, 500
@@ -95,14 +98,16 @@ def buyShopGood(shop_type: str):
         "high": "hggShard",
         "extra": "4006",
         "classic": "classicShard",
-        "epgs": "EPGS_COIN"
+        "epgs": "EPGS_COIN",
+        "Rep": "REP_COIN",
+        "Social": ""
     }
 
     # 从good_list中获取 goodId
     good = next((g for g in good_list if g["goodId"] == good_id), None)
     # 没有就跟客户端爆了
     if not good:
-        bomb
+        return bomb()
 
     # 要扣的数值
     price = good["price"] * count
@@ -115,163 +120,29 @@ def buyShopGood(shop_type: str):
         case "low"|"high"|"classic":
             currency = currency_map[shop_type.lower()]
             inventory:dict = sync_data["user"]["status"]
-        case "extra"|"epgs":
-            currency = currency[shop_type.lower()]
+        case "extra"|"epgs"|"Rep":
+            currency = currency_map[shop_type.lower()]
             inventory:dict = sync_data["user"]["inventory"]
         case _:
-            bomb
+            return bomb()
     
     # 如果货币不足
     if inventory.get(currency, 0) < price:
-        bomb
+        return bomb()
     else:
         # 否则正常扣除
         inventory[currency] -= price
 
     item = good["item"]
-    if item is None:
-        bomb
-    else:
-        item_type = item["type"]
-
-    # 实际增加数量 = 配置数量 × 购买次数
-    item_count = item.get("count", 1) * count
-
-    # user：用户数据根节点
     user = sync_data["user"]
 
-    # 角色类型（CHAR = 干员/角色）
-    if item_type == "CHAR":
-        # troop.chars：角色实例表（instId → 角色数据）
-        chars = user["troop"]["chars"]
-
-        # char_id：角色配置ID（非实例ID）
-        char_id = item["id"]
-
-        # repeat_inst：已拥有角色的实例ID（如果重复获得）
-        repeat_inst = next(
-            (iid for iid, c in chars.items() if c["charId"] == char_id),
-            None
-        )
-
-        #  新角色 
-        if repeat_inst is None:
-            # inst_id：角色实例ID（唯一）
-            inst_id = str(len(chars) + 1)
-
-            char_data = {
-                "instId": int(inst_id), # 实例ID
-                "charId": char_id, # 角色配置ID
-                "favorPoint": 0, # 好感度
-                "potentialRank": 0, # 潜能等级
-                "mainSkillLvl": 1, # 主技能等级
-                "skin": f"{char_id}#1", # 默认皮肤
-                "level": 1, # 等级
-                "exp": 0, # 经验
-                "evolvePhase": 0, # 精英化阶段
-                "gainTime": int(datetime.now().timestamp()), # 获得时间戳
-                "skills": [], # 技能列表
-                "defaultSkillIndex": -1, # 默认技能
-                "currentEquip": None # 模块
-            }
-
-            # 写入角色表
-            chars[inst_id] = char_data
-
-            # 当前角色实例游标（用于新角色ID生成）
-            user["troop"]["curCharInstId"] = int(inst_id) + 1
-
-            # 更新troop修改信息
-            modified["troop"]["chars"] = {inst_id: char_data}
-            modified["troop"]["curCharInstId"] = user["troop"]["curCharInstId"]
-
-            # 返回给客户端的结构
-            items.append({
-                "id": char_id,
-                "type": "CHAR",
-                "charGet": {
-                    "charInstId": int(inst_id),
-                    "charId": char_id,
-                    "isNew": 1 # 新角色
-                }
-            })
-
-        #  重复角色 
-        else:
-            # 更新troop修改信息
-            modified["troop"]["chars"] = {repeat_inst: chars[repeat_inst]}
-
-            items.append({
-                "id": char_id,
-                "type": "CHAR",
-                "charGet": {
-                    "charInstId": int(repeat_inst),
-                    "charId": char_id,
-                    "isNew": 0 # 非新角色
-                }
-            })
-
-    # 合成玉
-    elif item_type == "DIAMOND_SHD":
-        user["status"]["diamondShard"] += item_count
-        user["status"]["androidDiamond"] += item_count
-
-        modified["status"].update({
-            "diamondShard": user["status"]["diamondShard"],
-            "androidDiamond": user["status"]["androidDiamond"],
-        })
-
-        # 添加到items列表
-        items.append({
-            "id": "4001",
-            "type": "DIAMOND_SHD",
-            "count": item_count
-        })
-
-    # 龙门币
-    elif item_type == "GOLD":
-        user["status"]["gold"] += item_count
-        modified["status"]["gold"] = user["status"]["gold"]
-
-        # 添加到items列表
-        items.append({
-            "id": "4002",
-            "type": "GOLD",
-            "count": item_count
-        })
-
-    # 寻访凭证
-    elif "GACHA" in item_type:
-        key = gacha_map.get(item_type)
-
-        if key:
-            user["status"][key] += item_count
-            modified["status"][key] = user["status"][key]
-
-            # 添加到items列表
-            items.append({
-                "id": item["id"],
-                "type": item_type,
-                "count": item_count
-            })
-
-    # 其它
-    else:
-        # 仓库
-        inv = user.setdefault("inventory", {})
-
-        # 物品ID
-        item_id = item["id"]
-
-        inv[item_id] = inv.get(item_id, 0) + item_count
-        modified["inventory"][item_id] = inv[item_id]
-
-        # 添加到items列表
-        items.append({
-            "id": item_id,
-            "type": item_type,
-            "count": item_count
-        })
+    if item is not None:
+        reward_item = {
+            "id": item["id"],
+            "type": item["type"],
+            "count": item.get("count", 1) * count
+        }
+        _apply_reward_item(user, reward_item, modified, items)
 
     # 返回内容
     result = {
@@ -283,5 +154,194 @@ def buyShopGood(shop_type: str):
         "items": items,
         "result": 0
     }
-
+    # run_after_response(write_json, sync_data_data, SYNC_DATA_TEMPLATE_PATH)
     return result
+
+def buyShopGoodWithTicket(shop_type: str):
+    json_body = request.get_json()
+
+    ticket_id = json_body["ticketId"]
+    good_id = json_body["goodId"]
+    parts = json_body["goodId"].split("_")
+    shop_type = parts[0]
+    good_type = parts[1]
+    good_list = get_memory("shop")[shop_type.lower()]
+
+    sync_data = read_json(SYNC_DATA_TEMPLATE_PATH)
+    user = sync_data["user"]
+
+    # 手动控制是否通用(即main_class的内容是否为list类型)
+    general = False
+    config_items = []
+    result_items = []
+    modified = {
+        "status": {},
+        "inventory": {},
+        "troop": {}
+    }
+
+    # shop 礼包分类的映射表
+    main_class_map = {
+        "Once": "oneTimeGP",
+        "NpOne": "chooseGroup",
+    }
+
+    # 每月礼包位于 packages 中, 类型为dict, 不需要遍历查找, 直接引用即可
+    if good_type == "gM":
+        general = False
+        main_class = "monthlyGroup"
+        good_info = good_list[main_class]["packages"][good_id]
+        config_items = good_info["items"]
+
+    if config_items == []:
+        general = True
+        main_class = main_class_map[good_type]
+
+    if general:
+        for good_info in good_list[main_class]:
+            if good_info["goodId"] == json_body["goodId"]:
+                config_items = good_info["items"]
+                break
+
+    for item in config_items:
+        _apply_reward_item(user, item, modified, result_items)
+
+    result = {
+        "playerDataDelta": {
+            "modified": {k: v for k, v in modified.items() if v},
+            "deleted": {}
+        },
+        "items": result_items
+    }
+    # run_after_response(write_json, sync_data_data, SYNC_DATA_TEMPLATE_PATH)
+    return result
+
+def _apply_reward_item(user: dict, reward_item: dict, modified: dict, result_items: list):
+    '''
+    处理奖励物品，没有返回内容，直接修改 user 和 modified，作为运算函数使用
+    :param user: 用户数据
+    :param reward_item: 奖励物品
+    :param modified: 修改后的用户数据
+    :param result_items: 返回的物品列表
+    '''
+    gacha_map = {
+        "TKT_GACHA": "gachaTicket",
+        "TKT_GACHA_10": "tenGachaTicket",
+        "CLASSIC_TKT_GACHA": "classicGachaTicket",
+        "CLASSIC_TKT_GACHA_10": "classicTenGachaTicket"
+    }
+
+    def build_char_data(char_id: str) -> tuple[str, dict]:
+        # 角色实例ID直接取 char_xxx 中的数字段，项目内保证唯一
+        inst_id = char_id.split("_")[1]
+
+        char_data = {
+            "instId": int(inst_id),
+            "charId": char_id,
+            "favorPoint": 0,
+            "potentialRank": 0,
+            "mainSkillLvl": 1,
+            "skin": f"{char_id}#1",
+            "level": 1,
+            "exp": 0,
+            "evolvePhase": 0,
+            "gainTime": int(datetime.now().timestamp()),
+            "skills": [],
+            "defaultSkillIndex": -1,
+            "currentEquip": None
+        }
+        return inst_id, char_data
+
+    item_type = reward_item["type"]
+    item_id = reward_item["id"]
+    item_count = reward_item.get("count", 1)
+
+    # 角色奖励
+    if item_type == "CHAR":
+        chars = user["troop"]["chars"]
+        char_id = item_id
+        inst_id = char_id.split("_")[1]
+
+        # 直接用实例ID判断是否已拥有, 避免扫描整个 chars
+        if inst_id not in chars:
+            inst_id, char_data = build_char_data(char_id)
+            chars[inst_id] = char_data
+            modified["troop"].setdefault("chars", {})[inst_id] = char_data
+            is_new = 1
+        else:
+            is_new = 0
+
+        result_items.append({
+            "id": char_id,
+            "type": "CHAR",
+            "charGet": {
+                "charInstId": int(inst_id),
+                "charId": char_id,
+                "isNew": is_new
+            }
+        })
+
+    # 合成玉
+    elif item_type == "DIAMOND_SHD":
+        user["status"]["diamondShard"] += item_count
+        if user["status"]["diamondShard"] > 2147483647:
+            user["status"]["diamondShard"] = 2147483647
+        modified["status"] = user["status"]
+
+        result_items.append({
+            "id": item_id,
+            "type": item_type,
+            "count": item_count
+        })
+
+    # 源石
+    elif item_type == "DIAMOND":
+        user["status"]["diamondShard"] += item_count
+        if user["status"]["diamondShard"] > 2147483647:
+            user["status"]["androidDiamond"] = 2147483647
+        modified["status"] = user["status"]
+
+        result_items.append({
+            "id": item_id,
+            "type": item_type,
+            "count": item_count
+        })
+
+    # 龙门币
+    elif item_type == "GOLD":
+        user["status"]["gold"] += item_count
+        if user["status"]["gold"] > 18446744073709551616:
+            user["status"]["gold"] = 18446744073709551616
+        modified["status"] = user["status"]
+
+        result_items.append({
+            "id": item_id,
+            "type": item_type,
+            "count": item_count
+        })
+
+    # 寻访券
+    elif item_type in gacha_map:
+        key = gacha_map[item_type]
+        user["status"][key] += item_count
+        if user["status"][key] > 2147483647:
+            user["status"][key] = 2147483647
+        modified["status"] = user["status"]
+
+        result_items.append({
+            "id": item_id,
+            "type": item_type,
+            "count": item_count
+        })
+
+    # 其它物品默认进入 inventory
+    else:
+        inv = user.setdefault("inventory", {})
+        inv[item_id] = inv.get(item_id, 0) + item_count
+        modified["inventory"][item_id] = inv[item_id]
+
+        result_items.append({
+            "id": item_id,
+            "type": item_type,
+            "count": item_count
+        })
