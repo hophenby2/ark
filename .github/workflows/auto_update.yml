@@ -6,7 +6,6 @@ on:
   schedule:
     - cron: "30 22 * * *"    # UTC 22:00，北京时间 06:30
     - cron: "0 8 * * *"     # UTC 08:00，北京时间 16:00
-    - cron: "30 11 * * *"   # UTC 11:30，北京时间 19:30
   workflow_dispatch:
 
 jobs:
@@ -28,15 +27,20 @@ jobs:
         run: |
           # 获取远程版本信息
           curl -s "https://ak-conf.hypergryph.com/config/prod/official/Android/version" -o android_version.json
+          curl -s "https://ak-conf.hypergryph.com/config/prod/official/Windows/version" -o windows_version.json
           # curl -s "https://ak-conf.hypergryph.com/config/prod/official/network_config" -o network_config.json
 
           # 提取字段
           resVersion=$(jq -r '.resVersion' android_version.json)
           clientVersion=$(jq -r '.clientVersion' android_version.json)
+          win_resVersion=$(jq -r '.resVersion' windows_version.json)
+          win_clientVersion=$(jq -r '.clientVersion' windows_version.json)
           # funcVer=$(jq -r '.content' network_config.json | jq -r '.funcVer')
 
           echo "resVersion=$resVersion" >> $GITHUB_ENV
           echo "clientVersion=$clientVersion" >> $GITHUB_ENV
+          echo "win_resVersion=$win_resVersion" >> $GITHUB_ENV
+          echo "win_clientVersion=$win_clientVersion" >> $GITHUB_ENV
           # echo "funcVer=$funcVer" >> $GITHUB_ENV
 
       - name: Update config.json
@@ -47,6 +51,8 @@ jobs:
           # 原始数据
           old_res=$(jq -r '.version.android.resVersion' $file)
           old_client=$(jq -r '.version.android.clientVersion' $file)
+          old_win_res=$(jq -r '.version.windows.resVersion' $file)
+          old_win_client=$(jq -r '.version.windows.clientVersion' $file)
           # old_func=$(jq -r '.networkConfig.cn.content.funcVer' $file)
 
           changed=false
@@ -59,6 +65,16 @@ jobs:
 
           if [ "$old_client" != "$clientVersion" ]; then
             jq --arg v "$clientVersion" '.version.android.clientVersion = $v' $file > tmp && mv tmp $file
+            changed=true
+          fi
+
+          if [ "$old_win_res" != "$win_resVersion" ]; then
+            jq --arg v "$win_resVersion" '.version.windows.resVersion = $v' $file > tmp && mv tmp $file
+            changed=true
+          fi
+
+          if [ "$old_win_client" != "$win_clientVersion" ]; then
+            jq --arg v "$win_clientVersion" '.version.windows.clientVersion = $v' $file > tmp && mv tmp $file
             changed=true
           fi
 
@@ -84,7 +100,7 @@ jobs:
           git pull --rebase --autostash origin main
 
           git add config/config.json
-          git commit -m "自动更新 config.json (resVer=${{ env.resVersion }}, clientVer=${{ env.clientVersion }})" || echo "No changes"
+          git commit -m "自动更新 config.json (Android: resVer=${{ env.resVersion }}, clientVer=${{ env.clientVersion }}; Windows: resVer=${{ env.win_resVersion }}, clientVer=${{ env.win_clientVersion }})" || echo "No changes"
           git push origin main
 
       - name: No changes

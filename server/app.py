@@ -82,6 +82,8 @@ app.add_url_rule("/account/syncPushMessage", methods=["POST"], view_func=account
 
 app.add_url_rule("/assetbundle/official/Android/assets/<string:assetsHash>/<string:fileName>", methods = ["GET"], view_func=asset.assetbundle.getFile)
 app.add_url_rule("/official/Android/assets/<string:assetsHash>/<string:fileName>", methods=["GET"], view_func=asset.assetbundle.getFile)
+app.add_url_rule("/arknights/<path:subpath>", methods=["GET"], view_func=asset.assetbundle.proxy_assest)
+
 
 app.add_url_rule("/background/setBackground", methods=["POST"], view_func=background.SetBackground)
 app.add_url_rule("/homeTheme/change", methods=["POST"], view_func=background.homeThemeChange)
@@ -157,6 +159,7 @@ app.add_url_rule("/api/remote_config/101/prod/default/Android/ak_sdk_config", me
 app.add_url_rule("/gameBulletin", methods=["GET"], view_func= config.prod.prodGameBulletin)
 app.add_url_rule("/analytics/collect", methods=["POST"], view_func= config.prod.prodAnalyticsCollect)
 app.add_url_rule("/api/game/<path:subpath>", methods=["GET"], view_func= config.prod.prodBulletinList)
+app.add_url_rule("/announce/images/<path:subpath>", methods=["GET"], view_func= config.prod.announceImages)
 
 app.add_url_rule("/crisis/getInfo", methods=["POST"], view_func=crisis.crisisGetCrisisInfo)
 app.add_url_rule("/crisis/battleStart", methods=["POST"], view_func=crisis.crisisBattleStart)
@@ -230,8 +233,17 @@ app.add_url_rule("/activity/bossRush/battleStart", methods=["POST"], view_func=q
 app.add_url_rule("/activity/bossRush/battleFinish", methods=["POST"], view_func=quest.questBattleFinish)
 app.add_url_rule("/activity/bossRush/relicSelect", methods=["POST"], view_func=quest.relicSelect)
 
+app.add_url_rule("/aprilFool/act7fun/battleStart", methods=["POST"], view_func=quest.questBattleStart)
+app.add_url_rule("/aprilFool/act7fun/battleFinish", methods=["POST"], view_func=quest.act7fun_questBattleFinish)
+app.add_url_rule("/aprilFool/act6fun/battleStart", methods=["POST"], view_func=quest.questBattleStart)
+app.add_url_rule("/aprilFool/act6fun/battleFinish", methods=["POST"], view_func=quest.act6fun_questBattleFinish)
 app.add_url_rule("/aprilFool/act5fun/battleStart", methods=["POST"], view_func=quest.questBattleStart)
 app.add_url_rule("/aprilFool/act5fun/battleFinish", methods=["POST"], view_func=quest.act5fun_questBattleFinish)
+app.add_url_rule("/aprilFool/act4fun/battleStart", methods=["POST"], view_func=quest.questBattleStart)
+app.add_url_rule("/aprilFool/act4fun/battleFinish", methods=["POST"], view_func=quest.act4fun_questBattleFinish)
+app.add_url_rule("/aprilFool/act4fun/liveSettle", methods=["POST"], view_func=quest.act4fun_liveSettle)
+app.add_url_rule("/aprilFool/act3fun/battleStart", methods=["POST"], view_func=quest.questBattleStart)
+app.add_url_rule("/aprilFool/act3fun/battleFinish", methods=["POST"], view_func=quest.questBattleFinish)
 
 app.add_url_rule("/rlv2/giveUpGame", methods=["POST"], view_func=rlv2.rlv2GiveUpGame)
 app.add_url_rule("/rlv2/createGame", methods=["POST"], view_func=rlv2.rlv2CreateGame)
@@ -350,6 +362,7 @@ app.add_url_rule('/recalRune/battleFinish', methods=['POST'], view_func=crisis.r
 # 以下为远程管理路由，如果你不打算使用我的管理app，请不要抄过去
 app.add_url_rule("/admin/verify", methods=["GET","POST"], view_func=admin.adminVerify)
 app.add_url_rule("/admin/saveUserData", methods=["POST"], view_func=admin.adminSaveUserData)
+app.add_url_rule("/admin/login/by_phone_password", methods=["POST"], view_func=admin.by_phone_password)
 
 if __name__ == "__main__":
     print(Fore.YELLOW + \

@@ -384,22 +384,147 @@ def setTool():
     }
     return data
 
+def act7fun_questBattleFinish():
+
+    json_body = request.get_json()
+
+    battle_data = decrypt_battle_data(json_body["data"])
+
+    complete_state = battle_data["completeState"]
+
+    return {
+        "completeState": complete_state,
+        "rewards": [],
+        "unlockedStages": "",
+        "playerDataDelta": {"modified": {}, "deleted": {}},
+    }
+
+def act6fun_questBattleFinish():
+
+    json_body = request.get_json()
+
+    battle_data = decrypt_battle_data(json_body["data"])
+    user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
+    act6fun_data = user_data["user"]["aprilFool"]["act6fun"]
+    
+    new_record = False
+    coin = 0
+
+    complete_state = battle_data["completeState"]
+    pass_sec = battle_data["battleData"]["completeTime"]
+    for i in battle_data["battleData"]["stats"]["extraBattleInfo"]:
+        if i.startswith("coin_collect_cnt"):
+            coin = battle_data["battleData"]["stats"]["extraBattleInfo"][i]
+            break
+
+    return {
+        "completeState": complete_state,
+        "passSec": pass_sec,
+        "newRecord": new_record,
+        "coin": coin,
+        "playerDataDelta": {"modified": {}, "deleted": {}},
+    }
+
 def act5fun_questBattleFinish():
 
     json_body = request.get_json()
 
     battle_data = decrypt_battle_data(json_body["data"])
+    user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
+    act5fun_data = user_data["user"]["aprilFool"]["act5fun"]
+
     score = 0
+    round = 0
+    round_win = 0
+    npc_result = {}
+    is_high_score = False
+    high_score:int = act5fun_data["highScore"]
+
     for i in battle_data["battleData"]["stats"]["extraBattleInfo"]:
+        if i.startswith("DETAILED,player,"):
+            round += 1
+            if i.endswith("win"):
+                round_win += 1
+                continue
+        if i.startswith("SIMPLE,act5fun_npc_") and i.endswith("win"):
+            npc_result[i.split(",")[1]] = battle_data["battleData"]["stats"]["extraBattleInfo"][i]
+            continue
         if i.startswith("SIMPLE,money,"):
             score = int(i.split(",")[-1])
-    return {
+
+    if score > high_score:
+        act5fun_data["highScore"] = score
+        is_high_score = True
+        run_after_response(write_json, user_data, SYNC_DATA_TEMPLATE_PATH)
+
+    result =  {
         "result": 0,
         "score": score,
-        "isHighScore": False,
-        "npcResult": {},
-        "playerResult": {"totalWin": 0, "streak": 0, "totalRound": 0},
+        "isHighScore": is_high_score,
+        "npcResult": npc_result,
+        "playerResult": {
+            "totalWin": round_win,
+            "streak": score,
+            "totalRound": round
+        },
         "reward": [],
+        "playerDataDelta": {
+            "modified": {
+                "aprilFool": {
+                    "act5fun": user_data["user"]["aprilFool"]["act5fun"]
+                }
+            },
+            "deleted": {}
+        },
+    }
+    
+    return result
+
+def act4fun_questBattleFinish():
+    return {
+        "materials": [
+            {"instId": i, "materialId": j, "materialType": 1}
+            for i, j in enumerate(
+                [
+                    "spLiveMat_tr_1",
+                    "spLiveMat_tr_2",
+                    "spLiveMat_01_1",
+                    "spLiveMat_01_2",
+                    "spLiveMat_01_3",
+                    "spLiveMat_01_4",
+                    "spLiveMat_01_5",
+                    "spLiveMat_01_6",
+                    "spLiveMat_01_7",
+                    "spLiveMat_01_8",
+                    "spLiveMat_01_9",
+                    "spLiveMat_02_1",
+                    "spLiveMat_02_2",
+                    "spLiveMat_02_3",
+                    "spLiveMat_02_4",
+                    "spLiveMat_02_5",
+                    "spLiveMat_02_6",
+                    "spLiveMat_02_7",
+                    "spLiveMat_02_8",
+                    "spLiveMat_02_9",
+                    "spLiveMat_03_1",
+                    "spLiveMat_03_2",
+                    "spLiveMat_03_3",
+                    "spLiveMat_03_4",
+                    "spLiveMat_03_5",
+                    "spLiveMat_03_6",
+                    "spLiveMat_03_7",
+                    "spLiveMat_03_8",
+                    "spLiveMat_03_9",
+                ]
+            )
+        ],
+        "liveId": "abcdefgh-1234-5678-a1b2c3d4e5f6",
+        "playerDataDelta": {"modified": {}, "deleted": {}},
+    }
+
+def act4fun_liveSettle():
+    return {
+        "ending": "goodending_1",
         "playerDataDelta": {"modified": {}, "deleted": {}},
     }
 
