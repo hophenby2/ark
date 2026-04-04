@@ -2160,6 +2160,487 @@ class multiplayer:
     }
         return result
 
+class autochessSeason:
+    def syncInfo():
+        
+        result = {
+            "changeId": [""],
+            "battleInfo": {}
+        }
+
+        return result
+    
+    def getFriendAndRequestSendList():
+
+        result = {
+            "friendsList": [
+                {
+                    "uid": "25249069",
+                    "friendAlias": ""
+                }
+            ],
+            "requestSendIdList": []
+        }
+
+        return result
+
+    def setChessPoolDeploy():
+
+        json_body = request.get_json()
+
+        user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
+
+        activity_id = json_body["actId"]
+        auto_chess_data = user_data["user"]["activity"]["AUTOCHESS_SEASON"][activity_id]
+        chess_data = auto_chess_data["chessSquad"]
+        for key, value in json_body["chessPool"].items():
+            for key2, value2 in value.items():
+                chess_data[key][key2] = value2
+
+
+        result = {
+            "playerDataDelta": {
+                "modified": {
+                    "activity": {
+                        "AUTOCHESS_SEASON": {
+                            activity_id: {
+                                "chessSquad": chess_data
+                            }
+                        }
+                    }
+                },
+                "deleted": {}
+            },
+        }
+
+        return result
+
+
+    def act2autochess():
+        server_config = get_memory("config")
+        if server_config["server"]["adaptive"]:
+            server = request.host_url[:-1]
+        else:
+            server = (
+                "http://"
+                + server_config["server"]["host"]
+                + ":"
+                + str(server_config["server"]["port"])
+            )
+        
+        result = f'''
+        <!doctype html>
+        <html lang="zh-cn">
+
+        <head>
+            <meta charset="utf-8">
+            <meta name="referrer" content="no-referrer">
+            <meta http-equiv="pragma" content="no-cache">
+            <meta http-equiv="cache-control" content="no-cache">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+            <meta name="renderer" content="webkit">
+            <meta name="force-rendering" content="webkit">
+            <meta name="viewport"
+                content="user-scalable=no,initial-scale=1,maximum-scale=1,minimum-scale=1,width=device-width,height=device-height,viewport-fit=cover">
+            <meta name="copyright" content="Hypergryph">
+            <meta name="format-detection" content="telephone=no,email=no,address=no">
+            <meta name="apple-mobile-web-app-capable" content="yes">
+            <meta name="robots" content="noindex">
+            <title>卫戍协议 | 明日方舟 - Arknights</title>
+            <link href="{server}/arknights/webview/favicon.ico" rel="icon">
+            <link as="image" href="{server}/arknights/webview/assets/img/bg-circle.cd5774.png" rel="preload">
+            <link as="image" href="{server}/arknights/webview/assets/img/bg.55399b.jpg" rel="preload">
+            <link as="image" href="{server}/arknights/webview/assets/img/bg.cdd07d.png" rel="preload">
+            <link as="image" href="{server}/arknights/webview/assets/img/bond-bg.53ee8c.png" rel="preload">
+            <link as="image" href="{server}/arknights/webview/assets/img/bond-list-empty.671709.png" rel="preload">
+            <link as="image" href="{server}/arknights/webview/assets/img/dash.99f37d.png" rel="preload">
+            <link as="image" href="{server}/arknights/webview/assets/img/elite_0.949306.png" rel="preload">
+            <link as="image" href="{server}/arknights/webview/assets/img/elite_2.71c645.png" rel="preload">
+            <link as="image" href="{server}/arknights/webview/assets/img/header.960345.png" rel="preload">
+            <link as="image" href="{server}/arknights/webview/assets/img/title-bg.26ebe7.png" rel="preload">
+            <link href="{server}/arknights/webview/commons.d9025b.css" rel="stylesheet">
+            <link href="{server}/arknights/webview/act1autochess.41668e.css" rel="stylesheet">
+        </head>
+
+        <body>
+            <div id="root"></div>
+
+
+            <script crossorigin="anonymous" src="{server}/arknights/webview/analytics.1585a3.js"></script>
+            <script crossorigin="anonymous" src="{server}/arknights/webview/act1autochess_i18n.02dbe5.js"></script>
+            <script crossorigin="anonymous" src="{server}/arknights/webview/react.0bb887.js"></script>
+            <script crossorigin="anonymous" src="{server}/arknights/webview/commons.1b8875.js"></script>
+            <script crossorigin="anonymous" src="{server}/arknights/webview/act1autochess.c65de8.js"></script>
+        </body>
+
+        </html>
+        '''
+
+        return result
+
+    def act1playerSummary():
+
+        user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
+        uid = user_data["user"]["status"]["uid"]
+        name = user_data["user"]["status"]["nickName"]
+
+        result = {
+            "status": 0,
+            "code": 0,
+            "msg": "",
+            "data": {
+                "uid": uid,
+                "level": 120,
+                "nickname": name,
+                "avatar": "char_4172_xingzh@epoque#51",
+                "nameCard": "nc_6d5_1",
+                "total": {
+                    "multi": {
+                        "battle": 0,
+                        "win": 0,
+                        "hardWin": 0
+                    },
+                    "single": {
+                        "battle": 1,
+                        "win": 0,
+                        "hardWin": 0
+                    },
+                    "trophy": 0,
+                    "beLike": 0
+                },
+                "max": {
+                    "coinCost": 0,
+                    "sync": 0,
+                    "defeat": 0,
+                    "bond": None,
+                    "squad": [],
+                    "bonds": []
+                },
+                "topBonds": [],
+                "topBands": [
+                    {
+                        "id": "band_chen",
+                        "value": 1,
+                        "iconId": "icon_chen",
+                        "name": "陈"
+                    }
+                ],
+                "bandPassInfo": [],
+                "titleCntInfo": {}
+            }
+        }
+        
+        return result
+
+    def act2playerSummary():
+
+        user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
+        uid = user_data["user"]["status"]["uid"]
+        name = user_data["user"]["status"]["nickName"]
+
+        result = {
+            "status": 0,
+            "code": 0,
+            "msg": "",
+            "data": {
+                "uid": uid,
+                "level": 120,
+                "nickname": name,
+                "avatar": "char_4172_xingzh@epoque#51",
+                "nameCard": "nc_6d5_1",
+                "total": {
+                    "multi": {
+                        "battle": 6,
+                        "win": 3,
+                        "hardWin": 3
+                    },
+                    "single": {
+                        "battle": 4,
+                        "win": 2,
+                        "hardWin": 0
+                    },
+                    "trophy": 22,
+                    "beLike": 5
+                },
+                "max": {
+                    "coinCost": 165,
+                    "sync": 6,
+                    "defeat": 275,
+                    "bond": {
+                        "id": "sargonShip",
+                        "num": 280,
+                        "iconId": "icon_sargonShip"
+                    },
+                    "squad": [
+                        {
+                            "chessId": "chess_char_6_06_a",
+                            "chessLevel": 6,
+                            "charId": "char_4058_pepe",
+                            "charLevel": 1,
+                            "evolvePhase": 2,
+                            "equips": [
+                                "sktok_acarm059_1",
+                                "sktok_acarm060_1"
+                            ]
+                        },
+                        {
+                            "chessId": "chess_char_4_18_b",
+                            "chessLevel": 4,
+                            "charId": "char_311_mudrok",
+                            "charLevel": 60,
+                            "evolvePhase": 2,
+                            "equips": [
+                                "sktok_acarm047_1",
+                                "sktok_acarm050_1"
+                            ]
+                        },
+                        {
+                            "chessId": "chess_char_5_02_a",
+                            "chessLevel": 5,
+                            "charId": "char_4056_titi",
+                            "charLevel": 1,
+                            "evolvePhase": 2,
+                            "equips": [
+                                "sktok_acarm051_1",
+                                "sktok_acarm050_2"
+                            ]
+                        },
+                        {
+                            "chessId": "chess_char_4_04_a",
+                            "chessLevel": 4,
+                            "charId": "char_4087_ines",
+                            "charLevel": 1,
+                            "evolvePhase": 2,
+                            "equips": [
+                                "sktok_acarm125_2"
+                            ]
+                        },
+                        {
+                            "chessId": "chess_char_5_diy1_a",
+                            "chessLevel": 5,
+                            "charId": "char_2012_typhon",
+                            "charLevel": 1,
+                            "evolvePhase": 2,
+                            "equips": [
+                                "sktok_acarm063_1",
+                                "sktok_acarm048_2"
+                            ]
+                        },
+                        {
+                            "chessId": "chess_char_2_06_b",
+                            "chessLevel": 2,
+                            "charId": "char_4139_papyrs",
+                            "charLevel": 55,
+                            "evolvePhase": 2,
+                            "equips": []
+                        },
+                        {
+                            "chessId": "chess_char_5_07_a",
+                            "chessLevel": 5,
+                            "charId": "char_350_surtr",
+                            "charLevel": 1,
+                            "evolvePhase": 2,
+                            "equips": [
+                                "sktok_acarm055_1"
+                            ]
+                        },
+                        {
+                            "chessId": "chess_char_6_09_a",
+                            "chessLevel": 6,
+                            "charId": "char_245_cello",
+                            "charLevel": 1,
+                            "evolvePhase": 2,
+                            "equips": [
+                                "sktok_acarm062_1"
+                            ]
+                        }
+                    ],
+                    "bonds": [
+                        {
+                            "id": "suntShip",
+                            "value": 0,
+                            "iconId": "icon_suntShip"
+                        },
+                        {
+                            "id": "soloShip",
+                            "value": 0,
+                            "iconId": "icon_soloShip"
+                        },
+                        {
+                            "id": "sargonShip",
+                            "value": 280,
+                            "iconId": "icon_sargonShip"
+                        },
+                        {
+                            "id": "raidShip",
+                            "value": 26,
+                            "iconId": "icon_raidShip"
+                        }
+                    ]
+                },
+                "topBonds": [
+                    {
+                        "id": "soloShip",
+                        "iconId": "icon_soloShip",
+                        "name": "独行",
+                        "chessList": [
+                            {
+                                "chessId": "chess_char_1_08_a",
+                                "chessLevel": 1,
+                                "charId": "char_102_texas",
+                                "sortId": 8
+                            },
+                            {
+                                "chessId": "chess_char_2_17_a",
+                                "chessLevel": 2,
+                                "charId": "char_4207_branch",
+                                "sortId": 17
+                            },
+                            {
+                                "chessId": "chess_char_3_17_a",
+                                "chessLevel": 3,
+                                "charId": "char_126_shotst",
+                                "sortId": 17
+                            },
+                            {
+                                "chessId": "chess_char_4_09_a",
+                                "chessLevel": 4,
+                                "charId": "char_437_mizuki",
+                                "sortId": 9
+                            },
+                            {
+                                "chessId": "chess_char_4_18_a",
+                                "chessLevel": 4,
+                                "charId": "char_311_mudrok",
+                                "sortId": 18
+                            },
+                            {
+                                "chessId": "chess_char_5_11_a",
+                                "chessLevel": 5,
+                                "charId": "char_202_demkni",
+                                "sortId": 11
+                            }
+                        ]
+                    },
+                    {
+                        "id": "suntShip",
+                        "iconId": "icon_suntShip",
+                        "name": "绝技",
+                        "chessList": []
+                    },
+                    {
+                        "id": "yanShip",
+                        "iconId": "icon_yanShip",
+                        "name": "炎",
+                        "chessList": [
+                            {
+                                "chessId": "chess_char_1_03_a",
+                                "chessLevel": 1,
+                                "charId": "char_306_leizi",
+                                "sortId": 3
+                            },
+                            {
+                                "chessId": "chess_char_2_04_a",
+                                "chessLevel": 2,
+                                "charId": "char_4122_grabds",
+                                "sortId": 4
+                            },
+                            {
+                                "chessId": "chess_char_3_03_a",
+                                "chessLevel": 3,
+                                "charId": "char_308_swire",
+                                "sortId": 3
+                            },
+                            {
+                                "chessId": "chess_char_3_04_a",
+                                "chessLevel": 3,
+                                "charId": "char_1033_swire2",
+                                "sortId": 4
+                            },
+                            {
+                                "chessId": "chess_char_4_15_a",
+                                "chessLevel": 4,
+                                "charId": "char_4196_reckpr",
+                                "sortId": 15
+                            },
+                            {
+                                "chessId": "chess_char_4_17_a",
+                                "chessLevel": 4,
+                                "charId": "char_136_hsguma",
+                                "sortId": 17
+                            },
+                            {
+                                "chessId": "chess_char_5_03_a",
+                                "chessLevel": 5,
+                                "charId": "char_1040_blaze2",
+                                "sortId": 3
+                            },
+                            {
+                                "chessId": "chess_char_5_12_a",
+                                "chessLevel": 5,
+                                "charId": "char_2015_dusk",
+                                "sortId": 12
+                            },
+                            {
+                                "chessId": "chess_char_5_23_a",
+                                "chessLevel": 5,
+                                "charId": "char_4196_reckpr",
+                                "sortId": 23
+                            },
+                            {
+                                "chessId": "chess_char_6_03_a",
+                                "chessLevel": 6,
+                                "charId": "char_2026_yu",
+                                "sortId": 3
+                            },
+                            {
+                                "chessId": "chess_char_6_15_a",
+                                "chessLevel": 6,
+                                "charId": "char_4082_qiubai",
+                                "sortId": 15
+                            }
+                        ]
+                    }
+                ],
+                "topBands": [
+                    {
+                        "id": "band_quintus",
+                        "value": 5,
+                        "iconId": "icon_quintus",
+                        "name": "昆图斯"
+                    },
+                    {
+                        "id": "band_amiya",
+                        "value": 4,
+                        "iconId": "icon_amiya",
+                        "name": "阿米娅"
+                    },
+                    {
+                        "id": "band_kirara",
+                        "value": 1,
+                        "iconId": "icon_kirara",
+                        "name": "绮良"
+                    }
+                ],
+                "bandPassInfo": [
+                    {
+                        "id": "band_amiya",
+                        "value": 3,
+                        "sortId": 2,
+                        "iconId": "icon_amiya",
+                        "name": "阿米娅"
+                    }
+                ],
+                "titleCntInfo": {
+                    "comment_1": 2,
+                    "comment_2": 1,
+                    "comment_6": 2
+                }
+            }
+        }
+
+        return result
+
 class vecbreak:
 
     def getSeasonRecord():

@@ -6,22 +6,22 @@
                 {
                     "rarityRank": 5,
                     "charIdList": [
-                        "char_003_kalts",
-                        "char_479_sleach",
-                        "char_4087_ines",
-                        "char_4121_zuole"
+                        "char_4145_ulpia",
+                        "char_4146_nymph",
+                        "char_4026_vulpis",
+                        "char_4204_mantra"
                     ],
                     "totalPercent": 0.02
                 },
                 {
                     "rarityRank": 4,
                     "charIdList": [
-                        "char_489_serum",
-                        "char_422_aurora",
-                        "char_4032_provs",
-                        "char_341_sntlla",
-                        "char_4147_mitm",
-                        "char_4155_talr"
+                        "char_4014_lunacu",
+                        "char_297_hamoni",
+                        "char_4081_warmy",
+                        "char_487_bobb",
+                        "char_4052_surfer",
+                        "char_4214_cairn"
                     ],
                     "totalPercent": 0.08
                 },
@@ -73,7 +73,9 @@
                         "char_4062_totter",
                         "char_491_humus",
                         "char_4107_vrdant",
-                        "char_4130_luton"
+                        "char_4130_luton",
+                        "char_445_wscoot",
+                        "char_4208_wintim"
                     ],
                     "totalPercent": 0.5
                 },

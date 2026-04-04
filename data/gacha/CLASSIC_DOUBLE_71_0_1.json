@@ -38,7 +38,15 @@
                         "char_264_f12yin",
                         "char_332_archet",
                         "char_362_saga",
-                        "char_472_pasngr"
+                        "char_472_pasngr",
+                        "char_003_kalts",
+                        "char_426_billro",
+                        "char_485_pallas",
+                        "char_437_mizuki",
+                        "char_479_sleach",
+                        "char_430_fartth",
+                        "char_420_flamtl",
+                        "char_206_gnosis"
                     ],
                     "totalPercent": 0.02
                 },
@@ -98,7 +106,14 @@
                         "char_214_kafka",
                         "char_338_iris",
                         "char_455_nothin",
-                        "char_363_toddi"
+                        "char_363_toddi",
+                        "char_475_akafyu",
+                        "char_478_kirara",
+                        "char_421_crow",
+                        "char_473_mberry",
+                        "char_431_ashlok",
+                        "char_489_serum",
+                        "char_422_aurora"
                     ],
                     "totalPercent": 0.08
                 },
@@ -182,8 +197,8 @@
                 {
                     "rarityRank": 5,
                     "charIdList": [
-                        "char_103_angel",
-                        "char_400_weedy"
+                        "char_311_mudrok",
+                        "char_485_pallas"
                     ],
                     "percent": 0.25,
                     "count": 2
@@ -191,9 +206,9 @@
                 {
                     "rarityRank": 4,
                     "charIdList": [
-                        "char_144_red",
-                        "char_308_swire",
-                        "char_378_asbest"
+                        "char_166_skfire",
+                        "char_214_kafka",
+                        "char_475_akafyu"
                     ],
                     "percent": 0.166666672,
                     "count": 3

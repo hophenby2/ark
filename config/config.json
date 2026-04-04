@@ -55,6 +55,21 @@
       },
       "sign": "Yu9qJf+JL6E8rwO/RiQu3Bq4en4tr4+wpfHfg9cPc1jtWlA2FDaf+Hh8H1wibz/K3yaHeN0r6NeWp5/wpX01OXssqCw0pAA34ypPcBq03GdsGbHPjOOdD27QTS7bE5ymXhfLJkHyXfB9ejK65xyHwFw6ceRFUOx+dEfJUdT8QhA="
     },
+    "cn_new": {
+      "an": "{server}/config/prod/announce_meta/{0}/announcement.meta.json",
+      "as": "{server}",
+      "configVer": 5,
+      "devsdk": false,
+      "gs": "{server}",
+      "hu": "{server}/official",
+      "hv": "{server}/config/prod/official/{0}/version",
+      "of": "{server}/index.html",
+      "pkgAd": "https://ak.hypergryph.com/download",
+      "pkgIOS": "https://apps.apple.com/cn/app/id1454663939",
+      "prean": "{server}",
+      "sl": "{server}/protocol/service",
+      "u8": "{server}/u8"
+    },
     "global": {
       "content": {
         "configVer": "1",
@@ -81,21 +96,6 @@
         "funcVer": "V066"
       },
       "sign": "sign"
-    },
-    "cn_new": {
-      "an": "{server}/config/prod/announce_meta/{0}/announcement.meta.json",
-      "as": "{server}",
-      "gs": "{server}",
-      "hu": "{server}/official",
-      "hv": "{server}/config/prod/official/{0}/version",
-      "of": "{server}/index.html",
-      "sl": "{server}/protocol/service",
-      "u8": "{server}/u8",
-      "pkgAd": "https://ak.hypergryph.com/download",
-      "prean": "https://ak-webview.hypergryph.com",
-      "devsdk": false,
-      "pkgIOS": "https://apps.apple.com/cn/app/id1454663939",
-      "configVer": 5
     }
   },
   "remote": {
@@ -111,35 +111,39 @@
     "vaild_seed": "146,224,136,212,199,215,161,86,112,85,87,199,158,170,215,203,166,205,152,215,215,171,87,145,91,210,195,176,156,162,199,197,89,159,134,223,136,199,154,168,151,87,111,129,84,176,192,133,200,208,161,217,200,166,169,193,91,156,130,147,82,27543,39135,30543,24375,28405,20915,36253,65394,23013,26581,20372,26213,20237,36206,33816,21512,65345,37127,20139,20421,35084,39626,20203,65391,35887,31488,21464,36921,27552,24144,35835,24230,20081,25355,65378,87,39134,30548,22420,22438,203,173,168,166,168,111,144,97,156,205,215,205,214,149,147,198,167,162,148,163,203,199,163,156,159,210,146,105,150,159,147,181,211,158,162,122,164,152,213,161,167,197,215,202,177,172,146,168,144,98,181,174,196,206,160,147,12341,194,131,99,133,194,134,210,210,168,164,146,87,111,129,101,97,132,191,135,206,148,207,210,170,139,202,171,213,203,166,158,143,136,155,87,193,136,151,156,156,149,86,179,87,178,222,143"
   },
   "server": {
+    "adminKey": "b3c09164-26bb-4ae9-af51-a46d5ab572fc",
     "dynamicKey": true,
-    "adminKey": null,
     "host": "0.0.0.0",
     "mode": "cn",
     "port": 8443,
-    "virtualtime": -114514,
-    "useMemoryCache": true
+    "useMemoryCache": true,
+    "virtualtime": -114514
   },
   "towerConfig": {
     "season": "tower_season_5"
   },
   "userConfig": {
-    "useUserData": false,
-    "activityMinStartTs": 1756353600,
     "activityMaxStartTs": 1758743999,
-    "fakeTime": -1,
+    "activityMinStartTs": 1756353600,
     "background": "bg_sui_1",
+    "fakeTime": -1,
     "secretary": "char_4172_xingzh",
     "secretarySkinId": "char_4172_xingzh#1",
-    "theme": "tm_sui_1"
+    "theme": "tm_sui_1",
+    "useUserData": true
   },
   "version": {
+    "Windows": {
+      "clientVersion": "2.7.11",
+      "resVersion": "26-03-09-09-45-56_fd97a4"
+    },
     "android": {
       "clientVersion": "2.7.11",
       "resVersion": "26-03-31-05-42-28_7d7f67"
     },
-    "Windows": {
-      "clientVersion": "2.7.11",
-      "resVersion": "26-03-09-09-45-56_fd97a4"
+    "windows": {
+      "resVersion": "26-03-31-05-51-38_1cc8a5",
+      "clientVersion": "2.7.11"
     }
   },
   "versionGlobal": {

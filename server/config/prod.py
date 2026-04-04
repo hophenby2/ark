@@ -1,8 +1,8 @@
 import re
-import json
+import os
 import requests
 
-from flask import request, redirect
+from flask import request, redirect, Response
 from random import shuffle
 from constants import CONFIG_PATH
 from utils import read_json, write_json, dump_json, get_memory
@@ -226,10 +226,110 @@ def prodAnalyticsCollect():
         "data": {}
     }
 
-def prodBulletinList(subpath):
-    if subpath.startswith("bulletinList"):
-        response = requests.get("https://ak-webview.hypergryph.com/api/game/bulletinList?target=Android", verify=False)
-    else:
-        response = requests.get(f"https://ak-webview.hypergryph.com/api/game/{subpath}", verify=False)
+def prodGameBulletin():
+    import hashlib
+    from datetime import datetime
+    # 已经做好了，不要改！就是index.html文件！不要改！
+    header = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36 Edg/105.0.1343.53"
+    }
+    cache_path = os.path.abspath("./assets/ak-webview/gameBulletin/")
+    arch = request.args.get("target", None)
+    if arch is None:
+        arch = "Android"
 
-    return response.json()
+    if True:
+        file = requests.get(f"https://ak-webview.hypergryph.com/gameBulletin?target={arch}", stream=True, verify=False, headers=header)
+
+        if file.status_code == 200:
+            if not os.path.exists(cache_path):
+                os.makedirs(cache_path)
+
+            if os.path.exists(f"{cache_path}/index.html"):
+                with open(f"{cache_path}/index.html", "rb") as old_file:
+                    old_file_md5 = hashlib.md5(old_file.read()).hexdigest()
+                
+                current_file_md5 = hashlib.md5(file.content).hexdigest()
+
+                if old_file_md5 != current_file_md5:
+                    os.rename(f"{cache_path}/index.html", f"{cache_path}/index.{datetime.now().strftime('%Y%m%d%H%M%S')}.html")
+                
+                    with open(f"{cache_path}/index.html", "wb") as f:
+                        for chunk in file.iter_content(chunk_size=1024):
+                            if chunk:
+                                f.write(chunk)
+
+    server_config = get_memory("config")
+    if server_config["server"]["adaptive"]:
+        server = request.host_url.rstrip("/")
+    else:
+        server = f"http://{server_config['server']['host']}:{server_config['server']['port']}"
+
+    with open(f"{cache_path}/index.html", encoding="utf-8") as f:
+        content = f.read()
+    content = content.replace("https://web.hycdn.cn", server)
+    # 返回响应，保留 Content-Type
+    content_type = "text/html; charset=utf-8"
+    return Response(content, content_type=content_type)
+
+def prodBulletinList(subpath):
+    from urllib.parse import quote
+    header = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36 Edg/105.0.1343.53"
+    }
+    cache_path = os.path.abspath("./assets/ak-webview/api/game/")
+
+    if not os.path.isdir(cache_path):
+        os.makedirs(cache_path)
+    
+    subpath = quote(subpath, safe="/")
+    full_path = os.path.join(cache_path, subpath)
+    os.makedirs(os.path.dirname(full_path), exist_ok=True)
+
+    if True:
+        if subpath.startswith("bulletinList"):
+            arch = request.args.get("target", None)
+            if arch is None:
+                arch = "Android"
+            file = requests.get(f"https://ak-webview.hypergryph.com/api/game/bulletinList?target=Android", stream=True, verify=False, headers=header)
+        else:
+            file = requests.get(f"https://ak-webview.hypergryph.com/api/game/{subpath}", stream=True, verify=False, headers=header)
+        if file.status_code == 200:
+            with open(f"{cache_path}/{subpath}", "wb") as f:
+                for chunk in file.iter_content(chunk_size=4096):
+                    f.write(chunk)
+            
+    server_config = get_memory("config")
+    if server_config["server"]["adaptive"]:
+        server = request.host_url.rstrip("/")
+    else:
+        server = f"http://{server_config['server']['host']}:{server_config['server']['port']}"
+
+    with open(full_path, "r", encoding="utf-8") as f:
+        content = f.read()
+    content = content.replace("https://web.hycdn.cn", server)
+    # 返回响应，保留 Content-Type
+    content_type = "application/json"
+    return Response(content, content_type=content_type)
+
+def announceImages(subpath):
+    from urllib.parse import quote
+    from flask import send_from_directory
+    
+    cache_path = os.path.abspath("./assets/hycdn/announce/images/")
+
+    if not os.path.isdir(cache_path):
+        os.makedirs(cache_path)
+    
+    subpath = quote(subpath, safe="/")
+    full_path = os.path.join(cache_path, subpath)
+    os.makedirs(os.path.dirname(full_path), exist_ok=True)
+
+    if True:
+        file = requests.get(f"https://web.hycdn.cn/announce/images/{subpath}", stream=True, verify=False)
+        if file.status_code == 200:
+            with open(f"{cache_path}/{subpath}", "wb") as f:
+                for chunk in file.iter_content(chunk_size=4096):
+                    f.write(chunk)
+            
+    return send_from_directory(cache_path, subpath)

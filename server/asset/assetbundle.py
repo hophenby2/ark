@@ -137,3 +137,39 @@ def export(url, basePath, fileName, filePath, assetsHash, redownload = False):
     else:
         downloading_files_lock.release()
     return send_from_directory(os.path.join("..", basePath), fileName)
+
+def proxy_assest(subpath):
+    cache_path = os.path.abspath("./assets/hycdn/arknights/")
+
+    if not os.path.isdir(cache_path):
+        os.makedirs(cache_path)
+    
+    subpath = quote(subpath, safe="/")
+    full_path = os.path.join(cache_path, subpath)
+    os.makedirs(os.path.dirname(full_path), exist_ok=True)
+
+    if not os.path.isfile(full_path):
+        file = requests.get(f"https://web.hycdn.cn/arknights/{subpath}", stream=True, verify=False, headers=header)
+        if file.status_code == 200:
+            with open(f"{cache_path}/{subpath}", "wb") as f:
+                for chunk in file.iter_content(chunk_size=4096):
+                    f.write(chunk)
+
+    server_config = get_memory("config")
+    if server_config["server"]["adaptive"]:
+        server = request.host_url.rstrip("/")
+    else:
+        server = f"http://{server_config['server']['host']}:{server_config['server']['port']}"
+
+    TEXT_TYPES = (".js", ".css")
+    
+    if subpath.endswith(TEXT_TYPES):
+        with open(full_path, "r", encoding="utf-8", errors="ignore") as f:
+            content = f.read()
+        content = content.replace("https://web.hycdn.cn", server)
+        # 返回响应，保留 Content-Type
+        content_type = "application/javascript" if subpath.endswith(".js") else "text/css"
+        return Response(content, content_type=content_type)
+
+    # 二进制文件直接返回
+    return send_from_directory(cache_path, subpath)

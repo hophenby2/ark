@@ -51,3 +51,11 @@ def adminSaveUserData():
     else:
         return "", 403
     
+def by_phone_password():
+
+    result = {
+        "uid": "",
+        "secret": ""
+    }
+
+    return result

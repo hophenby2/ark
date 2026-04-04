@@ -41,7 +41,18 @@
                         "char_1039_thorn2",
                         "char_1040_blaze2",
                         "char_4010_etlchi",
-                        "char_450_necras"
+                        "char_450_necras",
+                        "char_4179_monstr",
+                        "char_4193_lemuen",
+                        "char_1042_phatm2",
+                        "char_1043_leizi2",
+                        "char_4202_haruka",
+                        "char_4204_mantra",
+                        "char_1046_sbell2",
+                        "char_4212_nasti",
+                        "char_4056_titi",
+                        "char_1050_chen3",
+                        "char_4037_demetr"
                     ],
                     "totalPercent": 0.02
                 },
@@ -83,7 +94,18 @@
                         "char_4164_tecno",
                         "char_4052_surfer",
                         "char_4173_nowell",
-                        "char_4171_wulfen"
+                        "char_4171_wulfen",
+                        "char_4178_alanna",
+                        "char_4187_graceb",
+                        "char_4191_tippi",
+                        "char_4196_reckpr",
+                        "char_4203_kichi",
+                        "char_4207_branch",
+                        "char_4211_snhunt",
+                        "char_4214_cairn",
+                        "char_1022_flwr2",
+                        "char_4222_taraxa",
+                        "char_4031_liesel"
                     ],
                     "totalPercent": 0.08
                 },
@@ -135,7 +157,9 @@
                         "char_4062_totter",
                         "char_491_humus",
                         "char_4107_vrdant",
-                        "char_4130_luton"
+                        "char_4130_luton",
+                        "char_445_wscoot",
+                        "char_4208_wintim"
                     ],
                     "totalPercent": 0.5
                 },
@@ -168,8 +192,8 @@
                 {
                     "rarityRank": 5,
                     "charIdList": [
-                        "char_377_gdglow",
-                        "char_4087_ines"
+                        "char_4048_doroth",
+                        "char_1020_reed2"
                     ],
                     "percent": 0.25,
                     "count": 2
@@ -177,9 +201,9 @@
                 {
                     "rarityRank": 4,
                     "charIdList": [
-                        "char_433_windft",
-                        "char_4083_chimes",
-                        "char_1036_fang2"
+                        "char_4006_melnte",
+                        "char_4187_graceb",
+                        "char_4211_snhunt"
                     ],
                     "percent": 0.166666672,
                     "count": 3
