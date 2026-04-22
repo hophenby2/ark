@@ -66,3 +66,8 @@ def campaignV2BattleSweep():
 
     return data
 
+def getBreakReward():
+    return {}, 202
+
+def getExMissionReward():
+    return {}, 202

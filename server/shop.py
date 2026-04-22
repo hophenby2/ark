@@ -345,3 +345,29 @@ def _apply_reward_item(user: dict, reward_item: dict, modified: dict, result_ite
             "type": item_type,
             "count": item_count
         })
+
+def decomposePotentialItem():
+    result = {
+        "playerDataDelta": {
+            "modified": {},
+            "deleted": {}
+        },
+        "items": []
+    }
+
+    return result
+
+def decomposeClassicPotentialItem():
+    return {}, 202
+
+def getCashGoodPurchaseResult():
+    return {}, 202
+
+def getVoucherSkinGoodList():
+    return {}, 202
+
+def useVoucherSkin():
+    return {}, 202
+
+def checkForbidden():
+    return {}, 202

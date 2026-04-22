@@ -590,3 +590,54 @@ def singleBattleFinish():
     }
 
     return result
+
+def unlockStageFog():
+    return {}, 202
+
+def unlockHideStage():
+    return {}, 202
+
+def getCowLevelReward():
+    return {}, 202
+
+def getMainlineRecordRewards():
+    return {}, 202
+
+def getMainlineCache():
+    return {}, 202
+
+def unlockRetroBlock():
+    return {}, 202
+
+def getRetroTrailReward():
+    return {}, 202
+
+def getRetroPassReward():
+    return {}, 202
+
+def runeBattleStart():
+    return {}, 202
+
+def runeBattleFinish():
+    return {}, 202
+
+def unlockStoryByCoin():
+    return {}, 202
+
+def rewardGroup():
+    return {}, 202
+
+def trailReward():
+    return {}, 202
+
+def trainingGroundBattleStart():
+    return {}
+
+def trainingGroundBattleFinish():
+    return {}
+
+def arcadeBattleStart():
+    return {}, 202
+
+def arcadeBattleFinish():
+    return {}, 202

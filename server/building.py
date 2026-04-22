@@ -7,40 +7,193 @@ import json
 def Sync():
     # 读取用户数据
     user_data = read_json(USER_JSON_PATH)
+    building_data = user_data["user"]["building"]
+    
+    ts = time()
 
-    # 更新基建数据中的角色实例ID列表
-    def update_building_char_InstId_List(building_data):
-        # 遍历基建数据中的房间插槽列表
+    def process_building_data(building_data, user_data, ts):
+        """处理建筑数据的闭包函数 - 只在异常时调用"""
+        
+        # 从建筑数据中提取角色实例ID到角色ID的映射
+        def extract_id_mapping():
+            """提取实例ID到角色ID的映射"""
+            inst_to_role = {}
+            role_to_inst = {}
+            
+            for inst_id, char_data in building_data["chars"].items():
+                if "charId" in char_data:
+                    char_full_id = char_data["charId"]
+                    parts = char_full_id.split("_")
+                    if len(parts) >= 2:
+                        role_id = parts[1]
+                        inst_to_role[inst_id] = role_id
+                        if role_id not in role_to_inst:
+                            role_to_inst[role_id] = []
+                        role_to_inst[role_id].append(inst_id)
+            
+            return inst_to_role, role_to_inst
+        
+        # 从数据获取需要保留的角色集合
+        def get_user_role_set():
+            """获取当前拥有的角色ID集合"""
+            return set(user_data["user"]["troop"]["chars"].keys())
+        
+        # 重建chars字典
+        def rebuild_chars_dict():
+            """重建building_data["chars"]，保留原有数据"""
+            inst_to_role, role_to_inst = extract_id_mapping()
+            user_roles = get_user_role_set()
+            
+            new_chars = {}
+            processed_roles = set()
+            
+            # 处理拥有的角色
+            for role_id in user_roles:
+                # 查找对应的实例ID
+                if role_id in role_to_inst:
+                    # 使用第一个可用的实例ID
+                    inst_id = role_to_inst[role_id][0]
+                    original_data = building_data["chars"].get(inst_id, {})
+                    
+                    # 保留原有数据并更新
+                    new_chars[role_id] = {
+                        "charId": original_data.get("charId", f"char_{role_id}_unknown"),
+                        "ap": original_data.get("ap", 8640000),
+                        "lastApAddTime": ts,
+                        "roomSlotId": original_data.get("roomSlotId", ""),
+                        "index": original_data.get("index", -1),
+                        "changeScale": original_data.get("changeScale", 0),
+                        "bubble": original_data.get("bubble", {
+                            "normal": {"add": -1, "ts": 0},
+                            "assist": {"add": -1, "ts": 0},
+                            "private": {"add": -1, "ts": 0}
+                        }),
+                        "workTime": original_data.get("workTime", 0),
+                        "skin": original_data.get("skin")
+                    }
+                    processed_roles.add(role_id)
+                else:
+                    # 有新角色，创建新条目
+                    char_data = user_data["user"]["troop"]["chars"][role_id]
+                    new_chars[role_id] = {
+                        "charId": char_data["charId"],
+                        "ap": 8640000,
+                        "lastApAddTime": ts,
+                        "roomSlotId": "",
+                        "index": -1,
+                        "changeScale": 0,
+                        "bubble": {
+                            "normal": {"add": -1, "ts": 0},
+                            "assist": {"add": -1, "ts": 0},
+                            "private": {"add": -1, "ts": 0}
+                        },
+                        "workTime": 0,
+                        "skin": None
+                    }
+                    processed_roles.add(role_id)
+            
+            # 保留没有但建筑中存在的角色（可能正在工作中）
+            for role_id, inst_list in role_to_inst.items():
+                if role_id not in processed_roles:
+                    inst_id = inst_list[0]
+                    original_data = building_data["chars"].get(inst_id, {})
+                    # 检查是否有重要的状态数据（如在工作中）
+                    if (original_data.get("roomSlotId") or 
+                        original_data.get("index") != -1 or
+                        original_data.get("workTime", 0) > 0):
+                        new_chars[role_id] = {
+                            "charId": original_data.get("charId", f"char_{role_id}_unknown"),
+                            "ap": original_data.get("ap", 8640000),
+                            "lastApAddTime": original_data.get("lastApAddTime", ts),
+                            "roomSlotId": original_data.get("roomSlotId", ""),
+                            "index": original_data.get("index", -1),
+                            "changeScale": original_data.get("changeScale", 0),
+                            "bubble": original_data.get("bubble", {
+                                "normal": {"add": -1, "ts": 0},
+                                "assist": {"add": -1, "ts": 0},
+                                "private": {"add": -1, "ts": 0}
+                            }),
+                            "workTime": original_data.get("workTime", 0),
+                            "skin": original_data.get("skin")
+                        }
+            
+            return new_chars
+        
+        # 更新roomSlots中的charInstIds（将实例ID转换为角色ID）
+        def update_room_slots_mapping():
+            """更新房间插槽中的角色实例ID为角色ID"""
+            inst_to_role, _ = extract_id_mapping()
+            
+            for slot_id, slot_data in building_data["roomSlots"].items():
+                if "charInstIds" in slot_data:
+                    new_char_ids = []
+                    for inst_id in slot_data["charInstIds"]:
+                        if inst_id == -1:
+                            new_char_ids.append(-1)
+                        else:
+                            inst_id_str = str(inst_id)
+                            if inst_id_str in inst_to_role:
+                                new_char_ids.append(int(inst_to_role[inst_id_str]))
+                            else:
+                                new_char_ids.append(inst_id)
+                    slot_data["charInstIds"] = new_char_ids
+        
+        # 修复presetQueue中的角色ID
+        def update_preset_queues():
+            """更新所有预设队列中的角色ID"""
+            inst_to_role, _ = extract_id_mapping()
+            
+            def convert_queue(queue):
+                """转换单个队列"""
+                if not queue or not isinstance(queue, list):
+                    return queue
+                new_queue = []
+                for item in queue:
+                    if isinstance(item, list):
+                        new_queue.append(convert_queue(item))
+                    elif isinstance(item, (int, str)) and str(item) in inst_to_role:
+                        new_queue.append(int(inst_to_role[str(item)]))
+                    else:
+                        new_queue.append(item)
+                return new_queue
+            
+            # 遍历所有房间
+            for room_id, room_data in building_data.get("rooms", {}).items():
+                for slot_id, slot_data in room_data.items():
+                    if isinstance(slot_data, dict):
+                        if "presetQueue" in slot_data:
+                            slot_data["presetQueue"] = convert_queue(slot_data["presetQueue"])
+                        
+                        for field in ["trainee", "trainer"]:
+                            if field in slot_data and isinstance(slot_data[field], dict):
+                                for key in ["charInstId", "charInstId"]:
+                                    if key in slot_data[field]:
+                                        inst_id = str(slot_data[field][key])
+                                        if inst_id in inst_to_role:
+                                            slot_data[field][key] = int(inst_to_role[inst_id])
+        
+        # 执行重建流程
+        new_chars = rebuild_chars_dict()
+        building_data["chars"] = new_chars
+        
+        # 更新映射关系
+        update_room_slots_mapping()
+        update_preset_queues()
+        
+        return building_data
+
+    try:
         for i in building_data["roomSlots"]:
-            # 遍历房间插槽中的角色实例ID列表
             for j, k in enumerate(building_data["roomSlots"][i]["charInstIds"]):
-                # 如果角色实例ID为-1，则跳过
                 if k == -1:
                     continue
-                # 将角色实例ID转换为字符串
                 k = str(k)
-                # 更新角色实例ID和索引
                 building_data["chars"][k]["roomSlotId"] = i
                 building_data["chars"][k]["index"] = j
-
-    # 创建角色字典
-    chars = {
-        i: {
-            "charId": user_data["user"]["troop"]["chars"][i]["charId"],
-            "lastApAddTime": 1695000000,
-            "ap": 8640000,
-            "roomSlotId": "",
-            "index": -1,
-            "changeScale": 0,
-            "bubble": {"normal": {"add": -1, "ts": 0}, "assist": {"add": -1, "ts": 0}},
-            "workTime": 0,
-        }
-        for i in user_data["user"]["troop"]["chars"]
-    }
-    # 将角色字典赋值给基建数据
-    user_data["user"]["building"]["chars"] = chars
-    # 更新基建数据中的角色实例ID列表
-    update_building_char_InstId_List(user_data["user"]["building"])
+    except (KeyError, IndexError, TypeError) as e:
+        # 重建
+        process_building_data(building_data, user_data, ts)
+    
     # 读取基建table数据
     building_table = get_memory("building_data")
     # 创建家具字典
@@ -48,15 +201,14 @@ def Sync():
         i: {"count": 9999, "inUse": 0}
         for i in building_table["customData"]["furnitures"]
     }
-    # 将家具字典赋值给基建数据
-    user_data["user"]["building"]["furniture"] = furniture
+    building_data["furniture"] = furniture
     # 将基建数据写入文件
-    run_after_response(write_json ,user_data, USER_JSON_PATH)
-
+    run_after_response(write_json, user_data, USER_JSON_PATH)
+    
     result = {
         "playerDataDelta": {
             "modified": {
-                "building": user_data["user"]["building"]
+                "building": building_data
             },
             "deleted": {}
         }
@@ -802,5 +954,109 @@ def confirmPrivateDormIntimacy():
             "deleted": {}
         }
     }
+
+    return result
+
+def gainIntimacy():
+    return {}, 202
+
+def gainAssistIntimacy():
+    return {}, 202
+
+def gainAllIntimacy():
+    return {}, 202
+
+def visitBuilding():
+    return {}, 202
+
+def completeUpgradeRoom():
+    return {}, 202
+
+def changeSaleSolution():
+    return {}, 202
+
+def settleSale():
+    return {}, 202
+
+def upgradeDiyLevel():
+    return {}, 202
+
+def saveDiyPresetSolution():
+    return {}, 202
+
+def changePresetName():
+    return {}, 202
+
+def getThumbnailUrl():
+    return {}, 202
+
+def workshopDecomposition():
+    return {}, 202
+
+def deleteOrder():
+    return {}, 202
+
+def accelerateOrder():
+    return {}, 202
+
+def accelerateSolution():
+    return {}, 202
+
+def buyLabor():
+    return {}, 202
+
+def deleteOwnClue():
+    return {}, 202
+
+def deleteReceiveClue():
+    return {}, 202
+
+def putClueToTheBoard():
+    return {}, 202
+
+def putClueToTheBoardAuto():
+    return {}, 202
+
+def sendClueAuto():
+    return {}, 202
+
+def sendClue():
+    return {}, 202
+
+def getMeetingroomReward():
+    
+    result = {
+        "palyerDataDelta":{
+            "modified": {},
+            "deleted": {}
+        },
+        "rewards": []
+    }
+
+    return result
+
+def receiveClueToStock():
+    return {}, 202
+
+def startInfoShare():
+    return {}, 202
+
+def getDailyClue():
+    return {}, 202
+
+def getOthersMessageBoardContent():
+    return {}, 202
+
+def confirmMessageBoardReward():
+    return {}, 202
+
+def sendEmoji():
+    return {}, 202
+
+def batchChangeWorkChar():
+    return {}, 202
+
+def useOnePresetQueue():
+    return {}, 202
 
     return result
