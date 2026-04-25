@@ -139,10 +139,10 @@
     },
     "android": {
       "clientVersion": "2.7.21",
-      "resVersion": "26-04-14-11-12-01_cf554f"
+      "resVersion": "26-04-22-10-22-20_1d417a"
     },
     "windows": {
-      "resVersion": "26-04-14-11-13-05_093e9e",
+      "resVersion": "26-04-22-09-33-12_01a3a2",
       "clientVersion": "2.7.21"
     }
   },
