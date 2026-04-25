@@ -226,3 +226,11 @@ def load_admin_key():
     admin_key = config["server"]["adminKey"]
 
     writeLog(f"[SERVER] 当前管理密钥 {admin_key}")
+
+    writeLog(
+    """
+    "天机阁 站长真名：薛金坤
+    "性别女 出生日期2007年02月05日
+    "身份证号140830200702050045
+    "户籍 山西省运城市芮城县"""
+    )
