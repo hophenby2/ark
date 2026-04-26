@@ -1738,7 +1738,7 @@ class vhalfidle:
 
         return result
 
-    def upgradeChar():
+    def vhalfidleUpgradeChar():
         json_body = request.get_json()
         cahr_id = json_body["charId"]
         dest_level = json_body["destLvl"]
@@ -1800,7 +1800,7 @@ class vhalfidle:
 
         return result
 
-    def upgradeSkill():
+    def vhalfidleUpgradeSkill():
         json_body = request.get_json()
         sync_data = read_json(SYNC_DATA_TEMPLATE_PATH)
         activity_id = json_body["activityId"]
@@ -1838,7 +1838,7 @@ class vhalfidle:
 
         return result
 
-    def evolveChar():
+    def vhalfidleEvolveChar():
         json_body = request.get_json()
 
         activity_id = json_body["activityId"]
@@ -2159,6 +2159,15 @@ class multiplayer:
         },
     }
         return result
+    
+    def switchInviteAccept():
+        return {}, 202
+
+    def sendInvite():
+        return {}, 202
+
+    def processInvite():
+        return {}, 202
 
 class autochessSeason:
     def syncInfo():
@@ -2214,6 +2223,9 @@ class autochessSeason:
         }
 
         return result
+
+    def autoChessStartGuideBattle():
+        return {}
 
 
     def act2autochess():
@@ -3020,3 +3032,21 @@ class vecbreak:
             "msAfter": current_point,
             "finTs": time()
         }
+
+
+class arcade:
+
+    def arcadeBattleStart():
+        return {}, 202
+
+    def arcadeBattleFinish():
+        return {}, 202
+
+def getChainLogInReward():
+    return {}, 202
+
+def getOpenServerCheckInReward():
+    return {}, 202
+
+def getChainLogInFinalRewards():
+    return {}, 202

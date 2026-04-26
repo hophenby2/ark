@@ -1001,3 +1001,12 @@ def bulletinVersion():
     }
 
     return result
+
+def cancelNormalGacha():
+    return {}, 202
+
+def buyRecruitSlot():
+    return {}, 202
+
+def getFreeChar():
+    return {}, 202

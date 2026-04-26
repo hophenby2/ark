@@ -1339,6 +1339,81 @@ def rlv2getReward():
 
     return result
 
+def rlv2BankPut():
+    return {}, 202
+
+def rlv2BankWithdraw():
+    return {}, 202
+
+def rlv2NodeMissionConfirm():
+    return {}, 202
+
+def rlv2NodeMissionGiveUp():
+    return {}, 202
+
+def rlv2NodeMissionCloseTip():
+    return {}, 202
+
+def rlv2ReadEndingChange():
+    return {}, 202
+
+def rlv2RerollNode():
+    return {}, 202
+
+def rlv2UpgradeNode():
+    return {}, 202
+
+def rlv2GetTicketAssistList():
+    return {}, 202
+
+def rlv2RecruitAssistChar():
+    return {}, 202
+
+def rlv2DiceChoice():
+    return {}, 202
+
+def rlv2SacrificeChoice():
+    return {}, 202
+
+def rlv2CopperGild():
+    return {}, 202
+
+def rlv2ExpeditionChoice():
+    return {}, 202
+
+def rlv2ConfirmExpeditonReturn():
+    return {}, 202
+
+def rlv2ShopBattleStart():
+    return {}, 202
+
+def rlv2RefreshShop():
+    return {}, 202
+
+def rlv2SetPinned():
+    return {}, 202
+
+def rlv2ConfirmZoneReward():
+    return {}, 202
+
+def rlv2ConfirmTraderReturn():
+    return {}, 202
+
+def rlv2UseStashedTicket():
+    return {}, 202
+
+def rlv2StashRecruitTicket():
+    return {}, 202
+
+def rlv2SpecialZoneLeave():
+    return {}, 202
+
+def rlv2ChooseInitialExploreTool():
+    return {}, 202
+
+def rlv2getRewardgetReward():
+    return {}, 202
+
 
 class _rlv2:
     def getNextRelicIndex(rlv2):

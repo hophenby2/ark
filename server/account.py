@@ -110,7 +110,6 @@ def SyncData():
                 "homeTheme": "tm_rhodes_day",
                 "name": "未命名的配置",
                 "profile": "char_171_bldsk@witch#1",
-                "profileInst": "171",
                 "slots": [
                     {
                         "charId": "char_171_bldsk",
@@ -321,6 +320,8 @@ def SyncData():
 
         # 保存干员数据
         myCharList[str(inst_id)] = operator
+        if "character" not in player_data["user"]["dexNav"]:
+            player_data["user"]["dexNav"]["character"] = {}
         player_data["user"]["dexNav"]["character"][char_id] = {
             "charInstId": inst_id,
             "count": 6
@@ -579,7 +580,6 @@ def SyncData():
     if (current_preset := player_data["user"]["charRotation"]["preset"].get(
             player_data["user"]["charRotation"]["current"]
     )):
-        player_data["user"]["status"]["secretary"] = current_preset["profileInst"]
         player_data["user"]["background"]["selected"] = current_preset["background"]
 
     player_data["".join(map(lambda c:\

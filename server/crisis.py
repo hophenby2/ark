@@ -376,3 +376,30 @@ def recalRune_battleFinish():
     }
 
     return response
+
+def crisisgetGoodList():
+    return {}, 202
+
+def buyGoods():
+    return {}, 202
+
+def challengeRewardTask():
+    return {}, 202
+
+def challengeRewardPoint():
+    return {}, 202
+
+def challengeRewardAll():
+    return {}, 202
+
+def unlockMapRank():
+    return {}, 202
+
+def unlockRune():
+    return {}, 202
+
+def getAllItems():
+    return {}, 202
+
+def crisisV2BuyGood():
+    return {}, 202

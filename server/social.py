@@ -1,7 +1,7 @@
 import json
 from flask import request
 from constants import USER_JSON_PATH, CONFIG_PATH
-from utils import read_json, write_json
+from utils import read_json, write_json, run_after_response
 
 
 def setAssistCharList():
@@ -94,3 +94,9 @@ def setCardShowMedal():
             "deleted": {},
         }
     }
+
+def receiveSocialPoint():
+    return {}, 202
+
+def setStarFriendList():
+    return {}, 202

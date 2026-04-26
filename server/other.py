@@ -52,22 +52,40 @@ def event():
     
 def batch_event():
 
-    {
-    "code": 200,
-    "msg": "OK",
-    "next": 180
+    return {
+        "code": 200,
+        "msg": "OK",
+        "next": 180
     }
 
 def beat():
 
     # 来自bi-track.hypergryph.com:443 101.132.113.1:443
 
-    {
-    "code": 200,
-    "msg": "ok",
-    "next": 257
+    return {
+        "code": 200,
+        "msg": "ok",
+        "next": 257
     }
 
 def deviceprofile():
 
     return {}
+
+def logUploaddo():
+    return {}
+
+def mgw():
+    return {}
+
+def cheat():
+    return {}, 202
+
+def getVersion():
+    return {}, 202
+
+def startSurvey():
+    return {}, 202
+
+def npcAudioChangeLan():
+    return {}, 202

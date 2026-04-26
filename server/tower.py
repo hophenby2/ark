@@ -4,7 +4,7 @@ from flask import request
 
 from constants import TOWERDATA_PATH, USER_JSON_PATH
 
-from utils import read_json, write_json, decrypt_battle_data, logging, get_memory
+from utils import read_json, write_json, decrypt_battle_data, logging, get_memory, run_after_response
 
 
 def currentCoords(stageid: str):
@@ -456,3 +456,12 @@ def towerSettleGame():
         },
     }
     return data
+
+def layerReward():
+    return {}, 202
+
+def seasonMissonsAward():
+    return {}, 202
+
+def sweepGame():
+    return {}, 202

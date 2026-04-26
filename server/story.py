@@ -13,3 +13,5 @@ def storyFinishStory():
 
     return data
 
+def performanceStoryStart():
+    return {}, 202

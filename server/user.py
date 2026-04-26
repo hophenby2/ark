@@ -791,7 +791,7 @@ class gallery:
         run_after_response(write_json, sync_data, SYNC_DATA_TEMPLATE_PATH)
         return result
 
-    def getThumbnailUrl():
+    def galleryGetThumbnailUrl():
         json_body = request.get_json()
         # {'idList': ['leaf_default', 'leaf_default2']}
         id_list:list = json_body["idList"]
@@ -912,3 +912,54 @@ class gallery:
             f.read(),
             mimetype="image/jpeg"
         )
+    
+    def getCollectionRewards():
+        return {}, 202
+
+def bindNickName():
+    return {}, 202
+
+def changePassword():
+    return {}, 202
+
+def changePhoneCheck():
+    return {}, 202
+
+def changePhone():
+    return {}, 202
+
+def sendSmsCode():
+    return {}, 202
+
+def register():
+    return {}, 202
+
+def authenticateUserIdentity():
+    return {}, 202
+
+def checkIdCard():
+    return {}, 202
+
+def updateAgreement():
+    return {}, 202
+
+def guestLogin():
+    return {}, 202
+
+def loginBySmsCode():
+    return {}, 202
+
+def buyAp():
+    return {}, 202
+
+def useItem():
+    return {}, 202
+
+def useItems():
+    return {}, 202
+
+def receiveTeamCollectionReward():
+    return {}, 202
+
+def medal_rewardMedal():
+    return {}, 202

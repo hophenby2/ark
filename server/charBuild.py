@@ -207,3 +207,44 @@ def charBuildChangeCharTemplate():
 
     return data
 
+def upgradeChar():
+    return {}, 202
+
+def evolveChar():
+    return {}, 202
+
+def lockChar():
+    return {}, 202
+
+def sellChar():
+    return {}, 202
+
+def boostPotential():
+    return {}, 202
+
+def upgradeSkill():
+    return {}, 202
+
+def upgradeSpecialization():
+    return {}, 202
+
+def completeUpgradeSpecialization():
+    return {}, 202
+
+def evolveCharUseItem():
+    return {}, 202
+
+def upgradeCharLevelMaxUseItem():
+    return {}, 202
+
+def upgradeSpecializedSkillUseItem():
+    return {}, 202
+
+def unlockEquipment():
+    return {}, 202
+
+def upgradeEquipment():
+    return {}, 202
+
+def getSpCharMissionReward():
+    return {}, 202

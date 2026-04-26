@@ -16,3 +16,24 @@ def getVoucherDetail():
         voucher_info = voucher[item_id]
         response = voucher_info
         return response
+
+def voucherGacha():
+    return {}, 202
+
+def getCharGachaVoucherDetail():
+    return {}, 202
+
+def getMaterialVoucherDetail():
+    return {}, 202
+
+def useCharGachaVoucher():
+    return {}, 202
+
+def useMaterialVoucher():
+    return {}, 202
+
+def useFullPotentialItem():
+    return {}, 202
+
+def useOptionVoucher():
+    return {}, 202

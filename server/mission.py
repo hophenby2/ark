@@ -188,3 +188,15 @@ class mission_manger:
             process_data(mission_data["missions"][mission_type], self.daily_start_list if mission_type == "DAILY" else self.weekly_start_list)
 
         return mission_data
+
+def exchangeMissionRewards():
+    return {}, 202
+
+def confirmMissionList():
+    return {}, 202
+
+def confirmMissionGroup():
+    return {}, 202
+
+def confirmMultiGroupMissionList():
+    return {}, 202

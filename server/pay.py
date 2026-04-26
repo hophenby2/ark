@@ -183,3 +183,19 @@ def createappproduct():
     }
 
     return result
+
+def confirmOrder():
+
+    return {}, 202
+
+def createOrderAppstore():
+
+    return {}, 202
+
+def confirmOrderAppstore():
+
+    return {}, 202
+
+def confirmOrderAppstoreNew():
+
+    return {}, 202
