@@ -110,7 +110,6 @@ def finishNormalGacha():
     char_inst_id = repeat_char_id  # 角色实例ID
 
     if repeat_char_id == 0:  # 如果是新角色
-        char_data = {}  # 角色数据
         skils_array = get_memory("character_table")[random_char_id]["skills"]  # 技能数组
         skils = []  # 技能列表
 
@@ -126,20 +125,23 @@ def finishNormalGacha():
 
         inst_id = len(chars) + 1  # 实例ID
         char_inst_id = inst_id
-        char_data["instId"] = inst_id  # 实例ID
-        char_data["charId"] = random_char_id  # 角色ID
-        char_data["favorPoint"] = 0  # 好感度
-        char_data["potentialRank"] = 0  # 潜能等级
-        char_data["mainSkillLvl"] = 1  # 主技能等级
-        char_data["skin"] = f"{random_char_id}#1"  # 皮肤
-        char_data["level"] = 1  # 等级
-        char_data["exp"] = 0  # 经验值
-        char_data["evolvePhase"] = 0  # 精英阶段
-        char_data["gainTime"] = int(time)  # 获得时间
-        char_data["skills"] = skils  # 技能
-        char_data["equip"] = {}  # 装备
-        char_data["voiceLan"] = get_memory("charword_table")["charDefaultTypeDict"][random_char_id]  # 角色语音
-        char_data["defaultSkillIndex"] = -1 if not skils else 0  # 默认技能索引
+        char_data = {
+            "instId": int(random_char_id.split("_")[1]),
+            "charId": random_char_id,
+            "favorPoint": 0,
+            "potentialRank": 0,
+            "mainSkillLvl": 1,
+            "skin": f"{random_char_id}#1",
+            "level": 1,
+            "exp": 0,
+            "evolvePhase": 0,
+            "gainTime": time,
+            "skills": skils,
+            "equip": {},
+            "voiceLan": get_memory("charword_table")["charDefaultTypeDict"][random_char_id],
+            "defaultSkillIndex": -1 if not skils else 0,
+            "currentEquip": None
+        }
 
         sub1 = random_char_id.split("_", 2)[2]  # 分割字符
         char_name = sub1.split("_", 1)[1]  # 分割角色名
@@ -173,8 +175,11 @@ def finishNormalGacha():
         building_chars[str(inst_id)] = building_char  # 更新建筑角色数据
         chars[str(inst_id)] = char_data  # 更新角色数据
 
-        shd = {"type": "HGG_SHD", "id": "4004", "count": 1}  # 物品
-        item_get.append(shd)  # 添加物品
+        item_get.append({
+            "type": "HGG_SHD",
+            "id": "4004",
+            "count": 1
+        })
 
         is_new = 1  # 是新角色
         user_json_path = read_json(SYNC_DATA_TEMPLATE_PATH)

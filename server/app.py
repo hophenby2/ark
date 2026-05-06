@@ -404,6 +404,9 @@ app.add_url_rule("/templateShop/BuyGood", methods=["POST"], view_func=templateSh
 app.add_url_rule("/story/finishStory", methods=["POST"], view_func=story.storyFinishStory)
 app.add_url_rule("/quest/finishStoryStage", methods=["POST"], view_func=story.storyFinishStory)
 
+app.add_url_rule("/cg/getCgCollection", methods=["POST"], view_func=user.CG.getCgCollection)
+app.add_url_rule("/cg/addCgCollection", methods=["POST"], view_func=user.CG.addCgCollection)
+app.add_url_rule("/cg/removeCgCollection", methods=["POST"], view_func=user.CG.removeCgCollection)
 app.add_url_rule("/gallery/getFirstRewards", methods=["POST"], view_func=user.gallery.getFirstRewards)
 app.add_url_rule("/gallery/getThumbnailUrl", methods=["POST"], view_func=user.gallery.galleryGetThumbnailUrl)
 app.add_url_rule("/gallery/changeMagazineSquad", methods=["POST"], view_func=user.gallery.changeMagazineSquad)
@@ -533,13 +536,7 @@ if __name__ == "__main__":
     print(Fore.YELLOW + \
     "──────────────────────────\n" + \
     "该软件开源免费\n" + \
-    "如果你花钱了，说明你被骗了\n" + \
-    "──────────────────────────\n"
-    "天机阁 站长真名：薛金坤\n" + \
-    "性别女 出生日期2007年02月05日\n" + \
-    "身份证号140830200702050045\n" + \
-    "户籍山西省运城市芮城县\n" + \
-    "──────────────────────────"
+    "如果你花钱了，说明你被骗了"
     )
     writeLog("[SERVER] 加载config.json")
     load_config()

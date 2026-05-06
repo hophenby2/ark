@@ -916,6 +916,58 @@ class gallery:
     def getCollectionRewards():
         return {}, 202
 
+class CG:
+
+    def getCgCollection():
+        server_data:dict = read_json(SERVER_DATA_PATH)
+        cg_list:set = server_data["cgList"]
+
+        result = {
+            "playerDataDelta": {
+                "modified": {},
+                "deleted": {},
+            },
+            "cgList": list(cg_list)
+        }
+
+        return result
+
+    def addCgCollection():
+        json_body:dict[str,str] = request.get_json()
+        cg_id:str = json_body["cgId"]
+        server_data:dict = read_json(SERVER_DATA_PATH)
+        cg_list:set = server_data["cgList"]
+        cg_list.add(cg_id)
+
+        result = {
+            "playerDataDelta": {
+                "modified": {},
+                "deleted": {},
+            },
+            "cgList": list(cg_list)
+        }
+
+        run_after_response(write_json, server_data, SERVER_DATA_PATH)
+        return result
+
+    def removeCgCollection():
+        json_body:dict[str,str] = request.get_json()
+        cg_id:str = json_body["cgId"]
+        server_data:dict = read_json(SERVER_DATA_PATH)
+        cg_list:set = server_data["cgList"]
+        cg_list.remove(cg_id)
+
+        result = {
+            "playerDataDelta": {
+                "modified": {},
+                "deleted": {},
+            },
+            "cgList": list(cg_list)
+        }
+
+        run_after_response(write_json, server_data, SERVER_DATA_PATH)
+        return result
+
 def bindNickName():
     return {}, 202
 

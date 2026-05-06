@@ -120,6 +120,16 @@ def SyncData():
         }
     }
 
+    # Sp时装
+    skin_sp_list = skin_table["spDynSkins"].keys()
+    sp_data:dict[str,int] = player_data["user"]["skin"]["skinSp"]
+    sp_list = sp_data.keys()
+    if len(skin_sp_list) >= len(sp_list):
+        no_have_sp = skin_sp_list - sp_list
+        if no_have_sp:
+            for skin_id in no_have_sp:
+                sp_data[skin_id] = 0
+
     # 角色模组补齐
     equip_dict = equip_table["equipDict"]
     for char_data in player_data["user"]["troop"]["chars"].values():
