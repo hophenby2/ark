@@ -968,6 +968,34 @@ class CG:
         run_after_response(write_json, server_data, SERVER_DATA_PATH)
         return result
 
+class mainlineClue:
+
+    def unlockClue():
+        json_body = request.get_json()
+        print(json_body)
+        clue_id = json_body["id"]
+        user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
+
+        clue_data = user_data["user"]["mainline"]["clue"]["state"]
+        clue_data[clue_id] = 2
+
+        result = {
+            "playerDataDelta": {
+                "deleted": {},
+                "modified": {
+                    "mainline": {
+                        "clue": {
+                            "state": clue_data
+                        }
+                    }
+                }
+            }
+        }
+
+        run_after_response(write_json, user_data, SYNC_DATA_TEMPLATE_PATH)
+        return result
+
+
 def bindNickName():
     return {}, 202
 

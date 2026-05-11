@@ -404,6 +404,7 @@ app.add_url_rule("/templateShop/BuyGood", methods=["POST"], view_func=templateSh
 app.add_url_rule("/story/finishStory", methods=["POST"], view_func=story.storyFinishStory)
 app.add_url_rule("/quest/finishStoryStage", methods=["POST"], view_func=story.storyFinishStory)
 
+app.add_url_rule("/mainlineClue/unlockClue", methods=["POST"], view_func=user.mainlineClue.unlockClue)
 app.add_url_rule("/cg/getCgCollection", methods=["POST"], view_func=user.CG.getCgCollection)
 app.add_url_rule("/cg/addCgCollection", methods=["POST"], view_func=user.CG.addCgCollection)
 app.add_url_rule("/cg/removeCgCollection", methods=["POST"], view_func=user.CG.removeCgCollection)

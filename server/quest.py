@@ -598,7 +598,68 @@ def unlockHideStage():
     return {}, 202
 
 def getCowLevelReward():
-    return {}, 202
+    json_body = request.get_json()
+
+    stage_id:str = json_body["stageId"]
+    user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
+    # 特殊主线对应的特殊物品
+    special_items = {
+        "spst_17-01": "main17_spitem_1"
+    }
+
+    item_id = special_items.get(stage_id, None)
+    if item_id is None:
+        return {}, 400
+
+    # user_data["user"]["items"][item_id] -= 1
+    cow_level_data = user_data["user"]["dungeon"]["cowLevel"]
+    main_line_ep:int = int((stage_id.split("-")[0]).split("_")[1])
+    if main_line_ep >= 17:
+        level_data = {
+            "id": stage_id,
+            "type": "STAGE",
+            "val": [1, 1],
+            "fts": time(),
+            "rts": time()
+        }
+    else:
+        level_data = {
+            "id": stage_id,
+            "fts": time(),
+            "rts": time()
+        }
+    cow_level_data[stage_id] = level_data
+
+    diamond_count = user_data["user"]["status"]["androidDiamond"]
+    if diamond_count < 2147483647:
+        diamond_count += 1
+
+
+    result = {
+        "playerDataDelta": {
+            "deleted": {},
+            "modified": {
+                "dungeon": {
+                    "cowLevel": {
+                        stage_id: level_data
+                    }
+                },
+                "status": {
+                    "androidDiamond": diamond_count
+                }
+            }
+        },
+        "rewards": [
+            {
+                "id": 4002,
+                "count": 1,
+                "type": "DIAMOND"
+            }
+        ]
+    }
+
+    run_after_response(write_json, user_data, SYNC_DATA_TEMPLATE_PATH)
+    return result
 
 def getMainlineRecordRewards():
     return {}, 202
