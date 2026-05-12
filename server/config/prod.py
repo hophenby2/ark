@@ -35,6 +35,17 @@ def prodAndroidVersion(subpath=None):
 
     return version
 
+
+def prodWindowsVersion(subpath=None):
+
+    server_config = get_memory("config")
+    version = server_config["version"]["windows"]
+
+    if server_config["assets"]["enableMods"]:
+        version["resVersion"] = version["resVersion"][:18] + randomHash()
+
+    return version
+
 def redirect_rote():
     return redirect("/config/prod/official/network_config")
 
@@ -137,6 +148,27 @@ def prodGateMeta():
         "preAnnounceId": "478",
         "actived": True,
         "preAnnounceType": 2
+    }
+
+def get_latest():
+    return {
+        "action": 0,
+        "version": "69.0.0",
+        "request_version": "69.0.0",
+        "pkg": {
+            "packs": [],
+            "total_size": "0",
+            "file_path": "https://ak.hycdn.cn/GzD1CpaWgmSq1wew/69.0/update/1/1/Windows/69.0.0_OCI5nGSI9gIFzxQn/files",
+            "url": "",
+            "md5": "",
+            "package_size": "0",
+            "file_id": "0",
+            "sub_channel": "1",
+            "game_files_md5": "109903ea32fc4d71b6b9541bc0b5f9f0",
+        },
+        "patch": None,
+        "state": 0,
+        "launcher_action": 0,
     }
 
 def get_latest_game_info():
