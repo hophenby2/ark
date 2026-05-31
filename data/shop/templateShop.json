@@ -2050,6 +2050,917 @@
       }
     }
   },
+  "sandbox_2": {
+    "shopId": "sandbox_2",
+    "shopName": "采购平台",
+    "type": "SHOP_PERIOD_UNLOCK",
+    "price": {
+      "id": "sandbox_2_tokencoin",
+      "count": 1,
+      "type": "SANDBOX_TOKEN"
+    },
+    "shopGroup": [
+      {
+        "shopGroupId": "sandbox_2_store_1",
+        "sortId": 1,
+        "preGroup": null,
+        "bkgIconId": null,
+        "lockDesc": null,
+        "shopGood": [
+          {
+            "goodId": "sandbox_2_1",
+            "displayName": "再启",
+            "sortId": 1,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "bg_sandboxv3_1",
+              "count": 1,
+              "type": "HOME_BACKGROUND"
+            },
+            "progressGoodId": null,
+            "price": 3000,
+            "availCount": 1
+          },
+          {
+            "goodId": "sandbox_2_2",
+            "displayName": "烧结核凝晶",
+            "sortId": 2,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "30155",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 1500,
+            "availCount": 1
+          },
+          {
+            "goodId": "sandbox_2_3",
+            "displayName": "聚合剂",
+            "sortId": 3,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "30115",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 1500,
+            "availCount": 1
+          },
+          {
+            "goodId": "sandbox_2_4",
+            "displayName": "提纯源岩",
+            "sortId": 4,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "30014",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 750,
+            "availCount": 4
+          },
+          {
+            "goodId": "sandbox_2_5",
+            "displayName": "炽合金块",
+            "sortId": 5,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "31024",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 900,
+            "availCount": 4
+          },
+          {
+            "goodId": "sandbox_2_6",
+            "displayName": "化合切削液",
+            "sortId": 6,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "31053",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 300,
+            "availCount": 10
+          },
+          {
+            "goodId": "sandbox_2_7",
+            "displayName": "全新装置",
+            "sortId": 7,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "30063",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 350,
+            "availCount": 10
+          },
+          {
+            "goodId": "sandbox_2_8",
+            "displayName": "中级作战记录",
+            "sortId": 8,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "2003",
+              "count": 1,
+              "type": "CARD_EXP"
+            },
+            "progressGoodId": null,
+            "price": 40,
+            "availCount": 15
+          },
+          {
+            "goodId": "sandbox_2_9",
+            "displayName": "高级作战记录",
+            "sortId": 9,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "2004",
+              "count": 1,
+              "type": "CARD_EXP"
+            },
+            "progressGoodId": null,
+            "price": 80,
+            "availCount": 15
+          },
+          {
+            "goodId": "sandbox_2_10",
+            "displayName": "技巧概要·卷2",
+            "sortId": 10,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "3302",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 40,
+            "availCount": 10
+          },
+          {
+            "goodId": "sandbox_2_11",
+            "displayName": "技巧概要·卷3",
+            "sortId": 11,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "3303",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 80,
+            "availCount": 10
+          },
+          {
+            "goodId": "sandbox_2_12",
+            "displayName": "龙门币",
+            "sortId": 12,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "4001",
+              "count": 5000,
+              "type": "GOLD"
+            },
+            "progressGoodId": null,
+            "price": 200,
+            "availCount": 20
+          }
+        ],
+        "progressGoods": []
+      },
+      {
+        "shopGroupId": "sandbox_2_store_2",
+        "sortId": 2,
+        "preGroup": "sandbox_2_store_1",
+        "bkgIconId": null,
+        "lockDesc": "购买完前一阶段解锁新奖励",
+        "shopGood": [
+          {
+            "goodId": "sandbox_2_13",
+            "displayName": "硬派速度",
+            "sortId": 13,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "char_264_f12yin@marthe#13",
+              "count": 1,
+              "type": "CHAR_SKIN"
+            },
+            "progressGoodId": null,
+            "price": 3000,
+            "availCount": 1
+          },
+          {
+            "goodId": "sandbox_2_14",
+            "displayName": "重相位对映体",
+            "sortId": 14,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "30165",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 1500,
+            "availCount": 1
+          },
+          {
+            "goodId": "sandbox_2_15",
+            "displayName": "晶体电子单元",
+            "sortId": 15,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "30145",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 1500,
+            "availCount": 1
+          },
+          {
+            "goodId": "sandbox_2_16",
+            "displayName": "晶体电路",
+            "sortId": 16,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "31034",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 1100,
+            "availCount": 4
+          },
+          {
+            "goodId": "sandbox_2_17",
+            "displayName": "酮阵列",
+            "sortId": 17,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "30054",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 1000,
+            "availCount": 4
+          },
+          {
+            "goodId": "sandbox_2_18",
+            "displayName": "扭转醇",
+            "sortId": 18,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "30073",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 200,
+            "availCount": 10
+          },
+          {
+            "goodId": "sandbox_2_19",
+            "displayName": "环烃聚质",
+            "sortId": 19,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "31083",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 350,
+            "availCount": 10
+          },
+          {
+            "goodId": "sandbox_2_20",
+            "displayName": "中级作战记录",
+            "sortId": 20,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "2003",
+              "count": 1,
+              "type": "CARD_EXP"
+            },
+            "progressGoodId": null,
+            "price": 40,
+            "availCount": 15
+          },
+          {
+            "goodId": "sandbox_2_21",
+            "displayName": "高级作战记录",
+            "sortId": 21,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "2004",
+              "count": 1,
+              "type": "CARD_EXP"
+            },
+            "progressGoodId": null,
+            "price": 80,
+            "availCount": 15
+          },
+          {
+            "goodId": "sandbox_2_22",
+            "displayName": "技巧概要·卷2",
+            "sortId": 22,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "3302",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 40,
+            "availCount": 10
+          },
+          {
+            "goodId": "sandbox_2_23",
+            "displayName": "技巧概要·卷3",
+            "sortId": 23,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "3303",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 80,
+            "availCount": 10
+          },
+          {
+            "goodId": "sandbox_2_24",
+            "displayName": "龙门币",
+            "sortId": 24,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "4001",
+              "count": 5000,
+              "type": "GOLD"
+            },
+            "progressGoodId": null,
+            "price": 200,
+            "availCount": 20
+          }
+        ],
+        "progressGoods": []
+      },
+      {
+        "shopGroupId": "sandbox_2_store_3",
+        "sortId": 3,
+        "preGroup": "sandbox_2_store_2",
+        "bkgIconId": null,
+        "lockDesc": "购买完前一阶段解锁新奖励",
+        "shopGood": [
+          {
+            "goodId": "sandbox_2_25",
+            "displayName": "“不变生息”",
+            "sortId": 25,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "avatar_activity_XB2_1",
+              "count": 1,
+              "type": "PLAYER_AVATAR"
+            },
+            "progressGoodId": null,
+            "price": 3000,
+            "availCount": 1
+          },
+          {
+            "goodId": "sandbox_2_26",
+            "displayName": "烧结核凝晶",
+            "sortId": 26,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "30155",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 1500,
+            "availCount": 1
+          },
+          {
+            "goodId": "sandbox_2_27",
+            "displayName": "聚合剂",
+            "sortId": 27,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "30115",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 1500,
+            "availCount": 1
+          },
+          {
+            "goodId": "sandbox_2_28",
+            "displayName": "转质盐聚块",
+            "sortId": 28,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "31064",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 850,
+            "availCount": 4
+          },
+          {
+            "goodId": "sandbox_2_29",
+            "displayName": "环烃预制体",
+            "sortId": 29,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "31084",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 1000,
+            "availCount": 4
+          },
+          {
+            "goodId": "sandbox_2_30",
+            "displayName": "轻锰矿",
+            "sortId": 30,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "30083",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 250,
+            "availCount": 10
+          },
+          {
+            "goodId": "sandbox_2_31",
+            "displayName": "褐素纤维",
+            "sortId": 31,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "31073",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 300,
+            "availCount": 10
+          },
+          {
+            "goodId": "sandbox_2_32",
+            "displayName": "中级作战记录",
+            "sortId": 32,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "2003",
+              "count": 1,
+              "type": "CARD_EXP"
+            },
+            "progressGoodId": null,
+            "price": 40,
+            "availCount": 15
+          },
+          {
+            "goodId": "sandbox_2_33",
+            "displayName": "高级作战记录",
+            "sortId": 33,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "2004",
+              "count": 1,
+              "type": "CARD_EXP"
+            },
+            "progressGoodId": null,
+            "price": 80,
+            "availCount": 15
+          },
+          {
+            "goodId": "sandbox_2_34",
+            "displayName": "技巧概要·卷2",
+            "sortId": 34,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "3302",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 40,
+            "availCount": 10
+          },
+          {
+            "goodId": "sandbox_2_35",
+            "displayName": "技巧概要·卷3",
+            "sortId": 35,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "3303",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 80,
+            "availCount": 10
+          },
+          {
+            "goodId": "sandbox_2_36",
+            "displayName": "龙门币",
+            "sortId": 36,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "4001",
+              "count": 5000,
+              "type": "GOLD"
+            },
+            "progressGoodId": null,
+            "price": 200,
+            "availCount": 20
+          }
+        ],
+        "progressGoods": []
+      },
+      {
+        "shopGroupId": "sandbox_2_store_4",
+        "sortId": 4,
+        "preGroup": "sandbox_2_store_3",
+        "bkgIconId": null,
+        "lockDesc": "购买完前一阶段解锁新奖励",
+        "shopGood": [
+          {
+            "goodId": "sandbox_2_37",
+            "displayName": "演算",
+            "sortId": 37,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "nc_sandbox2_1",
+              "count": 1,
+              "type": "NAME_CARD_SKIN"
+            },
+            "progressGoodId": null,
+            "price": 3000,
+            "availCount": 1
+          },
+          {
+            "goodId": "sandbox_2_38",
+            "displayName": "重相位对映体",
+            "sortId": 38,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "30165",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 1500,
+            "availCount": 1
+          },
+          {
+            "goodId": "sandbox_2_39",
+            "displayName": "晶体电子单元",
+            "sortId": 39,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "30145",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 1500,
+            "availCount": 1
+          },
+          {
+            "goodId": "sandbox_2_40",
+            "displayName": "异铁块",
+            "sortId": 40,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "30044",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 1100,
+            "availCount": 4
+          },
+          {
+            "goodId": "sandbox_2_41",
+            "displayName": "精炼溶剂",
+            "sortId": 41,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "31044",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 900,
+            "availCount": 4
+          },
+          {
+            "goodId": "sandbox_2_42",
+            "displayName": "异铁组",
+            "sortId": 42,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "30043",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 250,
+            "availCount": 10
+          },
+          {
+            "goodId": "sandbox_2_43",
+            "displayName": "固源岩组",
+            "sortId": 43,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "30013",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 150,
+            "availCount": 10
+          },
+          {
+            "goodId": "sandbox_2_44",
+            "displayName": "中级作战记录",
+            "sortId": 44,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "2003",
+              "count": 1,
+              "type": "CARD_EXP"
+            },
+            "progressGoodId": null,
+            "price": 40,
+            "availCount": 15
+          },
+          {
+            "goodId": "sandbox_2_45",
+            "displayName": "高级作战记录",
+            "sortId": 45,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "2004",
+              "count": 1,
+              "type": "CARD_EXP"
+            },
+            "progressGoodId": null,
+            "price": 80,
+            "availCount": 15
+          },
+          {
+            "goodId": "sandbox_2_46",
+            "displayName": "技巧概要·卷2",
+            "sortId": 46,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "3302",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 40,
+            "availCount": 10
+          },
+          {
+            "goodId": "sandbox_2_47",
+            "displayName": "技巧概要·卷3",
+            "sortId": 47,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "3303",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 80,
+            "availCount": 10
+          },
+          {
+            "goodId": "sandbox_2_48",
+            "displayName": "龙门币",
+            "sortId": 48,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "4001",
+              "count": 5000,
+              "type": "GOLD"
+            },
+            "progressGoodId": null,
+            "price": 200,
+            "availCount": 20
+          }
+        ],
+        "progressGoods": []
+      },
+      {
+        "shopGroupId": "sandbox_2_store_5",
+        "sortId": 5,
+        "preGroup": "sandbox_2_store_4",
+        "bkgIconId": null,
+        "lockDesc": "购买完前一阶段解锁新奖励",
+        "shopGood": [
+          {
+            "goodId": "sandbox_2_49",
+            "displayName": "“再起蓝图”",
+            "sortId": 49,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "furni_act73d4_projectionModel_01",
+              "count": 1,
+              "type": "FURN"
+            },
+            "progressGoodId": null,
+            "price": 3000,
+            "availCount": 1
+          },
+          {
+            "goodId": "sandbox_2_50",
+            "displayName": "烧结核凝晶",
+            "sortId": 50,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "30155",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 1500,
+            "availCount": 1
+          },
+          {
+            "goodId": "sandbox_2_51",
+            "displayName": "聚合剂",
+            "sortId": 51,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "30115",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 1500,
+            "availCount": 1
+          },
+          {
+            "goodId": "sandbox_2_52",
+            "displayName": "液化醚吸聚体",
+            "sortId": 52,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "31104",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 900,
+            "availCount": 4
+          },
+          {
+            "goodId": "sandbox_2_53",
+            "displayName": "切削原液",
+            "sortId": 53,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "31054",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 900,
+            "availCount": 4
+          },
+          {
+            "goodId": "sandbox_2_54",
+            "displayName": "研磨石",
+            "sortId": 54,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "30093",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 300,
+            "availCount": 10
+          },
+          {
+            "goodId": "sandbox_2_55",
+            "displayName": "炽合金",
+            "sortId": 55,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "31023",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 250,
+            "availCount": 10
+          },
+          {
+            "goodId": "sandbox_2_56",
+            "displayName": "中级作战记录",
+            "sortId": 56,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "2003",
+              "count": 1,
+              "type": "CARD_EXP"
+            },
+            "progressGoodId": null,
+            "price": 40,
+            "availCount": 15
+          },
+          {
+            "goodId": "sandbox_2_57",
+            "displayName": "高级作战记录",
+            "sortId": 57,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "2004",
+              "count": 1,
+              "type": "CARD_EXP"
+            },
+            "progressGoodId": null,
+            "price": 80,
+            "availCount": 15
+          },
+          {
+            "goodId": "sandbox_2_58",
+            "displayName": "技巧概要·卷2",
+            "sortId": 58,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "3302",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 40,
+            "availCount": 10
+          },
+          {
+            "goodId": "sandbox_2_59",
+            "displayName": "技巧概要·卷3",
+            "sortId": 59,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "3303",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 80,
+            "availCount": 10
+          },
+          {
+            "goodId": "sandbox_2_60",
+            "displayName": "龙门币",
+            "sortId": 60,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "4001",
+              "count": 5000,
+              "type": "GOLD"
+            },
+            "progressGoodId": null,
+            "price": 200,
+            "availCount": 20
+          }
+        ],
+        "progressGoods": []
+      }
+    ],
+    "iconColorCodes": "d8d769",
+    "buttonColorCodes": "afae1d",
+    "startTime": 1778832000,
+    "endTime": -1,
+    "groupExtraData": {
+      "inTimeText": null,
+      "allEndText": null
+    },
+    "nextSyncTime": -1
+  },
   "shop_act16mini": {
     "shopId": "shop_act16mini",
     "shopName": "沙地兽洞",
@@ -16721,5 +17632,507 @@
     "startTime": 1774598400,
     "endTime": 1775764799,
     "groupExtraData": null
+  },
+  "shop_act42sre": {
+    "shopId": "shop_act42sre",
+    "shopName": "甜梦会堂",
+    "type": "SHOP_RARITY_GROUP",
+    "price": {
+      "id": "act42side_token_pacifier_rep_1",
+      "count": 1,
+      "type": "ACTIVITY_ITEM"
+    },
+    "shopGroup": [
+      {
+        "shopGroupId": "act42sre_tag_1",
+        "sortId": 1,
+        "preGroup": null,
+        "bkgIconId": null,
+        "lockDesc": null,
+        "shopGood": [
+          {
+            "goodId": "act42sre_1",
+            "displayName": null,
+            "sortId": 1,
+            "goodType": "PROGRESS",
+            "item": null,
+            "progressGoodId": "char_rmixer_progress",
+            "price": 0,
+            "availCount": 0
+          },
+          {
+            "goodId": "act42sre_2",
+            "displayName": null,
+            "sortId": 2,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "7003",
+              "count": 1,
+              "type": "TKT_GACHA"
+            },
+            "progressGoodId": null,
+            "price": 150,
+            "availCount": 3
+          },
+          {
+            "goodId": "act42sre_3",
+            "displayName": null,
+            "sortId": 3,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "30115",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 100,
+            "availCount": 1
+          },
+          {
+            "goodId": "act42sre_4",
+            "displayName": null,
+            "sortId": 4,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "31014",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 30,
+            "availCount": 3
+          },
+          {
+            "goodId": "act42sre_5",
+            "displayName": null,
+            "sortId": 5,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "31034",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 40,
+            "availCount": 3
+          },
+          {
+            "goodId": "act42sre_6",
+            "displayName": null,
+            "sortId": 6,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "31084",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 45,
+            "availCount": 3
+          },
+          {
+            "goodId": "act42sre_7",
+            "displayName": null,
+            "sortId": 7,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "furni_gunworkshop_wallpaper_01",
+              "count": 1,
+              "type": "FURN"
+            },
+            "progressGoodId": null,
+            "price": 90,
+            "availCount": 1
+          },
+          {
+            "goodId": "act42sre_8",
+            "displayName": null,
+            "sortId": 8,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "furni_gunworkshop_gunshelf_01",
+              "count": 1,
+              "type": "FURN"
+            },
+            "progressGoodId": null,
+            "price": 80,
+            "availCount": 1
+          },
+          {
+            "goodId": "act42sre_9",
+            "displayName": null,
+            "sortId": 9,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "furni_gunworkshop_cabinet_01",
+              "count": 1,
+              "type": "FURN"
+            },
+            "progressGoodId": null,
+            "price": 70,
+            "availCount": 1
+          },
+          {
+            "goodId": "act42sre_10",
+            "displayName": null,
+            "sortId": 10,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "furni_gunworkshop_shelf_01",
+              "count": 1,
+              "type": "FURN"
+            },
+            "progressGoodId": null,
+            "price": 50,
+            "availCount": 1
+          },
+          {
+            "goodId": "act42sre_11",
+            "displayName": null,
+            "sortId": 11,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "furni_gunworkshop_floorlamp_01",
+              "count": 1,
+              "type": "FURN"
+            },
+            "progressGoodId": null,
+            "price": 45,
+            "availCount": 1
+          }
+        ],
+        "progressGoods": [
+          {
+            "progressGoodId": "char_rmixer_progress",
+            "items": [
+              {
+                "order": 1,
+                "price": 250,
+                "displayName": "信仰搅拌机的信物",
+                "item": {
+                  "id": "p_char_4194_rmixer",
+                  "count": 1,
+                  "type": "MATERIAL"
+                }
+              },
+              {
+                "order": 2,
+                "price": 300,
+                "displayName": "信仰搅拌机的信物",
+                "item": {
+                  "id": "p_char_4194_rmixer",
+                  "count": 1,
+                  "type": "MATERIAL"
+                }
+              },
+              {
+                "order": 3,
+                "price": 350,
+                "displayName": "信仰搅拌机的信物",
+                "item": {
+                  "id": "p_char_4194_rmixer",
+                  "count": 1,
+                  "type": "MATERIAL"
+                }
+              },
+              {
+                "order": 4,
+                "price": 400,
+                "displayName": "信仰搅拌机的信物",
+                "item": {
+                  "id": "p_char_4194_rmixer",
+                  "count": 1,
+                  "type": "MATERIAL"
+                }
+              },
+              {
+                "order": 5,
+                "price": 450,
+                "displayName": "信仰搅拌机的信物",
+                "item": {
+                  "id": "p_char_4194_rmixer",
+                  "count": 1,
+                  "type": "MATERIAL"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "shopGroupId": "act42sre_tag_2",
+        "sortId": 2,
+        "preGroup": null,
+        "bkgIconId": null,
+        "lockDesc": null,
+        "shopGood": [
+          {
+            "goodId": "act42sre_12",
+            "displayName": null,
+            "sortId": 12,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "30063",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 15,
+            "availCount": 5
+          },
+          {
+            "goodId": "act42sre_13",
+            "displayName": null,
+            "sortId": 13,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "31053",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 12,
+            "availCount": 5
+          },
+          {
+            "goodId": "act42sre_14",
+            "displayName": null,
+            "sortId": 14,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "4001",
+              "count": 5000,
+              "type": "GOLD"
+            },
+            "progressGoodId": null,
+            "price": 7,
+            "availCount": 20
+          },
+          {
+            "goodId": "act42sre_15",
+            "displayName": null,
+            "sortId": 15,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "2004",
+              "count": 2,
+              "type": "CARD_EXP"
+            },
+            "progressGoodId": null,
+            "price": 5,
+            "availCount": 5
+          },
+          {
+            "goodId": "act42sre_16",
+            "displayName": null,
+            "sortId": 16,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "2003",
+              "count": 2,
+              "type": "CARD_EXP"
+            },
+            "progressGoodId": null,
+            "price": 3,
+            "availCount": 10
+          },
+          {
+            "goodId": "act42sre_17",
+            "displayName": null,
+            "sortId": 17,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "2002",
+              "count": 2,
+              "type": "CARD_EXP"
+            },
+            "progressGoodId": null,
+            "price": 1,
+            "availCount": 20
+          },
+          {
+            "goodId": "act42sre_18",
+            "displayName": null,
+            "sortId": 18,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "3303",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 4,
+            "availCount": 10
+          },
+          {
+            "goodId": "act42sre_19",
+            "displayName": null,
+            "sortId": 19,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "3302",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 2,
+            "availCount": 20
+          }
+        ],
+        "progressGoods": []
+      },
+      {
+        "shopGroupId": "act42sre_tag_3",
+        "sortId": 3,
+        "preGroup": null,
+        "bkgIconId": null,
+        "lockDesc": null,
+        "shopGood": [
+          {
+            "goodId": "act42sre_20",
+            "displayName": null,
+            "sortId": 20,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "30022",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 3,
+            "availCount": 8
+          },
+          {
+            "goodId": "act42sre_21",
+            "displayName": null,
+            "sortId": 21,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "30032",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 3,
+            "availCount": 8
+          },
+          {
+            "goodId": "act42sre_22",
+            "displayName": null,
+            "sortId": 22,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "30042",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 3,
+            "availCount": 8
+          },
+          {
+            "goodId": "act42sre_23",
+            "displayName": null,
+            "sortId": 23,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "3231",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 6,
+            "availCount": 5
+          }
+        ],
+        "progressGoods": []
+      },
+      {
+        "shopGroupId": "act42sre_tag_4",
+        "sortId": 4,
+        "preGroup": null,
+        "bkgIconId": null,
+        "lockDesc": null,
+        "shopGood": [
+          {
+            "goodId": "act42sre_24",
+            "displayName": null,
+            "sortId": 24,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "30103",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 40,
+            "availCount": -1
+          },
+          {
+            "goodId": "act42sre_25",
+            "displayName": null,
+            "sortId": 25,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "30093",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 35,
+            "availCount": -1
+          },
+          {
+            "goodId": "act42sre_26",
+            "displayName": null,
+            "sortId": 26,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "30083",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 30,
+            "availCount": -1
+          },
+          {
+            "goodId": "act42sre_27",
+            "displayName": null,
+            "sortId": 27,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "30073",
+              "count": 1,
+              "type": "MATERIAL"
+            },
+            "progressGoodId": null,
+            "price": 25,
+            "availCount": -1
+          },
+          {
+            "goodId": "act42sre_28",
+            "displayName": null,
+            "sortId": 28,
+            "goodType": "NORMAL",
+            "item": {
+              "id": "4001",
+              "count": 20,
+              "type": "GOLD"
+            },
+            "progressGoodId": null,
+            "price": 1,
+            "availCount": -1
+          }
+        ],
+        "progressGoods": []
+      }
+    ],
+    "iconColorCodes": "ca8d43",
+    "buttonColorCodes": "ca8d43",
+    "startTime": 1779436800,
+    "endTime": 1780603199,
+    "groupExtraData": null,
+    "nextSyncTime": -1
   }
 }

@@ -1181,7 +1181,7 @@ def rlv2BuyGoods(select: int=None):
             "ts": 1695000000,
         }
     elif item_id.find("_explore_tool_") != -1:
-        explore_tool_id = rlv2.getNextExploreToolIndex(rlv2)
+        explore_tool_id = _rlv2.getNextExploreToolIndex(rlv2)
         rlv2["inventory"]["exploreTool"][explore_tool_id] = {
             "index": explore_tool_id,
             "id": item_id,
@@ -1209,7 +1209,7 @@ def rlv2shopAction():
     json_body = request.get_json()
 
     try:
-        select = int (json_body["buy"][0])
+        select = int(json_body["buy"][0])
         return rlv2BuyGoods(select)
     except (KeyError, IndexError):
         return rlv2LeaveShop()
