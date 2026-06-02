@@ -51,6 +51,9 @@ app.add_url_rule("/activity/act35side/buyCard", methods=["POST"], view_func=acti
 app.add_url_rule("/activity/act35side/toProcess", methods=["POST"], view_func=activity.act35side.act35toProcess)
 app.add_url_rule("/activity/act35side/process", methods=["POST"], view_func=activity.act35side.act35process)
 app.add_url_rule("/activity/act35side/nextRound", methods=["POST"], view_func=activity.act35side.act35nextRound)
+app.add_url_rule("/activity/act42side/getDailyRewards", methods=["POST"], view_func=activity.act42side.act42getDailyRewards)
+app.add_url_rule("/activity/act42side/acceptTask", methods=["POST"], view_func=activity.act42side.act42acceptTask)
+app.add_url_rule("/activity/act42side/confirmTask", methods=["POST"], view_func=activity.act42side.act42confirmTask)
 app.add_url_rule("/activity/act1vhalfidle/unlockTech", methods=["POST"], view_func=activity.vhalfidle.unlockTech)
 app.add_url_rule("/activity/act1vhalfidle/refreshProduct", methods=["POST"], view_func=activity.vhalfidle.refreshProduct)
 app.add_url_rule("/activity/act1vhalfidle/harvest", methods=["POST"], view_func=activity.vhalfidle.harvest)
@@ -206,6 +209,7 @@ app.add_url_rule("/config/prod/announce_meta/Android/announcement.meta.json", me
 app.add_url_rule("/api/remote_config/1/prod/default/Android/remote_config", methods=["GET"], view_func=config.prod.prodRemoteConfig)
 app.add_url_rule("/api/remote_config/1/prod/default/Windows/remote_config", methods=["GET"], view_func=config.prod.prodRemoteConfig)
 app.add_url_rule("/config/prod/official/Android/version", methods = ["GET"], view_func=config.prod.prodAndroidVersion)
+app.add_url_rule("/config/prod/official/Windows/version", methods=["GET"], view_func=config.prod.prodWindowsVersion)
 app.add_url_rule("/config/prod/official/network_config", methods=["GET"], view_func=config.prod.prodNetworkConfig)
 app.add_url_rule("/config/prod/b/network_config", methods=["GET"], view_func=config.prod.prodNetworkConfig)
 app.add_url_rule("/api/remote_config/1/prod/default/Android/network_config", methods=["GET"], view_func=config.prod.prodNetworkConfig_new)
@@ -216,6 +220,7 @@ app.add_url_rule("/audit/official/Android/version_<path:subpath>", methods=["GET
 app.add_url_rule("/audit/official/Android/assets/<string:assetsHash>/<string:fileName>", methods=["GET"], view_func=asset.assetbundle.getFile)
 app.add_url_rule("/config/prod/official/refresh_config", methods = ["GET"], view_func=config.prod.prodRefreshConfig)
 app.add_url_rule("/config/prod/official/remote_config", methods = ["GET"], view_func=config.prod.prodRemoteConfig)
+app.add_url_rule("/api/game/get_latest", methods=["GET"], view_func=config.prod.get_latest)
 app.add_url_rule("/api/game/get_latest_game_info", methods = ["GET"], view_func= config.prod.get_latest_game_info)
 app.add_url_rule("/api/gate/meta/Android", methods = ["GET"], view_func= config.prod.prodGateMeta)
 app.add_url_rule("/api/remote_config/101/prod/default/Android/ak_sdk_config", methods = ["GET"], view_func= config.prod.ak_sdk_config)
@@ -404,6 +409,10 @@ app.add_url_rule("/templateShop/BuyGood", methods=["POST"], view_func=templateSh
 app.add_url_rule("/story/finishStory", methods=["POST"], view_func=story.storyFinishStory)
 app.add_url_rule("/quest/finishStoryStage", methods=["POST"], view_func=story.storyFinishStory)
 
+app.add_url_rule("/mainlineClue/unlockClue", methods=["POST"], view_func=user.mainlineClue.unlockClue)
+app.add_url_rule("/cg/getCgCollection", methods=["POST"], view_func=user.CG.getCgCollection)
+app.add_url_rule("/cg/addCgCollection", methods=["POST"], view_func=user.CG.addCgCollection)
+app.add_url_rule("/cg/removeCgCollection", methods=["POST"], view_func=user.CG.removeCgCollection)
 app.add_url_rule("/gallery/getFirstRewards", methods=["POST"], view_func=user.gallery.getFirstRewards)
 app.add_url_rule("/gallery/getThumbnailUrl", methods=["POST"], view_func=user.gallery.galleryGetThumbnailUrl)
 app.add_url_rule("/gallery/changeMagazineSquad", methods=["POST"], view_func=user.gallery.changeMagazineSquad)
@@ -453,17 +462,24 @@ app.add_url_rule("/user/useItems", methods=["POST"], view_func=user.useItems)
 app.add_url_rule("/user/receiveTeamCollectionReward", methods=["POST"], view_func=user.receiveTeamCollectionReward)
 app.add_url_rule("/medal/rewardMedal", methods=["POST"], view_func=user.medal_rewardMedal)
 
-app.add_url_rule("/sandboxPerm/sandboxV2/createGame", methods=["POST"], view_func=sandbox.createGame)
-app.add_url_rule("/sandboxPerm/sandboxV2/battleStart", methods=["POST"], view_func=sandbox.battleStart)
-app.add_url_rule("/sandboxPerm/sandboxV2/battleFinish", methods=["POST"], view_func=sandbox.battleFinish)
-app.add_url_rule("/sandboxPerm/sandboxV2/settleGame", methods=["POST"], view_func=sandbox.settleGame)
-app.add_url_rule("/sandboxPerm/sandboxV2/eatFood", methods=["POST"], view_func=sandbox.eatFood)
-app.add_url_rule("/sandboxPerm/sandboxV2/setSquad", methods=["POST"], view_func=sandbox.setSquad)
-app.add_url_rule("/sandboxPerm/sandboxV2/homeBuildSave", methods=["POST"], view_func=sandbox.homeBuildSave)
-app.add_url_rule("/sandboxPerm/sandboxV2/exploreMode", methods=["POST"], view_func=sandbox.exploreMode)
-app.add_url_rule("/sandboxPerm/sandboxV2/eventChoice", methods=["POST"], view_func=sandbox.eventChoice)
-app.add_url_rule("/sandboxPerm/sandboxV2/monthBattleStart", methods=["POST"], view_func=sandbox.monthBattleStart)
-app.add_url_rule("/sandboxPerm/sandboxV2/monthBattleFinish", methods=["POST"], view_func=sandbox.monthBattleFinish)
+app.add_url_rule("/sandboxPerm/sandboxV2/createGame", methods=["POST"], view_func=sandbox.sandboxV2.createGame)
+app.add_url_rule("/sandboxPerm/sandboxV2/battleStart", methods=["POST"], view_func=sandbox.sandboxV2.battleStart)
+app.add_url_rule("/sandboxPerm/sandboxV2/battleFinish", methods=["POST"], view_func=sandbox.sandboxV2.battleFinish)
+app.add_url_rule("/sandboxPerm/sandboxV2/settleGame", methods=["POST"], view_func=sandbox.sandboxV2.settleGame)
+app.add_url_rule("/sandboxPerm/sandboxV2/eatFood", methods=["POST"], view_func=sandbox.sandboxV2.eatFood)
+app.add_url_rule("/sandboxPerm/sandboxV2/setSquad", methods=["POST"], view_func=sandbox.sandboxV2.setSquad)
+app.add_url_rule("/sandboxPerm/sandboxV2/homeBuildSave", methods=["POST"], view_func=sandbox.sandboxV2.homeBuildSave)
+app.add_url_rule("/sandboxPerm/sandboxV2/exploreMode", methods=["POST"], view_func=sandbox.sandboxV2.exploreMode)
+app.add_url_rule("/sandboxPerm/sandboxV2/eventChoice", methods=["POST"], view_func=sandbox.sandboxV2.eventChoice)
+app.add_url_rule("/sandboxPerm/sandboxV2/monthBattleStart", methods=["POST"], view_func=sandbox.sandboxV2.monthBattleStart)
+app.add_url_rule("/sandboxPerm/sandboxV2/monthBattleFinish", methods=["POST"], view_func=sandbox.sandboxV2.monthBattleFinish)
+app.add_url_rule("/sandboxPerm/changeTopic", methods=["POST"], view_func=sandbox.changeTopic)
+app.add_url_rule("/sandboxPerm/sandboxV3/switchMode", methods=["POST"], view_func=sandbox.sandboxV3.switchMode)
+app.add_url_rule("/sandboxPerm/sandboxV3/productionRefresh", methods=["POST"], view_func=sandbox.sandboxV3.productionRefresh)
+app.add_url_rule("/sandboxPerm/sandboxV3/productionHarvest", methods=["POST"], view_func=sandbox.sandboxV3.productionHarvest)
+app.add_url_rule("/sandboxPerm/sandboxV3/homeEnter", methods=["POST"], view_func=sandbox.sandboxV3.homeEnter)
+app.add_url_rule("/sandboxPerm/sandboxV3/homeShopBuy", methods=["POST"], view_func=sandbox.sandboxV3.homeShopBuy)
+app.add_url_rule("/sandboxPerm/sandboxV3/homeSave", methods=["POST"], view_func=sandbox.sandboxV3.homeSave)
 
 app.add_url_rule("/gacha/normalGacha", methods=["POST"], view_func=gacha.normalGacha)
 app.add_url_rule("/gacha/boostNormalGacha", methods=["POST"], view_func=gacha.boostNormalGacha)
@@ -533,13 +549,7 @@ if __name__ == "__main__":
     print(Fore.YELLOW + \
     "──────────────────────────\n" + \
     "该软件开源免费\n" + \
-    "如果你花钱了，说明你被骗了\n" + \
-    "──────────────────────────\n"
-    "天机阁 站长真名：薛金坤\n" + \
-    "性别女 出生日期2007年02月05日\n" + \
-    "身份证号140830200702050045\n" + \
-    "户籍山西省运城市芮城县\n" + \
-    "──────────────────────────"
+    "如果你花钱了，说明你被骗了"
     )
     writeLog("[SERVER] 加载config.json")
     load_config()

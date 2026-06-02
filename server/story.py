@@ -2,12 +2,18 @@ from flask import request
 
 
 def storyFinishStory():
+    json_body = request.get_json()
 
-    data = request.data
     data = {
         "playerDataDelta": {
-            "deleted": {},
-            "modified": {}
+            "modified": {
+                "status": {
+                    "flags": {
+                        json_body["stageId"]: 1
+                    }
+                }
+            },
+            "deleted": {}
         }
     }
 

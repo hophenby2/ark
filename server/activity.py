@@ -1298,7 +1298,78 @@ class act35side:
 
         run_after_response(write_json, user_data, SYNC_DATA_TEMPLATE_PATH)
         return result
-  
+
+class act42side:
+    def act42getDailyRewards():
+        json_body = request.get_json()
+        activity_id = json_body["activityId"]
+
+        result = {
+            "playerDataDelta": {
+                "modified": {
+                    "activity": {
+                        "TYPE_ACT42SIDE": {
+                            activity_id: {
+                                "dailyRewardState": 0
+                            }
+                        }
+                    }
+                },
+                "deleted": {}
+            }
+        }
+
+        return result
+
+    def act42acceptTask():
+        json_body = request.get_json()
+        activity_id = json_body["activityId"]
+        task_id = json_body["taskId"]
+        # 任务状态定义位于 public enum Torappu.PlayerActivity.PlayerAct42SideActivity.TaskState
+
+        result = {
+            "playerDataDelta": {
+                "modified": {
+                    "activity": {
+                        "TYPE_ACT42SIDE": {
+                            activity_id: {
+                                "taskMap": {
+                                    task_id: 2
+                                }
+                            }
+                        }
+                    }
+                },
+                "deleted": {}
+            }
+        }
+
+        return result
+
+    def act42confirmTask():
+        json_body = request.get_json()
+        activity_id = json_body["activityId"]
+        task_id = json_body["taskId"]
+
+        result = {
+            "playerDataDelta": {
+                "modified": {
+                    "activity": {
+                        "TYPE_ACT42SIDE": {
+                            activity_id: {
+                                "taskMap": {
+                                    task_id: 4
+                                }
+                            }
+                        }
+                    }
+                },
+                "deleted": {}
+            }
+        }
+
+        return result
+
 class vhalfidle:
     from data.act_data import SPEC_CHAR, VHALFIDLE_POOLS, E_0, E_1, E_2
 
