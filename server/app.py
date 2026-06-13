@@ -20,6 +20,11 @@ import logging
 logger = logging.getLogger('werkzeug')
 logger.setLevel(logging.INFO)
 logger.addFilter(lambda record: not re.match(r'.*(/syncPushMessage|/pb/async|/event|/batch_event|/deviceprofile/v4|/rqd/async).*', record.getMessage()))
+
+app.add_url_rule("/activity/rewardAllMilestone", methods=["POST"], view_func=activity.ActivityMission.rewardAllMilestone)
+app.add_url_rule("/activity/rewardMilestone", methods=["POST"], view_func=activity.ActivityMission.rewardMilestone)
+app.add_url_rule("/activity/confirmActivityMission", methods=["POST"], view_func=activity.ActivityMission.confirmActivityMission)
+app.add_url_rule("/activity/confirmActivityMissionList", methods=["POST"], view_func=activity.confirmActivityMissionList)
 app.add_url_rule("/activity/actCheckinAccess/getCheckInReward", methods=["POST"], view_func=activity.checkInReward.getCheckInReward)
 app.add_url_rule("/activity/getActivityCheckInReward", methods=["POST"], view_func=activity.checkInReward.getActivityCheckInReward)
 app.add_url_rule("/activity/prayOnly/getReward", methods=["POST"], view_func=activity.checkInReward.getReward)
@@ -66,9 +71,6 @@ app.add_url_rule("/activity/act1vhalfidle/replaceRate", methods=["POST"], view_f
 app.add_url_rule("/activity/act1vhalfidle/upgradeChar", methods=["POST"], view_func=activity.vhalfidle.vhalfidleUpgradeChar)
 app.add_url_rule("/activity/act1vhalfidle/upgradeSkill", methods=["POST"], view_func=activity.vhalfidle.vhalfidleUpgradeSkill)
 app.add_url_rule("/activity/act1vhalfidle/evolveChar", methods=["POST"], view_func=activity.vhalfidle.vhalfidleEvolveChar)
-app.add_url_rule("/vecBreakV2/getSeasonRecord", methods=["POST"], view_func=activity.vecbreak.getSeasonRecord)
-app.add_url_rule("/activity/rewardAllMilestone", methods=["POST"], view_func=activity.vecbreak.rewardAllMilestone)
-app.add_url_rule("/activity/rewardMilestone", methods=["POST"], view_func=activity.vecbreak.rewardMilestone)
 app.add_url_rule("/activity/vecBreakV2/changeBuffList", methods=["POST"], view_func=activity.vecbreak.vecV2changeBuffList)
 app.add_url_rule("/activity/vecBreakV2/defendBattleStart", methods=["POST"], view_func=activity.vecbreak.defendBattleStart)
 app.add_url_rule("/activity/vecBreakV2/defendBattleFinish", methods=["POST"], view_func=activity.vecbreak.defendBattleFinish)
@@ -549,7 +551,8 @@ if __name__ == "__main__":
     print(Fore.YELLOW + \
     "──────────────────────────\n" + \
     "该软件开源免费\n" + \
-    "如果你花钱了，说明你被骗了"
+    "如果你花钱了，说明你被骗了\n" + \
+    "──────────────────────────"
     )
     writeLog("[SERVER] 加载config.json")
     load_config()

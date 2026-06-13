@@ -1,10 +1,10 @@
 import os
 import requests
 
-from flask import Response, stream_with_context, redirect, send_file, send_from_directory
+from flask import Response, stream_with_context, redirect, send_file, send_from_directory, request
 from constants import CONFIG_PATH
 from core.function.loadMods import loadMods
-from utils import read_json, write_json, writeLog
+from utils import read_json, write_json, writeLog, get_memory
 
 from threading import Thread, Event, Lock
 
@@ -108,7 +108,7 @@ def export(url, basePath, fileName, filePath, assetsHash, redownload = False):
 
         hot_update_list["abInfos"] = newAbInfos
 
-        cachePath = './assets/cache/'
+        cachePath = '../assets/cache/'
         savePath = cachePath + 'hot_update_list.json'
 
         if not os.path.isdir(cachePath):
@@ -139,6 +139,7 @@ def export(url, basePath, fileName, filePath, assetsHash, redownload = False):
     return send_from_directory(os.path.join("..", basePath), fileName)
 
 def proxy_assest(subpath):
+    from urllib.parse import quote
     cache_path = os.path.abspath("./assets/hycdn/arknights/")
 
     if not os.path.isdir(cache_path):
