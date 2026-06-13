@@ -8,9 +8,10 @@ from constants import (
 )
 import random
 
+
 class checkInReward:
     # 这个类用于处理签到奖励
-        
+
     def getCheckInReward():
         json_body = request.get_json()
         user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
@@ -36,7 +37,7 @@ class checkInReward:
                         "count": 200
                     }
                 ]
-                
+
                 modified = {
                     "activity": {
                         "CHECKIN_ACCESS": {
@@ -105,7 +106,7 @@ class checkInReward:
         run_after_response(write_json, user_data, SYNC_DATA_TEMPLATE_PATH)
 
         return result
-    
+
     def getReward():
 
         json_body = request.get_json()
@@ -125,7 +126,7 @@ class checkInReward:
                 activity_data["lastTs"] = time()
                 activity_data["praying"] = True
 
-                count_list = [200,300, 400, 500, 600, 700, 800]
+                count_list = [200, 300, 400, 500, 600, 700, 800]
                 random.shuffle(count_list)
                 count_1 = random.choice(count_list)
                 random.shuffle(count_list)
@@ -165,7 +166,7 @@ class checkInReward:
 
             case _:
                 result = {
-                    "playerDataDelta":{
+                    "playerDataDelta": {
                         "modified": {},
                         "deleted": {}
                     }
@@ -189,7 +190,7 @@ class checkInReward:
         run_after_response(write_json, user_data, SYNC_DATA_TEMPLATE_PATH)
 
         return result
-    
+
     def changeFestivalChar():
         json_body = request.get_json()
         # {'activityId': 'act3blessing', 'index': 0, 'newChar': 'act1blessing_festival_1_1'}
@@ -202,7 +203,7 @@ class checkInReward:
         activity_data["festivalHistory"][index]["charId"] = new_char
 
         result = {
-            "playerDataDelta":{
+            "playerDataDelta": {
                 "modified": {
                     "activity": {
                         "BLESS_ONLY": {
@@ -257,19 +258,20 @@ class checkInReward:
             },
             "items": [
                 {
-                "type": "AP_SUPPLY",
-                "id": "ap_supply_lt_120",
-                "count": 1
+                    "type": "AP_SUPPLY",
+                    "id": "ap_supply_lt_120",
+                    "count": 1
                 },
                 {
-                "type": "GOLD",
-                "id": "4001",
-                "count": 30000
+                    "type": "GOLD",
+                    "id": "4001",
+                    "count": 30000
                 }
             ]
         }
 
-        return result 
+        return result
+
 
 class switchOnly:
     def getSwitchOnlyReward():
@@ -299,12 +301,13 @@ class switchOnly:
 
         return result
 
+
 class enemyDuel:
     def singleBattleStart():
-        
-        #{"activityId": "act1enemyduel", "modeId": "soloOperation"}
 
-        return{
+        # {"activityId": "act1enemyduel", "modeId": "soloOperation"}
+
+        return {
             "pushMessage": [],
             "result": 0,
             "battleId": "abcdefgh-1234-5678-a1b2c3d4e5f6",
@@ -352,7 +355,7 @@ class enemyDuel:
                 "allIn": 1
             },
             "commentId": "Comment_Operation_7",
-            "isHighScore": False, # 是否为最高记录
+            "isHighScore": False,  # 是否为最高记录
             "rankList": rankList,
             "dailyMission": {
                 "add": 0,
@@ -362,6 +365,7 @@ class enemyDuel:
         }
 
         return result
+
 
 class act24side:
 
@@ -374,7 +378,7 @@ class act24side:
         user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
         activity_table = get_memory("activity_table")
         activity_data = user_data["user"]["activity"]["TYPE_ACT24SIDE"][activity_id]
-        items_data:dict[str, int] = activity_data["alchemy"]["item"]
+        items_data: dict[str, int] = activity_data["alchemy"]["item"]
         gachabox = activity_table["activity"]["TYPE_ACT24SIDE"][activity_id]["meldingGachaBoxGoodDataMap"][gacha_box_id]
         total_score = 0
 
@@ -469,7 +473,7 @@ class act24side:
         }
 
         return result
-    
+
     def act24setTool():
         json_body = request.get_json()
         print(json_body)
@@ -504,9 +508,11 @@ class act24side:
 
         return result
 
+
 class act35side:
     # public class Torappu.UI.Carving.Carving
-    from data.act_data import ROUND_DATA, INITIAL_CARD, PREPARED_CARD_DATA, MATERIAL_PRICE, MATERIAL_LIST, SHOP_DATA, COIN_DATA, CARD_DATA
+    from data.act_data import ROUND_DATA, INITIAL_CARD, PREPARED_CARD_DATA, MATERIAL_PRICE, MATERIAL_LIST, SHOP_DATA, \
+        COIN_DATA, CARD_DATA
 
     def _BuildPreparedCardData() -> dict:
 
@@ -525,6 +531,7 @@ class act35side:
                 str(i): {"inputs": dict(inputs), "outputs": dict(outputs), "multiplier": 1.0}
                 for i in range(1, 4)
             }
+
         data.update({
             "card_fire_1": make_simple("material_fire_1", "material_fire_2", [1.0, 1.0, 2.0]),
             "card_fire_2": make_simple("material_fire_2", "material_fire_3", [1.0, 2.0, 2.0]),
@@ -533,9 +540,11 @@ class act35side:
         })
 
         data["card_leaf_1"] = {
-            "1": {"inputs": {"material_leaf_1": 10}, "outputs": {"material_leaf_2": 5, "material_sand": 5}, "multiplier": 1.0},
-            "2": {"inputs": {"material_leaf_1": 10}, "outputs": {"material_leaf_2": 8, "material_sand": 2}, "multiplier": 1.0},
-            "3": {"inputs": {"material_leaf_1": 1},  "outputs": {"material_leaf_2": 1}, "multiplier": 1.0},
+            "1": {"inputs": {"material_leaf_1": 10}, "outputs": {"material_leaf_2": 5, "material_sand": 5},
+                  "multiplier": 1.0},
+            "2": {"inputs": {"material_leaf_1": 10}, "outputs": {"material_leaf_2": 8, "material_sand": 2},
+                  "multiplier": 1.0},
+            "3": {"inputs": {"material_leaf_1": 1}, "outputs": {"material_leaf_2": 1}, "multiplier": 1.0},
         }
 
         leaf_rules = {
@@ -548,7 +557,7 @@ class act35side:
             data[card_name] = {
                 str(i + 1): {
                     "inputs": {f"material_leaf_{n}": 10},
-                    "outputs": {f"material_leaf_{n+1}": a, "material_sand": b},
+                    "outputs": {f"material_leaf_{n + 1}": a, "material_sand": b},
                     "multiplier": 1.0,
                 }
                 for i, (a, b) in enumerate(ratios)
@@ -567,7 +576,7 @@ class act35side:
         })
 
         return data
-    
+
     def _RandomCard(carving_data):
         max_lv_card = []
         # 获取满级卡信息
@@ -582,10 +591,10 @@ class act35side:
                 return [None] * count
             if pool_name == "all":
                 card_data = (
-                    act35side.CARD_DATA["fire"] +
-                    act35side.CARD_DATA["leaf"] +
-                    act35side.CARD_DATA["clst"] +
-                    act35side.CARD_DATA["sand"]
+                        act35side.CARD_DATA["fire"] +
+                        act35side.CARD_DATA["leaf"] +
+                        act35side.CARD_DATA["clst"] +
+                        act35side.CARD_DATA["sand"]
                 )
             else:
                 card_data = act35side.CARD_DATA[pool_name]
@@ -637,52 +646,51 @@ class act35side:
 
             total = 100
             max_diff = 25
-            
+
             # 计算每个值的最小和最大可能范围
             # 平均值
             avg = total / n
-            
+
             # 确定每个值的范围，确保差值不超过max_diff
-            min_val = max(0, avg - max_diff/2)
-            max_val = min(total, avg + max_diff/2)
-            
+            min_val = max(0, avg - max_diff / 2)
+            max_val = min(total, avg + max_diff / 2)
+
             # 生成第一个随机值
             values = [random.randint(int(min_val), int(max_val))]
-            
+
             # 生成后续值，考虑已分配的值和剩余的总和
             remaining = total - values[0]
-            for i in range(1, n-1):
+            for i in range(1, n - 1):
                 # 计算当前值可能的范围
                 remaining_avg = remaining / (n - i)
-                current_min = max(0, remaining_avg - max_diff/2, remaining - max_val*(n-i-1))
-                current_max = min(remaining, remaining_avg + max_diff/2, remaining - min_val*(n-i-1))
-                
+                current_min = max(0, remaining_avg - max_diff / 2, remaining - max_val * (n - i - 1))
+                current_max = min(remaining, remaining_avg + max_diff / 2, remaining - min_val * (n - i - 1))
+
                 # 确保范围有效
                 current_min = max(min_val, current_min)
                 current_max = min(max_val, current_max)
-                
+
                 # 生成随机值
                 if current_min <= current_max:
                     value = random.randint(int(current_min), int(current_max))
                 else:
                     value = int(remaining_avg)  # 如果范围无效，使用平均值
-                
+
                 values.append(value)
                 remaining -= value
-            
+
             # 添加最后一个值
             values.append(remaining)
-            
+
             # 打乱顺序
             random.shuffle(values)
-            
+
             # 分配值到材料
             for i, key in enumerate(keys):
                 material[key] = values[i]
 
         else:
             material = act35side.ROUND_DATA[challenge_id + "_r1"]
-
 
         # 特殊关卡卡牌处理
         match challenge_id:
@@ -711,7 +719,7 @@ class act35side:
             case _:
                 card = {}
                 free_cnt = 2
-        
+
         good = []
         if act35side.INITIAL_CARD[challenge_id] is not None:
             for card_id in act35side.INITIAL_CARD[challenge_id]:
@@ -727,7 +735,7 @@ class act35side:
             "coin": 0,
             "good": good,
             "freeCardCnt": free_cnt,
-            "refreshPrice":99,
+            "refreshPrice": 99,
             "slotPrice": 8
         }
 
@@ -800,13 +808,13 @@ class act35side:
 
         run_after_response(write_json, user_data, SYNC_DATA_TEMPLATE_PATH)
         return result
-    
+
     def act35toBuy():
         json_body = request.get_json()
         activity_id = json_body["activityId"]
         user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
         carving_data = user_data["user"]["activity"]["TYPE_ACT35SIDE"][activity_id]["carving"]
-        
+
         # 商店卡牌刷新
         good_list = act35side._RandomCard(carving_data)
         good = []
@@ -837,14 +845,13 @@ class act35side:
         carving_data["shop"]["coin"] = 0
 
         result = {
-            
+
         }
         carving_data["shop"]["good"] = good
 
         # 操作台槽位
         if carving_data["slotCnt"] < 8:
             carving_data["shop"]["slotPrice"] = act35side.SHOP_DATA["slot"][carving_data["slotCnt"] - 2]
-
 
         result = {
             "playerDataDelta": {
@@ -866,7 +873,7 @@ class act35side:
 
         run_after_response(write_json, user_data, SYNC_DATA_TEMPLATE_PATH)
         return result
-    
+
     def act35refreshShop():
         json_body = request.get_json()
         activity_id = json_body["activityId"]
@@ -891,7 +898,7 @@ class act35side:
                 })
             if len(good) < 3:
                 good += [None] * (3 - len(good))
-        
+
         result = {
             "playerDataDelta": {
                 "modified": {
@@ -908,7 +915,7 @@ class act35side:
         }
 
         return result
-    
+
     def act35buySlot():
         json_body = request.get_json()
         activity_id = json_body["activityId"]
@@ -952,13 +959,13 @@ class act35side:
 
         # 获取要购买的卡片ID
         card_id = carving_data["shop"]["good"][slot]["id"]
-        
+
         # 更新卡片数量
         if card_id in carving_data["card"]:
             carving_data["card"][card_id] += 1
         else:
             carving_data["card"][card_id] = 1
-        
+
         # 更新商店状态
         if carving_data["shop"]["freeCardCnt"] > 0:
             carving_data["shop"]["freeCardCnt"] -= 1  # 减少免费卡次数
@@ -996,10 +1003,10 @@ class act35side:
             },
             "pushMessage": []
         }
-        
+
         run_after_response(write_json, user_data, SYNC_DATA_TEMPLATE_PATH)
         return result
-    
+
     def act35toProcess():
         json_body = request.get_json()
         activity_id = json_body["activityId"]
@@ -1146,7 +1153,7 @@ class act35side:
 
     #     # run_after_response(write_json, user_data, SYNC_DATA_TEMPLATE_PATH)
     #     return result
-    
+
     def act35process():
         """
         处理活动35侧边流程的函数
@@ -1154,7 +1161,7 @@ class act35side:
         """
         json_body = request.get_json()
         activity_id = json_body["activityId"]
-        cards:list[str] = json_body["cards"]
+        cards: list[str] = json_body["cards"]
 
         # 读取数据
         card_data_map = act35side.PREPARED_CARD_DATA
@@ -1162,13 +1169,13 @@ class act35side:
         user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
         carving_data = dict(user_data["user"]["activity"]["TYPE_ACT35SIDE"][activity_id]["carving"])
 
-        card_info:dict[str, int] = carving_data["card"]
-        materials:dict[str, int] = carving_data["material"]
-        slot_cnt:int = carving_data["slotCnt"]
-        empty_slots = slot_cnt - len(cards)# 空槽位数量
+        card_info: dict[str, int] = carving_data["card"]
+        materials: dict[str, int] = carving_data["material"]
+        slot_cnt: int = carving_data["slotCnt"]
+        empty_slots = slot_cnt - len(cards)  # 空槽位数量
 
-        frames = []# 帧记录列表
-        base_score = carving_data["score"]# 当前分数
+        frames = []  # 帧记录列表
+        base_score = carving_data["score"]  # 当前分数
         total_score = base_score
 
         # 用于宝石合成的闭包函数
@@ -1217,7 +1224,7 @@ class act35side:
         syn_card = {}
         for card in fire_card:
             # 卡牌等级检查
-            card_lv:int = card_info.get(card, 0)
+            card_lv: int = card_info.get(card, 0)
             if card_lv <= 1:
                 continue
             # 合成
@@ -1232,7 +1239,7 @@ class act35side:
             frames.append({
                 "card": card,
                 "product": product,
-                "score": total_score,  
+                "score": total_score,
                 "type": 0
             })
 
@@ -1241,7 +1248,7 @@ class act35side:
         cards = [item for item in cards if item not in syn_card]
 
         # —— 常规合成
-        for card in cards:# 遍历cards列表，根据卡牌顺序进行合成
+        for card in cards:  # 遍历cards列表，根据卡牌顺序进行合成
             card_lv: int = card_info[card]
 
             # 交糅I/II/III 均分材料
@@ -1268,12 +1275,12 @@ class act35side:
 
             # 合成
             syn_info = score_calculation(card)
-            syn_times:int = syn_info["syn_times"]
-            product:dict[str, int] = syn_info["product"]
+            syn_times: int = syn_info["syn_times"]
+            product: dict[str, int] = syn_info["product"]
 
             # —— 算分
-            step_score:int = 0
-            extra_score:int = 0
+            step_score: int = 0
+            extra_score: int = 0
             # 卡牌等级效果处理
             match card:
                 # —— 淬雕 IV 空槽位加分
@@ -1284,7 +1291,7 @@ class act35side:
                 # —— 滤纯I/II/III 三级额外产出沙伊纳
                 case "card_leaf_1" | "card_leaf_2" | "card_leaf_3":
                     if card_lv == 3:
-                        count:int = syn_times
+                        count: int = syn_times
                         product["material_sand"] = count
 
                 # —— 交糅I/II/III 三级额外加分
@@ -1302,7 +1309,7 @@ class act35side:
 
                 case _:
                     pass
-                
+
             # 当前全部材料的总分
             for mat, num in materials.items():
                 base_val = material_data_map.get(mat, 0)
@@ -1315,7 +1322,7 @@ class act35side:
             frames.append({
                 "card": card,
                 "product": product,
-                "score": total_score,  
+                "score": total_score,
                 "type": 0
             })
 
@@ -1355,7 +1362,7 @@ class act35side:
         user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
         carving_data = dict(user_data["user"]["activity"]["TYPE_ACT35SIDE"][activity_id]["carving"])
         challenge_id = carving_data["id"]
-        
+
         # 回合计数
         carving_data["round"] += 1
 
@@ -1372,45 +1379,45 @@ class act35side:
 
             total = 100
             max_diff = 25
-            
+
             # 计算每个值的最小和最大可能范围
             # 平均值
             avg = total / n
-            
+
             # 确定每个值的范围，确保差值不超过max_diff
-            min_val = max(0, avg - max_diff/2)
-            max_val = min(total, avg + max_diff/2)
-            
+            min_val = max(0, avg - max_diff / 2)
+            max_val = min(total, avg + max_diff / 2)
+
             # 生成第一个随机值
             values = [random.randint(int(min_val), int(max_val))]
-            
+
             # 生成后续值，考虑已分配的值和剩余的总和
             remaining = total - values[0]
-            for i in range(1, n-1):
+            for i in range(1, n - 1):
                 # 计算当前值可能的范围
                 remaining_avg = remaining / (n - i)
-                current_min = max(0, remaining_avg - max_diff/2, remaining - max_val*(n-i-1))
-                current_max = min(remaining, remaining_avg + max_diff/2, remaining - min_val*(n-i-1))
-                
+                current_min = max(0, remaining_avg - max_diff / 2, remaining - max_val * (n - i - 1))
+                current_max = min(remaining, remaining_avg + max_diff / 2, remaining - min_val * (n - i - 1))
+
                 # 确保范围有效
                 current_min = max(min_val, current_min)
                 current_max = min(max_val, current_max)
-                
+
                 # 生成随机值
                 if current_min <= current_max:
                     value = random.randint(int(current_min), int(current_max))
                 else:
                     value = int(remaining_avg)  # 如果范围无效，使用平均值
-                
+
                 values.append(value)
                 remaining -= value
-            
+
             # 添加最后一个值
             values.append(remaining)
-            
+
             # 打乱顺序
             random.shuffle(values)
-            
+
             # 分配值到材料
             for i, key in enumerate(keys):
                 material[key] = values[i]
@@ -1439,6 +1446,7 @@ class act35side:
 
         run_after_response(write_json, user_data, SYNC_DATA_TEMPLATE_PATH)
         return result
+
 
 class act42side:
     def act42getDailyRewards():
@@ -1510,6 +1518,7 @@ class act42side:
         }
 
         return result
+
 
 class vhalfidle:
     from data.act_data import SPEC_CHAR, VHALFIDLE_POOLS, E_0, E_1, E_2
@@ -1821,7 +1830,6 @@ class vhalfidle:
 
         newChar = []
         newChar.append(char_id)
-
 
         vhalfidle._AddCharToActivity(act_info, sync_data, char_id)
 
@@ -2256,21 +2264,20 @@ class vhalfidle:
         run_after_response(write_json, sync_data, SYNC_DATA_TEMPLATE_PATH)
 
         return result
-    
+
+
 class multiplayer:
 
     def refreshInfo():
-
         return {}
-    
+
     def refreshInviteList():
-
         return {}
-    
+
     def getInfo():
         result = {}
         return result
-    
+
     def changeTitle():
         request_json = request.get_json()
         user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
@@ -2281,7 +2288,7 @@ class multiplayer:
 
         result = {}
         return result
-    
+
     def setBuff():
         request_json = request.get_json()
         user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
@@ -2290,11 +2297,12 @@ class multiplayer:
 
         mode_id = request_json["modeType"]
 
-        user_data["activity"]["MULTIPLAY_V3"][activity_id]["troop"]["squads"][mode_id]["buffId"] = request_json["buffId"]
+        user_data["activity"]["MULTIPLAY_V3"][activity_id]["troop"]["squads"][mode_id]["buffId"] = request_json[
+            "buffId"]
 
         result = {}
         return result
-    
+
     def setSquads():
         request_json = request.get_json()
         user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
@@ -2303,75 +2311,76 @@ class multiplayer:
 
         mode_id = request_json["modeType"]
 
-        user_data["activity"]["MULTIPLAY_V3"][activity_id]["troop"]["squads"][mode_id]["prefer"] = request_json["prefer"]
-        user_data["activity"]["MULTIPLAY_V3"][activity_id]["troop"]["squads"][mode_id]["backup"] = request_json["backup"]
+        user_data["activity"]["MULTIPLAY_V3"][activity_id]["troop"]["squads"][mode_id]["prefer"] = request_json[
+            "prefer"]
+        user_data["activity"]["MULTIPLAY_V3"][activity_id]["troop"]["squads"][mode_id]["backup"] = request_json[
+            "backup"]
 
         result = {}
         return result
-    
+
     def guideBattleStart():
         result = {
             "result": 0,
         }
-        
+
         return result
 
     def guideBattleFinish():
-
         result = {
-        "data": {
-            "result": 0,
-            "mateQuit": False,
-            "normal": {
-                "failTip": False,
-                "targets": [
-                    {
-                        "complete": True,
-                        "progressShow": ["30", "30"],
-                        "progressValue": [30, 30],
-                    },
-                    {
-                        "complete": True,
-                        "progressShow": ["5", "3"],
-                        "progressValue": [5, 3],
-                    },
-                    {
-                        "complete": True,
-                        "progressShow": ["5", "5"],
-                        "progressValue": [5, 5],
-                    },
-                ],
-                "newStar": False,
+            "data": {
+                "result": 0,
+                "mateQuit": False,
+                "normal": {
+                    "failTip": False,
+                    "targets": [
+                        {
+                            "complete": True,
+                            "progressShow": ["30", "30"],
+                            "progressValue": [30, 30],
+                        },
+                        {
+                            "complete": True,
+                            "progressShow": ["5", "3"],
+                            "progressValue": [5, 3],
+                        },
+                        {
+                            "complete": True,
+                            "progressShow": ["5", "5"],
+                            "progressValue": [5, 5],
+                        },
+                    ],
+                    "newStar": False,
+                },
+                "raft": {"score": 10000, "newScore": False},
+                "defence": {
+                    "targets": [
+                        {"complete": True, "progressValue": [4, 1]},
+                        {"complete": True, "progressValue": [4, 2]},
+                        {"complete": True, "progressValue": [4, 4]},
+                    ],
+                    "damage": 10000,
+                    "damagePct": 100,
+                    "bossKill": True,
+                    "newStar": False,
+                    "newDamage": False,
+                },
+                "star": 3,
+                "reward": {
+                    "item": [],
+                    "milestoneAdd": 0,
+                    "gainDailyReward": False,
+                },
+                "newPhoto": False,
+                "newPhotoId": "",
+                "sameChannel": True,
+                "isFriend": False,
+                "reverse": 0,
+                "ts": time(),
             },
-            "raft": {"score": 10000, "newScore": False},
-            "defence": {
-                "targets": [
-                    {"complete": True, "progressValue": [4, 1]},
-                    {"complete": True, "progressValue": [4, 2]},
-                    {"complete": True, "progressValue": [4, 4]},
-                ],
-                "damage": 10000,
-                "damagePct": 100,
-                "bossKill": True,
-                "newStar": False,
-                "newDamage": False,
-            },
-            "star": 3,
-            "reward": {
-                "item": [],
-                "milestoneAdd": 0,
-                "gainDailyReward": False,
-            },
-            "newPhoto": False,
-            "newPhotoId": "",
-            "sameChannel": True,
-            "isFriend": False,
-            "reverse": 0,
-            "ts": time(),
-        },
-    }
+        }
         return result
-    
+
     def switchInviteAccept():
         return {}, 202
 
@@ -2381,16 +2390,17 @@ class multiplayer:
     def processInvite():
         return {}, 202
 
+
 class autochessSeason:
     def syncInfo():
-        
+
         result = {
             "changeId": [""],
             "battleInfo": {}
         }
 
         return result
-    
+
     def getFriendAndRequestSendList():
 
         result = {
@@ -2418,7 +2428,6 @@ class autochessSeason:
             for key2, value2 in value.items():
                 chess_data[key][key2] = value2
 
-
         result = {
             "playerDataDelta": {
                 "modified": {
@@ -2439,19 +2448,18 @@ class autochessSeason:
     def autoChessStartGuideBattle():
         return {}
 
-
     def act2autochess():
         server_config = get_memory("config")
         if server_config["server"]["adaptive"]:
             server = request.host_url[:-1]
         else:
             server = (
-                "http://"
-                + server_config["server"]["host"]
-                + ":"
-                + str(server_config["server"]["port"])
+                    "http://"
+                    + server_config["server"]["host"]
+                    + ":"
+                    + str(server_config["server"]["port"])
             )
-        
+
         result = f'''
         <!doctype html>
         <html lang="zh-cn">
@@ -2553,7 +2561,7 @@ class autochessSeason:
                 "titleCntInfo": {}
             }
         }
-        
+
         return result
 
     def act2playerSummary():
@@ -2865,6 +2873,7 @@ class autochessSeason:
 
         return result
 
+
 class vecbreak:
 
     def getSeasonRecord():
@@ -2889,23 +2898,23 @@ class vecbreak:
         assistChar = server_data["vecbreakV2"]["assistChar"]
 
         result = {
-        "playerDataDelta": {
-            "modified": {},
-            "deleted": {}
-        },
-        "pushMessage": [],
-        "seasons": {
-            "act1break": {
-            "bestRecord": {
-                "stageId": "act1break_12",
-                "buff": buff,
-                "showTs": time(),
-                "squad": squad,
-                "assistChar": assistChar
+            "playerDataDelta": {
+                "modified": {},
+                "deleted": {}
             },
-            "stageInfo": stage_info
+            "pushMessage": [],
+            "seasons": {
+                "act1break": {
+                    "bestRecord": {
+                        "stageId": "act1break_12",
+                        "buff": buff,
+                        "showTs": time(),
+                        "squad": squad,
+                        "assistChar": assistChar
+                    },
+                    "stageInfo": stage_info
+                }
             }
-        }
         }
         return result
 
@@ -2998,7 +3007,7 @@ class vecbreak:
         # 等级点数
         ponit = activity_data["milestone"]["point"]
 
-        #构建响应内容
+        # 构建响应内容
         result = {
             "playerDataDelta": {
                 "modified": {
@@ -3088,17 +3097,18 @@ class vecbreak:
 
         if battle_data["stageId"].startswith(("act1break_0", "act1break_1")):
             if write_in:
-                server_data["vecbreakV2"]["buff"] = sync_data["user"]["activity"]["VEC_BREAK_V2"]["act1break"]["activatedBuff"]
+                server_data["vecbreakV2"]["buff"] = sync_data["user"]["activity"]["VEC_BREAK_V2"]["act1break"][
+                    "activatedBuff"]
                 # if battle_data["assistFriend"] is not None:
                 #   server_data["vecbreakV2"]["assistChar"] = battle_data["assistFriend"]
-                
+
                 char_equip_dict = battle_data["squad"]["slots"]
                 for char_id in sync_data["user"]["troop"]["chars"].keys():
                     matched_slot = next(
                         (slot for slot in char_equip_dict if str(slot["charInstId"]) == char_id),
                         None
                     )
-                    
+
                     if matched_slot is not None:
                         char_data = sync_data["user"]["troop"]["chars"][char_id]
                         if matched_slot["currentEquip"] is not None:
@@ -3111,7 +3121,7 @@ class vecbreak:
                                 "id": char_data["currentEquip"],
                                 "level": 1
                             }
-                        
+
                         template = {
                             "charInstId": char_data["charId"],
                             "currentTmpl": None,
@@ -3122,11 +3132,12 @@ class vecbreak:
                             "skin": char_data["skin"],
                             "skill": {
                                 "skillIndex": matched_slot["skillIndex"],
-                                "specializeLevel": char_data["skills"][str(matched_slot["skillIndex"])]["specializeLevel"]
+                                "specializeLevel": char_data["skills"][str(matched_slot["skillIndex"])][
+                                    "specializeLevel"]
                             },
                             "equip": equip
                         }
-                        
+
                         server_data["vecbreakV2"]["squad"].update(template)
 
         result = {
@@ -3151,7 +3162,7 @@ class vecbreak:
     def vecV2battleFinish():
 
         json_body = request.get_json()
-        sync_data = read_json(SYNC_DATA_TEMPLATE_PATH) 
+        sync_data = read_json(SYNC_DATA_TEMPLATE_PATH)
         server_data = read_json(SERVER_DATA_PATH)
         global battle_data
 
@@ -3172,7 +3183,7 @@ class vecbreak:
         run = write_in and not is_max_level and battle_data["stageId"].startswith(("act1break_0", "act1break_1"))
 
         def run_after(stage_num):
-            sync_data = read_json(SYNC_DATA_TEMPLATE_PATH) 
+            sync_data = read_json(SYNC_DATA_TEMPLATE_PATH)
             server_data = read_json(SERVER_DATA_PATH)
             global battle_data
             # 生成新的队伍记录
@@ -3180,17 +3191,17 @@ class vecbreak:
             for slot in battle_data["squad"]["slots"]:
                 # 获取对应的角色ID
                 char_inst_id = str(slot["charInstId"])
-                
+
                 if char_inst_id not in sync_data["user"]["troop"]["chars"]:
                     continue
 
                 # 获取角色基础数据
                 char_data = sync_data["user"]["troop"]["chars"][char_inst_id]
-                
+
                 # 处理装备数据
                 equip_id = slot["currentEquip"] or char_data["currentEquip"]
                 equip_level = char_data["equip"].get(equip_id, 1) if equip_id else 1
-                
+
                 # 构建角色完整数据
                 char_template = {
                     "charId": char_data["charId"],
@@ -3211,7 +3222,7 @@ class vecbreak:
                 }
                 new_squad.append(char_template)
 
-            assistChar = None #TODO:助战问题暂不处理
+            assistChar = None  # TODO:助战问题暂不处理
 
             # 更新服务器数据
             server_data["vecbreakV2"] = {
@@ -3222,7 +3233,7 @@ class vecbreak:
             }
 
             battle_data = None
-            run_after_response(write_json ,server_data, SERVER_DATA_PATH)
+            run_after_response(write_json, server_data, SERVER_DATA_PATH)
 
         if run:
             run_after_response(run_after, stage_num)
@@ -3235,15 +3246,22 @@ class vecbreak:
             "finTs": time()
         }
 
+
 class football:
     def footballBattleStart():
         json_body = request.get_json()
 
         result = {
+            "result": 0,
+            "battleId": "abcdefgh-1234-5678-a1b2c3d4e5f6",
+            "apFailReturn": 0,
+            "isApProtect": 0,
+            "inApProtectPeriod": False,
+            "notifyPowerScoreNotEnoughIfFailed": False,
             "playerDataDelta": {
                 "modified": {},
                 "deleted": {}
-            },
+            }
         }
 
         return result
@@ -3252,11 +3270,28 @@ class football:
         json_body = request.get_json()
 
         result = {
+            "result": 0,
+            "apFailReturn": 0,
+            "expScale": 0,
+            "goldScale": 0,
+            "rewards": [],
+            "firstRewards": [],
+            "unlockStages": [],
+            "unusualRewards": [],
+            "additionalRewards": [],
+            "furnitureRewards": [],
+            "alert": [],
+            "suggestFriend": False,
+            "pryResult": [],
+            "enemyScore": 0,
+            "selfScore": 99,
+            "isNewRecord": True,
+            "milestoneBefore": 0,
+            "milestoneAdd": 0,
             "playerDataDelta": {
                 "modified": {},
                 "deleted": {}
-            },
-            "rewards": []
+            }
         }
 
         return result
@@ -3291,7 +3326,7 @@ class ActivityMission:
 
     def rewardAllMilestone():
         json_body = request.get_json()
-        print (json_body)
+        print(json_body)
         result = {
             "playerDataDelta": {
                 "modified": {},
@@ -3304,7 +3339,7 @@ class ActivityMission:
 
     def rewardMilestone():
         json_body = request.get_json()
-        print (json_body)
+        print(json_body)
         result = {
             "playerDataDelta": {
                 "modified": {},
@@ -3315,6 +3350,7 @@ class ActivityMission:
 
         return result
 
+
 class arcade:
 
     def arcadeBattleStart():
@@ -3323,14 +3359,18 @@ class arcade:
     def arcadeBattleFinish():
         return {}, 202
 
+
 def getChainLogInReward():
     return {}, 202
+
 
 def getOpenServerCheckInReward():
     return {}, 202
 
+
 def getChainLogInFinalRewards():
     return {}, 202
+
 
 def confirmActivityMission():
     json_body = request.get_json()
@@ -3344,6 +3384,7 @@ def confirmActivityMission():
     }
 
     return result
+
 
 def confirmActivityMissionList():
     json_body = request.get_json()
