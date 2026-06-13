@@ -49,7 +49,7 @@ class checkInReward:
                 activity_data = user_data["user"]["activity"]["BLESS_ONLY"][access_id]
                 index = json_body["index"]
 
-                if json_body["isFestival"] == 1:
+                if json_body["isFestival"]==1:
                     activity_data["festivalHistory"][index]["state"] = 0
                 else:
                     activity_data["history"][index] = 0
@@ -240,7 +240,7 @@ class checkInReward:
 
         act_data["signedCnt"] += 1
         act_data["canVote"] = 0
-        if json_body["tasteChoice"] == 1:
+        if json_body["tasteChoice"]==1:
             act_data["sweetVote"] += 1
         else:
             act_data["saltyVote"] += 1
@@ -511,8 +511,7 @@ class act24side:
 
 class act35side:
     # public class Torappu.UI.Carving.Carving
-    from data.act_data import ROUND_DATA, INITIAL_CARD, PREPARED_CARD_DATA, MATERIAL_PRICE, MATERIAL_LIST, SHOP_DATA, \
-        COIN_DATA, CARD_DATA
+    from data.act_data import ROUND_DATA, INITIAL_CARD, PREPARED_CARD_DATA, MATERIAL_PRICE, MATERIAL_LIST, SHOP_DATA, COIN_DATA, CARD_DATA
 
     def _BuildPreparedCardData() -> dict:
 
@@ -540,10 +539,8 @@ class act35side:
         })
 
         data["card_leaf_1"] = {
-            "1": {"inputs": {"material_leaf_1": 10}, "outputs": {"material_leaf_2": 5, "material_sand": 5},
-                  "multiplier": 1.0},
-            "2": {"inputs": {"material_leaf_1": 10}, "outputs": {"material_leaf_2": 8, "material_sand": 2},
-                  "multiplier": 1.0},
+            "1": {"inputs": {"material_leaf_1": 10}, "outputs": {"material_leaf_2": 5, "material_sand": 5}, "multiplier": 1.0},
+            "2": {"inputs": {"material_leaf_1": 10}, "outputs": {"material_leaf_2": 8, "material_sand": 2}, "multiplier": 1.0},
             "3": {"inputs": {"material_leaf_1": 1}, "outputs": {"material_leaf_2": 1}, "multiplier": 1.0},
         }
 
@@ -582,14 +579,14 @@ class act35side:
         # 获取满级卡信息
         card_info = carving_data["card"]
         for card, lv in card_info.items():
-            if card_info[card] == 3:
+            if card_info[card]==3:
                 max_lv_card.append(card)
 
         # 随机选卡
         def _PickRandom(max_lv_card1, pool_name=None, count=3):
             if pool_name is None:
                 return [None] * count
-            if pool_name == "all":
+            if pool_name=="all":
                 card_data = (
                         act35side.CARD_DATA["fire"] +
                         act35side.CARD_DATA["leaf"] +
@@ -616,7 +613,7 @@ class act35side:
 
         cid = carving_data["id"]
 
-        if cid == "challenge_1":
+        if cid=="challenge_1":
             good = [{"id": "card_fire_3", "price": 0}, None, None]
         elif cid in challenge_map:
             good = _PickRandom(max_lv_card, challenge_map[cid])
@@ -975,7 +972,7 @@ class act35side:
         if carving_data["shop"]["freeCardCnt"] <= 0:
             for good in carving_data["shop"]["good"]:
                 if good is not None:
-                    if good["price"] == 0:
+                    if good["price"]==0:
                         # 初始价格
                         good["price"] = 3
                     else:
@@ -1194,7 +1191,7 @@ class act35side:
                 syn_times = min(syn_times, count // need)
 
             # syn_times转整数
-            if syn_times == float('inf'):
+            if syn_times==float('inf'):
                 syn_times = 0
             else:
                 syn_times = int(syn_times)
@@ -1261,7 +1258,7 @@ class act35side:
                             materials["material_sand"] = count_half
                             materials["material_clst_1"] = count_half
                     case "card_clst_2":
-                        if card_lv == 3:
+                        if card_lv==3:
                             sum_cnt = materials.get("material_leaf_2", 0) + materials.get("material_clst_2", 0)
                             count_half = int(sum_cnt / 2)
                             materials["material_leaf_2"] = count_half
@@ -1286,11 +1283,11 @@ class act35side:
                 # —— 淬雕 IV 空槽位加分
                 case "card_fire_4":
                     if card_lv > 1:
-                        step_score += empty_slots * (1500 if card_lv == 2 else 5000)
+                        step_score += empty_slots * (1500 if card_lv==2 else 5000)
 
                 # —— 滤纯I/II/III 三级额外产出沙伊纳
                 case "card_leaf_1" | "card_leaf_2" | "card_leaf_3":
-                    if card_lv == 3:
+                    if card_lv==3:
                         count: int = syn_times
                         product["material_sand"] = count
 
@@ -1298,13 +1295,13 @@ class act35side:
                 case "card_clst_1" | "card_clst_2" | "card_clst_3":
                     match card:
                         case "card_clst_1":
-                            if card_lv == 3:
+                            if card_lv==3:
                                 extra_score += 5
                         case "card_clst_2":
                             if card_lv > 1:
                                 extra_score += 15
                         case "card_clst_3":
-                            if card_lv == 3:
+                            if card_lv==3:
                                 step_score += syn_times * 100
 
                 case _:
@@ -1534,13 +1531,13 @@ class vhalfidle:
 
         # ① 检查是否已有相同角色（防止重复添加）
         for char_info in troop["char"].values():
-            if char_info.get("charId") == char_id:
+            if char_info.get("charId")==char_id:
                 return  # 已存在则直接跳过
 
         # ② 从用户主数据中查找对应角色
         chars_from_sync = user_data.get("user", {}).get("troop", {}).get("chars", {})
         target_char_info = next(
-            (info for info in chars_from_sync.values() if info.get("charId") == char_id),
+            (info for info in chars_from_sync.values() if info.get("charId")==char_id),
             None
         )
         if not target_char_info:
@@ -1554,7 +1551,7 @@ class vhalfidle:
             "charId": target_char_info["charId"],
             "level": target_char_info.get("level", 1),
             "evolvePhase": target_char_info.get("evolvePhase", 0),
-            "skillLvl": 10 if target_char_info.get("evolvePhase", 0) == 2 else 7,
+            "skillLvl": 10 if target_char_info.get("evolvePhase", 0)==2 else 7,
             "isAssist": False,
             "defaultSkillId": "",
             "defaultEquipId": "",
@@ -1562,7 +1559,7 @@ class vhalfidle:
 
         # ④ 处理默认技能
         default_skill_index = target_char_info.get("defaultSkillIndex", -1)
-        if default_skill_index != -1 and "skills" in target_char_info:
+        if default_skill_index!=-1 and "skills" in target_char_info:
             skills = target_char_info["skills"]
             if len(skills) > default_skill_index:
                 new_char_info["defaultSkillId"] = skills[default_skill_index].get("skillId", "")
@@ -1623,7 +1620,7 @@ class vhalfidle:
         milestoneAdd = 0
 
         for key, value in production["product"].items():
-            if key == "act1vhalfidle_token_point":
+            if key=="act1vhalfidle_token_point":
                 milestoneAdd = production["product"][key]
                 items.append({
                     "itemId": key,
@@ -1739,7 +1736,7 @@ class vhalfidle:
                 else:
                     oldChar.append(char_id)
 
-        elif pool_id == "normalGachaPool":
+        elif pool_id=="normalGachaPool":
             # 普通卡池：随机抽取
             # 获取可选角色id
             char_id_list = set()
@@ -1762,7 +1759,7 @@ class vhalfidle:
 
             poolTimes["normalGachaPool"] += json_body["count"]
 
-        elif pool_id == "newPlayerGachaPool":
+        elif pool_id=="newPlayerGachaPool":
             # 专项任命卡池：随机抽取
             pool_set = vhalfidle_pools.get(pool_id, set())
             char_data = list(pool_set) if pool_set else []
@@ -1971,7 +1968,7 @@ class vhalfidle:
         act_chars = act_info["troop"]["char"]
 
         for key, value in act_chars.items():
-            if value["charId"] == cahr_id:
+            if value["charId"]==cahr_id:
                 char_info = value
                 cahr_str_id = key
                 break
@@ -2029,7 +2026,7 @@ class vhalfidle:
         act_chars = act_info["troop"]["char"]
 
         for key, value in act_chars.items():
-            if value["charId"] == json_body["charId"]:
+            if value["charId"]==json_body["charId"]:
                 value["skillLvl"] = json_body["destLvl"]
                 act_chars[key] = value
                 cahr_str_id = key
@@ -2068,7 +2065,7 @@ class vhalfidle:
         act_chars = act_info["troop"]["char"]
 
         for key, value in act_chars.items():
-            if value["charId"] == json_body["charId"]:
+            if value["charId"]==json_body["charId"]:
                 value["evolvePhase"] = json_body["destEvolvePhase"]
                 value["level"] = 1
                 act_chars[key] = value
@@ -2114,7 +2111,7 @@ class vhalfidle:
         activity_data = sync_data["user"]["activity"]["HALFIDLE_VERIFY1"].get(activity_id, {})
 
         # 如果replace为1或settleInfo为null，则更新settleInfo
-        if replace == 1:
+        if replace==1:
             # 更新sync_data
             stage = activity_data["stage"][stage_id]
             stage["rate"] = settle_info["rate"]
@@ -2178,7 +2175,7 @@ class vhalfidle:
                 # 删除 troop.char 中的 isAssist 角色
                 for inst_id, char_info in list(troop["char"].items()):
                     if (
-                            char_info.get("charId") == old_char_id
+                            char_info.get("charId")==old_char_id
                             and char_info.get("isAssist", False)
                     ):
                         deleted_char_inst_ids.append(inst_id)
@@ -2200,8 +2197,8 @@ class vhalfidle:
 
             # 若该角色已在其他助战位上，清除旧槽（换位情况）
             for i in range(len(troop["assist"])):
-                if i != index and troop["assist"][i] is not None:
-                    if troop["assist"][i].get("charId") == char_id:
+                if i!=index and troop["assist"][i] is not None:
+                    if troop["assist"][i].get("charId")==char_id:
                         troop["assist"][i] = None
                         break
 
@@ -2211,7 +2208,7 @@ class vhalfidle:
                 old_char_id = old_assist_char.get("charId", "")
                 for inst_id, char_info in list(troop["char"].items()):
                     if (
-                            char_info.get("charId") == old_char_id
+                            char_info.get("charId")==old_char_id
                             and char_info.get("isAssist", False)
                     ):
                         deleted_char_inst_ids.append(inst_id)
@@ -2226,7 +2223,7 @@ class vhalfidle:
 
             # 将添加的角色标记为 isAssist = True
             for char_info in troop["char"].values():
-                if char_info.get("charId") == char_id:
+                if char_info.get("charId")==char_id:
                     char_info["isAssist"] = True
                     break
 
@@ -2311,10 +2308,8 @@ class multiplayer:
 
         mode_id = request_json["modeType"]
 
-        user_data["activity"]["MULTIPLAY_V3"][activity_id]["troop"]["squads"][mode_id]["prefer"] = request_json[
-            "prefer"]
-        user_data["activity"]["MULTIPLAY_V3"][activity_id]["troop"]["squads"][mode_id]["backup"] = request_json[
-            "backup"]
+        user_data["activity"]["MULTIPLAY_V3"][activity_id]["troop"]["squads"][mode_id]["prefer"] = request_json["prefer"]
+        user_data["activity"]["MULTIPLAY_V3"][activity_id]["troop"]["squads"][mode_id]["backup"] = request_json["backup"]
 
         result = {}
         return result
@@ -3087,7 +3082,7 @@ class vecbreak:
         global battle_data
 
         decrypt_data = decrypt_battle_data(json_body["data"])
-        if decrypt_data["percent"] == 100:
+        if decrypt_data["percent"]==100:
             write_in = True
         else:
             write_in = False
@@ -3097,15 +3092,14 @@ class vecbreak:
 
         if battle_data["stageId"].startswith(("act1break_0", "act1break_1")):
             if write_in:
-                server_data["vecbreakV2"]["buff"] = sync_data["user"]["activity"]["VEC_BREAK_V2"]["act1break"][
-                    "activatedBuff"]
+                server_data["vecbreakV2"]["buff"] = sync_data["user"]["activity"]["VEC_BREAK_V2"]["act1break"]["activatedBuff"]
                 # if battle_data["assistFriend"] is not None:
                 #   server_data["vecbreakV2"]["assistChar"] = battle_data["assistFriend"]
 
                 char_equip_dict = battle_data["squad"]["slots"]
                 for char_id in sync_data["user"]["troop"]["chars"].keys():
                     matched_slot = next(
-                        (slot for slot in char_equip_dict if str(slot["charInstId"]) == char_id),
+                        (slot for slot in char_equip_dict if str(slot["charInstId"])==char_id),
                         None
                     )
 
@@ -3132,8 +3126,7 @@ class vecbreak:
                             "skin": char_data["skin"],
                             "skill": {
                                 "skillIndex": matched_slot["skillIndex"],
-                                "specializeLevel": char_data["skills"][str(matched_slot["skillIndex"])][
-                                    "specializeLevel"]
+                                "specializeLevel": char_data["skills"][str(matched_slot["skillIndex"])]["specializeLevel"]
                             },
                             "equip": equip
                         }
@@ -3169,7 +3162,7 @@ class vecbreak:
         # 解密战斗数据
         decrypt_data = decrypt_battle_data(json_body["data"])
         # 判断是否写入
-        write_in = decrypt_data["percent"] == 100
+        write_in = decrypt_data["percent"]==100
         # 获取关卡编号
         stage_num = int(battle_data["stageId"].split("_")[-1])
         # 判断是否达到最大关卡
