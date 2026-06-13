@@ -363,6 +363,147 @@ class enemyDuel:
 
         return result
 
+class act24side:
+
+    def act24alchemy():
+        json_body = request.get_json()
+        activity_id = json_body["activityId"]
+        gacha_box_id = json_body["gachaBox"]
+        items = json_body["items"]
+
+        user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
+        activity_table = get_memory("activity_table")
+        activity_data = user_data["user"]["activity"]["TYPE_ACT24SIDE"][activity_id]
+        items_data:dict[str, int] = activity_data["alchemy"]["item"]
+        gachabox = activity_table["activity"]["TYPE_ACT24SIDE"][activity_id]["meldingGachaBoxGoodDataMap"][gacha_box_id]
+        total_score = 0
+
+        items_score_map = {
+            "act50side_melding_1": 2,
+            "act50side_melding_2": 3,
+            "act50side_melding_3": 5,
+            "act50side_melding_4": 10,
+            "act50side_melding_5": 20,
+            "act50side_melding_6": 200
+        }
+
+        for key in items.keys():
+            if items_data.get(key, 0) < items[key]:
+                return {}, 400
+            else:
+                items_data[key] -= items[key]
+                total_score += items[key] * items_score_map[key]
+
+        gacha_times = total_score // 100
+
+        gacha_data = activity_data["alchemy"]["gacha"]
+        available = []
+        for box_item in gachabox:
+            good_id = box_item["goodId"]
+            drawn = gacha_data.get(good_id, 0)
+            remaining = box_item["totalCount"] - drawn
+            if remaining > 0:
+                available.append([box_item, remaining])
+
+        draw_result = {}
+        for _ in range(gacha_times):
+            if not available:
+                break
+            idx = random.randint(0, len(available) - 1)
+            box_item, remaining = available[idx]
+            good_id = box_item["goodId"]
+            if good_id not in draw_result:
+                draw_result[good_id] = {
+                    "goodId": good_id,
+                    "itemId": box_item["itemId"],
+                    "itemType": box_item["itemType"],
+                    "perCount": box_item["perCount"],
+                    "count": 0
+                }
+            draw_result[good_id]["count"] += 1
+            remaining -= 1
+            if remaining <= 0:
+                available.pop(idx)
+            else:
+                available[idx][1] = remaining
+
+        draw_list = []
+        for v in draw_result.values():
+            draw_list.append(v)
+        # {
+        #     "goodId": "gachabox1_1",
+        #     "itemId": "p_char_4215_buddy",
+        #     "itemType": "MATERIAL",
+        #     "perCount": 1,
+        #     "count": 1
+        # }
+        rewards = []
+        for item in draw_list:
+            # 活动数据添加已获得奖品计数
+            box = activity_data["alchemy"]["gacha"][gacha_box_id]
+            good_id = item["goodId"]
+            box[good_id] = box.get(good_id, 0) + item["count"]
+            # 计算物品总数，不写添加逻辑，要添加物品自行调用admin.adminutils的GiveItem函数
+            items_count = item["perCount"] * item["count"]
+            items = {
+                "id": item["itemId"],
+                "type": item["itemType"],
+                "count": items_count
+            }
+            rewards.append(items)
+
+        result = {
+            "playerDataDelta": {
+                "modified": {
+                    "activity": {
+                        "TYPE_ACT24SIDE": {
+                            activity_id: {
+                                "alchemy": activity_data["alchemy"]
+                            }
+                        }
+                    }
+                },
+                "deleted": {}
+            },
+            "rewards": rewards
+        }
+
+        return result
+    
+    def act24setTool():
+        json_body = request.get_json()
+        print(json_body)
+        activity_id = json_body["activityId"]
+        tools = json_body["tools"]
+
+        user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
+        activity_data = user_data["user"]["activity"]["TYPE_ACT24SIDE"][activity_id]
+        # 传入的tools是激活列表，不能以tools为基准，否则全撤了会处理异常
+        for key in activity_data["tool"].keys():
+            if key in tools:
+                activity_data["tool"][key] = 2
+            else:
+                activity_data["tool"][key] = 1
+
+        run_after_response(write_json, user_data, SYNC_DATA_TEMPLATE_PATH)
+
+        result = {
+            "playerDataDelta": {
+                "modified": {
+                    "activity": {
+                        "TYPE_ACT24SIDE": {
+                            activity_id: {
+                                "tool": activity_data["tool"]
+                            }
+                        }
+                    }
+                },
+                "deleted": {},
+            }
+        }
+
+        return result
+
 class act35side:
     # public class Torappu.UI.Carving.Carving
     from data.act_data import ROUND_DATA, INITIAL_CARD, PREPARED_CARD_DATA, MATERIAL_PRICE, MATERIAL_LIST, SHOP_DATA, COIN_DATA, CARD_DATA
@@ -2768,16 +2909,6 @@ class vecbreak:
         }
         return result
 
-    def rewardAllMilestone():
-        json_body = request.get_json()
-
-        return {}
-
-    def rewardMilestone():
-        json_body = request.get_json()
-
-        return {}
-
     def vecV2changeBuffList():
         json_body = request.get_json()
         # {"activityId": "act1break", "buffList": ["act1break_rune01", "act1break_rune04"]}
@@ -3104,6 +3235,85 @@ class vecbreak:
             "finTs": time()
         }
 
+class football:
+    def footballBattleStart():
+        json_body = request.get_json()
+
+        result = {
+            "playerDataDelta": {
+                "modified": {},
+                "deleted": {}
+            },
+        }
+
+        return result
+
+    def footballBattleFinish():
+        json_body = request.get_json()
+
+        result = {
+            "playerDataDelta": {
+                "modified": {},
+                "deleted": {}
+            },
+            "rewards": []
+        }
+
+        return result
+
+
+class ActivityMission:
+    def confirmActivityMission():
+        json_body = request.get_json()
+        print(json_body)
+        result = {
+            "playerDataDelta": {
+                "modified": {},
+                "deleted": {}
+            },
+            "rewards": []
+        }
+
+        return result
+
+    def confirmActivityMissionList():
+        json_body = request.get_json()
+        print(json_body)
+        result = {
+            "playerDataDelta": {
+                "modified": {},
+                "deleted": {}
+            },
+            "rewards": []
+        }
+
+        return result
+
+    def rewardAllMilestone():
+        json_body = request.get_json()
+        print (json_body)
+        result = {
+            "playerDataDelta": {
+                "modified": {},
+                "deleted": {}
+            },
+            "rewards": []
+        }
+
+        return result
+
+    def rewardMilestone():
+        json_body = request.get_json()
+        print (json_body)
+        result = {
+            "playerDataDelta": {
+                "modified": {},
+                "deleted": {}
+            },
+            "rewards": []
+        }
+
+        return result
 
 class arcade:
 
@@ -3121,3 +3331,29 @@ def getOpenServerCheckInReward():
 
 def getChainLogInFinalRewards():
     return {}, 202
+
+def confirmActivityMission():
+    json_body = request.get_json()
+
+    result = {
+        "playerDataDelta": {
+            "modified": {},
+            "deleted": {}
+        },
+        "rewards": []
+    }
+
+    return result
+
+def confirmActivityMissionList():
+    json_body = request.get_json()
+
+    result = {
+        "playerDataDelta": {
+            "modified": {},
+            "deleted": {}
+        },
+        "rewards": []
+    }
+
+    return result
