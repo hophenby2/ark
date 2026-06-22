@@ -507,6 +507,34 @@ class act24side:
         }
 
         return result
+    
+    def act24eat():
+        json_body = request.get_json()
+        activity_id = json_body["activityId"]
+        meal_id = json_body["meal"]
+
+        user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
+        activity_data = user_data["user"]["activity"]["TYPE_ACT24SIDE"][activity_id]
+        activity_data["meal"]["digested"] = 0
+        activity_data["meal"]["chance"] = 0
+        activity_data["meal"]["id"] = meal_id
+
+        result = {
+            "playerDataDelta": {
+                "modified": {
+                    "activity": {
+                        "TYPE_ACT24SIDE": {
+                            activity_id: {
+                                "meal": activity_data["meal"]
+                            }
+                        }
+                    }
+                },
+                "deleted": {}
+            }
+        }
+
+        return result
 
 
 class act35side:

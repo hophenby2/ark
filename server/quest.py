@@ -363,27 +363,6 @@ def relicSelect():
     }
     return data
 
-def setTool():
-    json_body = request.get_json()
-    tool = {"tool_trap": 1, "tool_wirebug": 1, "tool_flashbomb": 1, "tool_bomb": 1}
-    for i in json_body["tools"]:
-        tool[i] = 2
-    data = {
-        "playerDataDelta": {
-            "modified": {
-                "activity": {
-                    "TYPE_ACT24SIDE": {
-                        "act24side": {
-                            "tool": tool
-                            }
-                        }
-                    }
-                },
-            "deleted": {},
-        }
-    }
-    return data
-
 def act7fun_questBattleFinish():
 
     json_body = request.get_json()
