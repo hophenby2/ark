@@ -54,6 +54,11 @@ def SyncData():
         # user_data["user"]["status"]["lastOnlineTs"] = ts
         player_data["ts"] = ts
 
+        # 修复 currentEquip 为空的问题
+        for char_data in player_data["user"]["troop"]["chars"].values():
+            if not char_data.get("currentEquip") and char_data.get("equip"):
+                char_data["currentEquip"] = list(char_data["equip"].keys())[-1]
+
         # write_json(user_data, SYNC_DATA_TEMPLATE_PATH)
         # b = datetime.now()
         # writeLog(f"syncdata耗时: {b - a}")
@@ -143,8 +148,11 @@ def SyncData():
                     char_data["equip"][equip] = {
                         "hide": 0,
                         "locked": 0,
-                        "level": len(item_cost) if item_cost else 1
+                        "level": len(item_cost) if item_cost else (3 if equip_data.get("type") == "ADVANCED" else 1)
                     }
+            # 修复 currentEquip 为空的问题
+            if not char_data.get("currentEquip") and char_data.get("equip"):
+                char_data["currentEquip"] = list(char_data["equip"].keys())[-1]
 
     try:
         player_data["user"].get("charRotation")
@@ -277,7 +285,7 @@ def SyncData():
                     "locked": 0,
                     "level": (
                         len(equip_dict[equip]["itemCost"])
-                        if equip_dict[equip].get("itemCost") else 1
+                        if equip_dict[equip].get("itemCost") else (3 if equip_dict[equip].get("type") == "ADVANCED" else 1)
                     )
                 } for equip in equip_list
             }
@@ -322,7 +330,7 @@ def SyncData():
                         "locked": 0,
                         "level": (
                             len(equip_dict[equip]["itemCost"])
-                            if equip_dict[equip].get("itemCost") else 1
+                            if equip_dict[equip].get("itemCost") else (3 if equip_dict[equip].get("type") == "ADVANCED" else 1)
                         )
                     } for equip in equip_list
                 }

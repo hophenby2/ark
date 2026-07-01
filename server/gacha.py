@@ -146,10 +146,16 @@ def finishNormalGacha():
         sub1 = random_char_id.split("_", 2)[2]  # 分割字符
         char_name = sub1.split("_", 1)[1]  # 分割角色名
 
-        if f"uniequip_001_{char_name}" in get_memory("uniequip_table"):
+        uniequip_table = get_memory("uniequip_table")
+        if f"uniequip_001_{char_name}" in uniequip_table:
+            equip_dict = uniequip_table["equipDict"]
+            def _eq_level(eq_id):
+                eq = equip_dict.get(eq_id, {})
+                ic = eq.get("itemCost")
+                return len(ic) if ic else (3 if eq.get("type") == "ADVANCED" else 1)
             equip = {
-                f"uniequip_001_{char_name}": {"hide": 0, "locked": 0, "level": 1},  # 装备
-                f"uniequip_002_{char_name}": {"hide": 0, "locked": 0, "level": 1}  # 装备
+                f"uniequip_001_{char_name}": {"hide": 0, "locked": 0, "level": _eq_level(f"uniequip_001_{char_name}")},
+                f"uniequip_002_{char_name}": {"hide": 0, "locked": 0, "level": _eq_level(f"uniequip_002_{char_name}")}
             }
             char_data["equip"] = equip
             char_data["currentEquip"] = f"uniequip_001_{char_name}"  # 当前装备
@@ -566,9 +572,14 @@ def Gacha(ticket_type, use_diamond_shard, json_body):
 
             # 判断是否为特殊角色
             if f"uniequip_001_{random_char_id.split('_')[2]}" in get_memory("uniequip_table")["equipDict"]:
+                equip_dict = get_memory("uniequip_table")["equipDict"]
+                def _eq_level2(eq_id):
+                    eq = equip_dict.get(eq_id, {})
+                    ic = eq.get("itemCost")
+                    return len(ic) if ic else (3 if eq.get("type") == "ADVANCED" else 1)
                 equip = {
-                    f"uniequip_001_{random_char_id.split('_')[2]}": {"hide": 0, "locked": 0, "level": 1},
-                    f"uniequip_002_{random_char_id.split('_')[2]}": {"hide": 0, "locked": 0, "level": 1}
+                    f"uniequip_001_{random_char_id.split('_')[2]}": {"hide": 0, "locked": 0, "level": _eq_level2(f"uniequip_001_{random_char_id.split('_')[2]}")},
+                    f"uniequip_002_{random_char_id.split('_')[2]}": {"hide": 0, "locked": 0, "level": _eq_level2(f"uniequip_002_{random_char_id.split('_')[2]}")}
                 }
                 char_data["equip"] = equip
                 char_data["currentEquip"] = f"uniequip_001_{random_char_id.split('_')[2]}"
