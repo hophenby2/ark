@@ -14,8 +14,13 @@ def changeTopic():
         "result": 0
     }
 
+def pinTopic():
+    json_body = request.get_json()
+    print(json_body)
+    return "", 202
+
 class sandboxV2:
-    def createGame():
+    def V2createGame():
         json_body = request.get_json
         result = {
                 "playerDataDelta": {
@@ -28,7 +33,7 @@ class sandboxV2:
 
         return result
 
-    def battleStart():
+    def V2battleStart():
         json_body = request.get_json
         result = {
                 "playerDataDelta": {
@@ -41,7 +46,7 @@ class sandboxV2:
 
         return result
 
-    def battleFinish():
+    def V2battleFinish():
         json_body = request.get_json
         result = {
                 "playerDataDelta": {
@@ -54,18 +59,21 @@ class sandboxV2:
 
         return result
 
-    def eatFood():
-        json_body = request.get_json
-        result = {
-                "playerDataDelta": {
-                    "modified": {
-                        
-                    },
-                    "deleted": {}
-                }
-            }
+    def V2eatFood():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
 
-        return result
+    def cookDrink():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def cookFood():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
 
     def setSquad():
         json_body = request.get_json
@@ -80,7 +88,7 @@ class sandboxV2:
 
         return result
 
-    def settleGame():
+    def V2settleGame():
         json_body = request.get_json
         result = {
                 "playerDataDelta": {
@@ -145,7 +153,7 @@ class sandboxV2:
 
         return result
 
-    def eventChoice():
+    def V2eventChoice():
         json_body = request.get_json
         result = {
                 "playerDataDelta": {
@@ -157,8 +165,197 @@ class sandboxV2:
             }
 
         return result
-    
+
+    def alchemy():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def baseUpgrade():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def build():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def cook():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def discardAp():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def enterChallenge():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def exitChallenge():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def extract():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def getChallengeReward():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def guideLoad():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def load():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def V2nextDay():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def removeSupply():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def riftClose():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def riftCreate():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def riftSetDifficulty():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def riftSetTeam():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def riftSettle():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def setSupply():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def settleChallenge():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def settleDay():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def V2shopBuy():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def startMission():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def V2switchMode():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def V2unlockTech():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def racingBattleFinish():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def racingBattleStart():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def racingLearnTalent():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def racingRegister():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def racingRelease():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def racingSaveMark():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+
 class sandboxV3:
+
+    tech_buff = {
+        "sandbox_2_tech_explore_1": "sandbox_v3_talent_3_lv1",
+        "sandbox_2_tech_explore_2": "sandbox_v3_talent_4_lv1",
+        "sandbox_2_tech_explore_3": "sandbox_v3_talent_1",
+        "sandbox_2_tech_explore_4": "sandbox_v3_weather_heat[ex]",
+        "sandbox_2_tech_explore_5": "sandbox_v3_talent_6_lv1",
+        "sandbox_2_tech_explore_6": "sandbox_v3_talent_5_lv1",
+        "sandbox_2_tech_explore_7": "sandbox_v3_talent_3_lv2",
+        "sandbox_2_tech_explore_8": "sandbox_v3_talent_2_lv1",
+        "sandbox_2_tech_explore_9": "sandbox_v3_talent_7_lv1",
+        "sandbox_2_tech_explore_10": "sandbox_v3_talent_5_lv2",
+        "sandbox_2_tech_explore_11": "sandbox_v3_talent_4_lv2",
+        "sandbox_2_tech_explore_12": "sandbox_v3_weather_storm[ex]",
+        "sandbox_2_tech_explore_13": "sandbox_v3_talent_2_lv2",
+        "sandbox_2_tech_explore_14": "sandbox_v3_talent_4_lv2",
+        "sandbox_2_tech_explore_15": "sandbox_v3_weather_lightning[ex]",
+        "sandbox_2_tech_explore_16": "sandbox_v3_talent_7_lv2",
+        "sandbox_2_tech_explore_17": "sandbox_v3_weather_rain[ex]",
+        "sandbox_2_tech_explore_18": "sandbox_v3_talent_8",
+    }
+
+    def V3switchMode():
+        json_body = request.get_json()
+
+        result = {
+            "playerDataDelta": {
+                "modified": {},
+                "deleted": {}
+            }
+        }
+
+        return result
 
     def switchMode():
         json_body = request.get_json()
@@ -289,6 +486,341 @@ class sandboxV3:
             }
         }
     
+    def homeShopSell():
+        json_body = request.get_json()
+        print(json_body)
+
+        return "", 202
+    
+    def homeUpgrade():
+        json_body = request.get_json()
+        print(json_body)
+
+        return "", 202
+
+    def V3createGame():
+        json_body = request.get_json()
+        topic_id = json_body["topicId"]
+        node_id = json_body["nodeId"]
+        difficulty_id = json_body["difficultyId"]
+
+        # 读数据
+        user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
+        sandbox_data = user_data["user"]["sandboxPerm"]
+        current_base_Lv = sandbox_data["template"]["SANDBOX_V3"][topic_id]["base"]["level"]
+        sandbox_data["summary"]["SANDBOX_V3"][topic_id]["inCurrent"] = 1
+        sandbox_data["summary"]["SANDBOX_V3"][topic_id]["baseLv"] = current_base_Lv
+        tech_list:list = sandbox_data["template"]["SANDBOX_V3"][topic_id]["tech"]["unlock"]
+
+        # 外勤增益buff添加
+        rune_data:list = []
+        for key in tech_list:
+            if key.startswith("sandbox_2_tech_explore_"):
+                rune_key = sandboxV3.tech_buff[key]
+                rune_data.append(rune_key)
+        rune_data.sort()
+
+        # 数据构建
+        current_default_data = {
+            "nodeId": node_id,
+            "state": 0, # Torappu.PlayerSandboxV3GameState
+            "game": {
+                "idx": 21,
+                "openTs": time(),
+                "difficultyId": "",
+                "npcInstId": -1,
+                "day": 1,
+                "weather": "weather_rain",
+                "windDir": "UP",
+                "power": 0,
+                "pros": 0,
+                "aesth": 0
+            },
+            "map": {
+                "subStage": [],
+                "unlockIndex": [],
+                "initIndex": []
+            },
+            "band": {
+                "id": "",
+                "level": 0
+            },
+            "troop": {},
+            "shop": {},
+            "dailyReport": None,
+            "bag": {},
+            "eventInfo": None,
+            "effect": {
+                "rune": rune_data,
+                "shopRefreshDiscount": 10,
+                "shopRefreshFree": 0,
+                "shopSlotAdd": 0,
+                "shopStockAdd": {
+                    "sandbox_2_good_wood_10": 10,
+                    "sandbox_2_good_stone_10": 10,
+                    "sandbox_2_good_iron_10": 10
+                },
+                "shopDiscountRate": 0,
+                "gapGainItem": {},
+                "recipeRefreshDiscount": 0,
+                "productAdd": {},
+                "trapDrop": {},
+                "buildReturn": {},
+                "taskRefreshAdd": 1
+            },
+            "save": None
+        }
+
+        sandbox_data["template"]["SANDBOX_V3"][topic_id]["current"] = current_default_data
+
+        result = {
+            "playerDataDelta": {
+                "modified": {
+                    "sandboxPerm": {
+                        "summary": {
+                            "SANDBOX_V3": {
+                                topic_id: sandbox_data["summary"]["SANDBOX_V3"][topic_id]
+                            }
+                        },
+                        "template":{
+                            "SANDBOX_V3": {
+                                topic_id: {
+                                    "current": sandbox_data["template"]["SANDBOX_V3"][topic_id]["current"],
+                                }
+                            }
+                        }
+                    }
+                },
+                "deleted": {}
+            }
+        }
+
+        return result
+
+    def V3giveUpGame():
+        json_body = request.get_json()
+        topic_id = json_body["topicId"]
+
+        user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
+        sandbox_data = user_data["user"]["sandboxPerm"]
+
+        sandbox_data["summary"]["SANDBOX_V3"][topic_id]["inCurrent"] = 0
+        sandbox_data["template"]["SANDBOX_V3"][topic_id]["current"] = None
+
+        result = {
+            "playerDataDelta": {
+                "modified": {
+                    "sandboxPerm": {
+                        "template":{
+                            "SANDBOX_V3": {
+                                topic_id: {
+                                    "summary": sandbox_data["summary"]["SANDBOX_V3"][topic_id],
+                                    "current": sandbox_data["template"]["SANDBOX_V3"][topic_id]["current"]
+                                }
+                            }
+                        }
+                    }
+                },
+                "deleted": {}
+            }
+        }
+
+        return result
+
+    def V3battleStart():
+        json_body = request.get_json()
+        print(json_body)
+
+        return "", 202
+
+    def V3battleFinish():
+        json_body = request.get_json()
+        print(json_body)
+
+        return "", 202
+
+    def changeDefend():
+        json_body = request.get_json()
+        topic_id:str = json_body["topicId"]
+        zone_id:str = json_body["zoneId"]
+        operate = bool(json_body["operate"])
+        chars:list = json_body["chars"]
+
+        user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
+        sandbox_data = user_data["user"]["sandboxPerm"]
+
+        zone_data:dict = sandbox_data["template"]["SANDBOX_V3"][topic_id]["map"]["zone"][zone_id]
+        if operate:
+            zone_data["sub"] = chars
+        else:
+            if len(chars) > 0:
+                zone_data["main"] = chars[0]
+            else:
+                zone_data["main"] = -1
+
+        result = {
+            "playerDataDelta": {
+                "modified": {
+                    "sandboxPerm": {
+                        "template":{
+                            "SANDBOX_V3": {
+                                topic_id: {
+                                    "map": sandbox_data["template"]["SANDBOX_V3"][topic_id]["map"]
+                                }
+                            }
+                        }
+                    }
+                },
+                "deleted": {}
+            }
+        }
+
+        run_after_response(write_json, user_data, SYNC_DATA_TEMPLATE_PATH)
+        return result
+
+    def chooseBand():
+        json_body = request.get_json()
+        print(json_body)
+
+        return "", 202
+        
+    def dailyRecruit():
+        json_body = request.get_json()
+        print(json_body)
+
+        return "", 202
+        
+    def V3eatFood():
+        json_body = request.get_json()
+        print(json_body)
+
+        return "", 202
+        
+    def V3eventChoice():
+        json_body = request.get_json()
+        print(json_body)
+
+        return "", 202
+        
+    def getDailyRecruitList():
+        json_body = request.get_json()
+        print(json_body)
+
+        return "", 202
+        
+    def V3nextDay():
+        json_body = request.get_json()
+        print(json_body)
+
+        return "", 202
+        
+    def initRecruit():
+        json_body = request.get_json()
+        print(json_body)
+
+        return "", 202
+        
+    def V3settleGame():
+        json_body = request.get_json()
+        print(json_body)
+
+        return "", 202
+        
+    def V3shopBuy():
+        json_body = request.get_json()
+        print(json_body)
+
+        return "", 202
+        
+    def shopBuyRecruit():
+        json_body = request.get_json()
+        print(json_body)
+
+        return "", 202
+        
+    def shopRefresh():
+        json_body = request.get_json()
+        print(json_body)
+
+        return "", 202
+        
+    def shopSell():
+        json_body = request.get_json()
+        print(json_body)
+
+        return "", 202
+        
+    def V3unlockTech():
+        json_body:dict[str, any] = request.get_json()
+        topic_id:str = json_body["topicId"]
+        tech_id:str = json_body["techId"]
+
+        user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
+        sandbox_data = user_data["user"]["sandboxPerm"]
+        sandbox_excel = get_memory("sandbox_perm_table")
+
+        tech_data:dict = sandbox_data["template"]["SANDBOX_V3"][topic_id]["tech"]
+        # 检查基地是否达到解锁所需等级
+        limit_base_lv:int = sandbox_excel["detail"]["SANDBOX_V3"][topic_id]["developmentData"][tech_id]["limitBaseLevel"]
+        current_base_lv:int = sandbox_data["template"]["SANDBOX_V3"][topic_id]["base"]["level"]
+        if current_base_lv < limit_base_lv:
+            return {}, 400
+        del limit_base_lv, current_base_lv
+
+        # 检查是否已经解锁
+        unlock_tech:list = tech_data["unlock"]
+        if tech_id in unlock_tech:
+            return {
+                "playerDataDelta": {
+                    "modified": {
+                        "sandboxPerm": {
+                            "template": {
+                                "SANDBOX_V3": {
+                                    topic_id: {
+                                        "tech": tech_data
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "deleted": {}
+                }
+            }
+
+        # 检查前置科技是否解锁
+        front_node_id:str = sandbox_excel["detail"]["SANDBOX_V3"][topic_id]["developmentData"][tech_id]["frontNodeId"]
+        if front_node_id not in unlock_tech:
+            return {}, 400
+        del front_node_id
+        
+        # 解锁科技
+        token_cost:int = sandbox_excel["detail"]["SANDBOX_V3"][topic_id]["developmentData"][tech_id]["tokenCost"]
+        current_token:int = tech_data["token"]
+        if current_token < token_cost:
+            return {}, 400
+        tech_data["token"] -= token_cost
+        unlock_tech.append(tech_id)
+        unlock_tech.sort() # 如果不想后期手动编辑数据时看到一团乱麻，这个排序是很有必要的
+
+        result = {
+            "playerDataDelta": {
+                "modified": {
+                    "sandboxPerm": {
+                        "template": {
+                            "SANDBOX_V3": {
+                                topic_id: {
+                                    "tech": tech_data
+                                }
+                            }
+                        }
+                    },
+                    "deleted": {}
+                }
+            }
+        }
+
+        run_after_response(write_json, user_data, SYNC_DATA_TEMPLATE_PATH)
+        return result
 
     def _harvestFresh(base_data:dict, topic_id:str, need_write:bool = False):
         '''
@@ -465,7 +997,7 @@ class sandboxV3:
         if need_write:
             user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
             sandbox_data = user_data["user"]["sandboxPerm"]
-            sandbox_data["template"]["SANDBOX_V3"][topic_id]["base"]["production"]["rate"] = rate_data
-            write_json(user_data, SYNC_DATA_TEMPLATE_PATH)
+            sandbox_data["template"]["SANDBOX_V3"][topic_id]["base"]["score"] = total_score
+            write_json(sandbox_data, SYNC_DATA_TEMPLATE_PATH)
         else:
             return total_score

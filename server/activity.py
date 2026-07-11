@@ -366,6 +366,82 @@ class enemyDuel:
 
         return result
 
+    def enemyDuel_startMatch():
+        json_body = request.get_json()
+        print(json_body)
+
+        return "", 202
+
+    def enemyDuel_queryMatch():
+        json_body = request.get_json()
+        print(json_body)
+
+        return "", 202
+
+    def enemyDuel_createTeam():
+        json_body = request.get_json()
+        print(json_body)
+
+        return "", 202
+
+    def enemyDuel_joinTeam():
+        json_body = request.get_json()
+        print(json_body)
+
+        return "", 202
+
+    def enemyDuel_multiBattleFinish():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def enemyDuel_multiBattleStart():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+
+class act13side:
+    def act13clearFlag():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act13dailyMissionAccept():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act13dailyMissionCancel():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act13dailyMissionCommit():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act13dailyMissionRandom():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act13dailyMissionReplace():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act13longMissionCommit():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act13longMissionCommitBatch():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
 
 class act24side:
 
@@ -383,12 +459,12 @@ class act24side:
         total_score = 0
 
         items_score_map = {
-            "act50side_melding_1": 2,
-            "act50side_melding_2": 3,
-            "act50side_melding_3": 5,
-            "act50side_melding_4": 10,
-            "act50side_melding_5": 20,
-            "act50side_melding_6": 200
+            "act50melding_1": 2,
+            "act50melding_2": 3,
+            "act50melding_3": 5,
+            "act50melding_4": 10,
+            "act50melding_5": 20,
+            "act50melding_6": 200
         }
 
         for key in items.keys():
@@ -535,6 +611,11 @@ class act24side:
         }
 
         return result
+    
+    def act24getHuntCollectRewards():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
 
 
 class act35side:
@@ -1544,6 +1625,62 @@ class act42side:
 
         return result
 
+    def act42getDailyTrustedItem():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+
+class act44game:
+
+    def act44SelectChoice():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act44UseInsight():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act44startGame():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+    
+    def act44nextState():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+
+class act46side:
+
+    def act46startGame():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+    
+    def act46settleGame():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act46move():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act46endRound():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act46Mining():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
 
 class vhalfidle:
     from data.act_data import SPEC_CHAR, VHALFIDLE_POOLS, E_0, E_1, E_2
@@ -2413,17 +2550,72 @@ class multiplayer:
     def processInvite():
         return {}, 202
 
+    def battleFinish():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def battleStart():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def changePhoto():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def multiplayer_commitAlbum():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def multiplayer_createTeam():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def multiplayer_joinTeam():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def multiplayer_queryMatch():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def report():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def settleLike():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def multiplayer_startMatch():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def unlockBuff():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
 
 class autochessSeason:
     def syncInfo():
-
+        
         result = {
             "changeId": [""],
             "battleInfo": {}
         }
 
         return result
-
+    
     def getFriendAndRequestSendList():
 
         result = {
@@ -2441,7 +2633,7 @@ class autochessSeason:
     def setChessPoolDeploy():
 
         json_body = request.get_json()
-
+        # {'actId': 'act2autochess', 'chessPool': {'chess_char_2_13_a': {'skillIndex': 1, 'currentEquip': None}, 'chess_char_5_15_a': {'skillIndex': 0, 'currentEquip': 'uniequip_002_thorn2'}}}
         user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
 
         activity_id = json_body["actId"]
@@ -2450,6 +2642,7 @@ class autochessSeason:
         for key, value in json_body["chessPool"].items():
             for key2, value2 in value.items():
                 chess_data[key][key2] = value2
+
 
         result = {
             "playerDataDelta": {
@@ -2468,21 +2661,46 @@ class autochessSeason:
 
         return result
 
+    def autoChessCreateTeam():
+        print(request.data)
+        server_config = get_memory("config")
+        if server_config["server"]["adaptive"]:
+            # http://192.168.1.1:8443
+            # 47.103.132.185:6001
+            host = (request.host_url[:-1]).split(":")[1][2:]
+            server = host + ":" + str(server_config["server"]["socketprot"])
+        else:
+            server = (
+                server_config["server"]["host"]
+                + ":"
+                + str(server_config["server"]["socketprot"])
+            )
+        
+        return {
+            "result": 0,
+            "team": {
+                "teamId": "1j5d7jdneeh509",
+                "serverAddress": server,
+                "serverToken": "2c7c3df3d351921d495d6407e06fe53ff92ac36b4cba673bebd3ae0ccd430adc",
+            }
+        }
+    
     def autoChessStartGuideBattle():
+        # '{"activityId":"act2autochess","stageId":"act1autochess_m01"}'
         return {}
-
+        
     def act2autochess():
         server_config = get_memory("config")
         if server_config["server"]["adaptive"]:
             server = request.host_url[:-1]
         else:
             server = (
-                    "http://"
-                    + server_config["server"]["host"]
-                    + ":"
-                    + str(server_config["server"]["port"])
+                "http://"
+                + server_config["server"]["host"]
+                + ":"
+                + str(server_config["server"]["port"])
             )
-
+        
         result = f'''
         <!doctype html>
         <html lang="zh-cn">
@@ -2535,18 +2753,14 @@ class autochessSeason:
 
     def act1playerSummary():
 
-        user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
-        uid = user_data["user"]["status"]["uid"]
-        name = user_data["user"]["status"]["nickName"]
-
         result = {
             "status": 0,
             "code": 0,
             "msg": "",
             "data": {
-                "uid": uid,
+                "uid": "25249069",
                 "level": 120,
-                "nickname": name,
+                "nickname": "芜湖起飞#4603",
                 "avatar": "char_4172_xingzh@epoque#51",
                 "nameCard": "nc_6d5_1",
                 "total": {
@@ -2584,7 +2798,7 @@ class autochessSeason:
                 "titleCntInfo": {}
             }
         }
-
+        
         return result
 
     def act2playerSummary():
@@ -2895,6 +3109,76 @@ class autochessSeason:
         }
 
         return result
+
+    def autoChessFinishGuideBattle():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def autoChessGetFriendCharAssistList():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def autoChessJoinTeam():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def autoChessMultiBattleFinish():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def autoChessMultiBattleStart():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def autoChessQueryMatch():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def autoChessQuitSingleGame():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def autoChessRemoveChessPoolChar():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def autoChessReport():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def autoChessSetChessPoolAssist():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def autoChessSetChessPoolDiyChar():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def autoChessSettleGame():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def autoChessSettleLike():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def autoChessStartMatch():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
 
 
 class vecbreak:
@@ -3370,6 +3654,11 @@ class ActivityMission:
         }
 
         return result
+    
+    def confirmActivityMissionGroup():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
 
 
 class arcade:
@@ -3379,6 +3668,412 @@ class arcade:
 
     def arcadeBattleFinish():
         return {}, 202
+    
+class act20side:
+    def act20competitionFinish():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act20competitionStart():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act20confirmExhiCar():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act20judge():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act20pick():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act20quickGetMilestoneAward():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act20quickRecycle():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+    
+    def act20retroCompetitionStart():
+        return {
+            "result": 0,
+            "battleId": "abcdefgh-1234-5678-a1b2c3d4e5f6",
+            "playerDataDelta": {
+                "modified": {},
+                "deleted": {}
+            }
+        }
+
+
+    def act20retroCompetitionFinish():
+        return {
+            "performance": 0,
+                "expression": 0,
+                "operation": 0,
+                "total": 0,
+                "level": "B",
+                "isNew": False,
+                "playerDataDelta": {
+                    "modified": {},
+                    "deleted": {}
+                }
+            }
+
+class act25side:
+
+    def dailyRefresh():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def finishInvestigation():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act25harvest():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def investigate():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+class act29side:
+
+    def act29commitMelody():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act29startMajorInvest():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act29syncthesize():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+class act3d0:
+    def act3d0_gacha():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act3d0_getGachaInfo():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act3d0_getMilestoneReward():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act3d0_selectFaction():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+class act4d0:
+    def act4d0_finishStory():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act4d0_getReward():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act4d0_unlockStory():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+class act5d0:
+    def act5d0_getReward():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+class act5d1:
+    def act5d1_buyGoods():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act5d1_buyRune():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act5d1_getGoodsList():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act5d1_getInfo():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+class act9d0:
+    def act9d0_readNews():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+class year5General:
+    def year5General_getInfReward():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+class act13side:
+    def act13clearFlag():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act13dailyMissionAccept():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act13dailyMissionCancel():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act13dailyMissionCommit():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act13dailyMissionRandom():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act13dailyMissionReplace():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act13longMissionCommit():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act13longMissionCommitBatch():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+class act27side:
+    def act27inquirePurchase():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act27inquireSell():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act27nextDay():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act27purchase():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act27saleSettle():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act27saleStart():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act27sell():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+class act36side:
+
+    def act36confirmDexNavReward():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+class act38side:
+    def act38completePuzzle():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act38getInfo():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act38useHint():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+class act42d0:
+    def act42d0_battleFinish():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act42d0_battleStart():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act42d0_challengeFinish():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act42d0_challengeStart():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act42d0_recvMilestone():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+class act45side:
+    def act45confirmChar():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def act45confirmMail():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+class interlock:
+    def interlock_milestone():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def interlock_milestoneBatch():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def interlock_setDefend():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def interlock_setSquad():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+class roguelike:
+    def roguelike_createGame():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def roguelike_finishGame():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def roguelike_giveUpGame():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def roguelike_milestoneReward():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def roguelike_milestoneRewardTryBest():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+    def roguelike_upgradeOutBuff():
+        json_body = request.get_json()
+        print(json_body)
+        return "", 202
+
+def getChainLogInReward():
+    json_body = request.get_json()
+    print(json_body)
+    return "", 202
+
+def getOpenServerCheckInReward():
+    json_body = request.get_json()
+    print(json_body)
+    return "", 202
+
+def getChainLogInFinalRewards():
+    json_body = request.get_json()
+    print(json_body)
+    return "", 202
+
+def tryGetCharmFirstReward():
+    json_body = request.get_json()
+    print(json_body)
+    return "", 202
+
+def exchangeActivityShopItem():
+    json_body = request.get_json()
+    print(json_body)
+    return "", 202
+
+def getActivityCollectionReward():
+    json_body = request.get_json()
+    print(json_body)
+    return "", 202
+
+def getActivityShopInfo():
+    json_body = request.get_json()
+    print(json_body)
+    return "", 202
+
+def recycleCharms():
+    json_body = request.get_json()
+    print(json_body)
+    return "", 202
+
 
 
 def getChainLogInReward():

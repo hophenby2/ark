@@ -293,31 +293,6 @@ def confirmBattleCar():
         }
     }
 
-def typeAct20side_competitionStart():
-    return {
-        "result": 0,
-        "battleId": "abcdefgh-1234-5678-a1b2c3d4e5f6",
-        "playerDataDelta": {
-            "modified": {},
-            "deleted": {}
-        }
-    }
-
-
-def typeAct20side_competitionFinish():
-    return {
-        "performance": 0,
-            "expression": 0,
-            "operation": 0,
-            "total": 0,
-            "level": "B",
-            "isNew": False,
-            "playerDataDelta": {
-                "modified": {},
-                "deleted": {}
-            }
-        }
-
 def questBattleContinue():
     return {
         "result": 0,

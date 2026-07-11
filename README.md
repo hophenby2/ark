@@ -7,6 +7,25 @@
 <summary><strong>最近三条更新日志(点击展开)：</strong></summary>
 
 
+- 2026 年 7 月 10 日
+
+    添加：  
+    1、dat Mod支持  
+    - dat文件本质上是一个标准的zip压缩包，使用普通的压缩软件即可解压，内部的ab文件可使用这个AssetStudio解包 [https://github.com/jiellll1219/assetstudio/releases/tag/2.4.1-LZHAM](https://github.com/jiellll1219/assetstudio/releases/tag/2.4.1-LZHAM) 
+    - 仓库自带一个Mod文件示例，使用 resversion 26-07-01-15-26-52_d3376d 的文件进行修改
+
+    2、生息演算重启锚点科技解锁、区域驻扎、收菜功能支持  
+    3、添加 downloadPeoxy 选项，用于从服务端代理下载，如果遇到客户端下载报错205或206，可把该项设置为true解决
+    4、其它暂未开发的路由，如果遇到，请截图控制台窗口反馈并等待修复
+
+    修改：  
+    1、移除golbal版本支持
+
+    更新：  
+    1、商店数据  
+    2、卡池数据
+
+
 - 2026 年 6 月 13 日
 
     修复：  
@@ -34,19 +53,6 @@
     更新：  
     1、卡池文件  
     2、活动商店数据
-
-- 2026 年 5 月 12 日
-
-    添加：  
-    1、主线特殊关卡解锁功能  
-    2、主线线索解锁功能  
-    3、EP17共享终端数据
-
-    修改：  
-    1、storyFinishStory函数现在可以正确响应，而不是作为一个占位符
-
-    更新：  
-    1、卡池文件
 
 </details>
 

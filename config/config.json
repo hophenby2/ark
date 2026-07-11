@@ -2,6 +2,7 @@
   "assets": {
     "autoUpdate": false,
     "downloadLocally": false,
+    "downloadPeoxy": false,
     "enableMods": false,
     "skipModCacheValidation": false
   },
