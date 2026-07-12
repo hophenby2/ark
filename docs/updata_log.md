@@ -6,6 +6,9 @@
     1、dat Mod支持  
     - dat文件本质上是一个标准的zip压缩包，使用普通的压缩软件即可解压，内部的ab文件可使用这个AssetStudio解包 [https://github.com/jiellll1219/assetstudio/releases/tag/2.4.1-LZHAM](https://github.com/jiellll1219/assetstudio/releases/tag/2.4.1-LZHAM) 
     - 仓库自带一个Mod文件示例，使用 resversion 26-07-01-15-26-52_d3376d 的文件进行修改
+    <img src="https://jiellll1219.pages.dev/post/3/mod_demo_1.jpg" style="width: 50%; height: auto;">  
+    Mod效果展示  
+    感谢视频 [“很遗憾，我并不能联动什么”](https://www.bilibili.com/video/av116859969995870) 与某位玛宝男主播提供制作动力，感谢视频 [当你发现小马联动玛恩纳没有联动皮：](https://www.bilibili.com/video/av116825643812476) 提供原图素材，本次mod最终素材使用 nano banana 2 扩图后人工修图制作而成
 
     2、生息演算重启锚点科技解锁、区域驻扎、收菜功能支持  
     3、添加 downloadPeoxy 选项，用于从服务端代理下载，如果遇到客户端下载报错205或206，可把该项设置为true解决
