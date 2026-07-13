@@ -221,8 +221,8 @@ app.add_url_rule("/account/yostar_auth_request", methods=["POST"], view_func=acc
 app.add_url_rule("/account/yostar_auth_submit", methods=["POST"], view_func=account.accountYostarAuthSubmit)
 app.add_url_rule("/account/syncPushMessage", methods=["POST"], view_func=account.syncPushMessage)
 
-app.add_url_rule("/assetbundle/official/Android/assets/<string:assetsHash>/<string:fileName>", methods = ["GET"], view_func=asset.assetbundle.getFile)
-app.add_url_rule("/official/Android/assets/<string:assetsHash>/<string:fileName>", methods=["GET"], view_func=asset.assetbundle.getFile)
+app.add_url_rule("/assetbundle/official/<string:system>/assets/<string:assetsHash>/<path:fileName>", methods = ["GET"], view_func=asset.assetbundle.getFile)
+app.add_url_rule("/official/<string:system>/assets/<string:assetsHash>/<path:fileName>", methods=["GET"], view_func=asset.assetbundle.getFile)
 app.add_url_rule("/arknights/<path:subpath>", methods=["GET"], view_func=asset.assetbundle.proxy_assest)
 
 
@@ -339,13 +339,15 @@ app.add_url_rule("/api/remote_config/1/prod/default/Windows/network_config", met
 app.add_url_rule("/api/remote_config/1/prod/bilibili/Windows/network_config", methods=["GET"], view_func=config.prod.prodNetworkConfig)
 app.add_url_rule("/audit/official/Windows/<path:subpath>", methods=["GET"], view_func=config.prod.prodAudit)
 app.add_url_rule("/audit/official/Android/version_<path:subpath>", methods=["GET"], view_func=config.prod.prodAndroidVersion)
-app.add_url_rule("/audit/official/Android/assets/<string:assetsHash>/<string:fileName>", methods=["GET"], view_func=asset.assetbundle.getFile)
+app.add_url_rule("/audit/official/<string:system>/assets/<string:assetsHash>/<path:fileName>", methods=["GET"], view_func=asset.assetbundle.getFile)
 app.add_url_rule("/config/prod/official/refresh_config", methods = ["GET"], view_func=config.prod.prodRefreshConfig)
 app.add_url_rule("/config/prod/official/remote_config", methods = ["GET"], view_func=config.prod.prodRemoteConfig)
 app.add_url_rule("/api/game/get_latest", methods=["GET"], view_func=config.prod.get_latest)
 app.add_url_rule("/api/game/get_latest_game_info", methods = ["GET"], view_func= config.prod.get_latest_game_info)
 app.add_url_rule("/api/gate/meta/Android", methods = ["GET"], view_func= config.prod.prodGateMeta)
+app.add_url_rule("/api/gate/meta/Windows", methods = ["GET"], view_func= config.prod.prodGateMeta)
 app.add_url_rule("/api/remote_config/101/prod/default/Android/ak_sdk_config", methods = ["GET"], view_func= config.prod.ak_sdk_config)
+app.add_url_rule("/api/remote_config/101/prod/default/Windows/ak_sdk_config", methods = ["GET"], view_func= config.prod.ak_sdk_config)
 app.add_url_rule("/gameBulletin", methods=["GET"], view_func= config.prod.prodGameBulletin)
 app.add_url_rule("/analytics/collect", methods=["POST"], view_func= config.prod.prodAnalyticsCollect)
 app.add_url_rule("/api/game/<path:subpath>", methods=["GET"], view_func= config.prod.prodBulletinList)

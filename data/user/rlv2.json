@@ -1,0 +1,353 @@
+{
+    "buff": {
+        "capsule": null,
+        "squadBuff": [],
+        "tmpHP": 0
+    },
+    "game": {
+        "eGrade": 18,
+        "equivalentGrade": 18,
+        "mode": "NORMAL",
+        "outer": {
+            "support": false
+        },
+        "predefined": null,
+        "start": 1783959764,
+        "theme": "rogue_2"
+    },
+    "inventory": {
+        "consumable": {},
+        "exploreTool": {},
+        "recruit": {},
+        "relic": {
+            "r_0": {
+                "count": 1,
+                "id": "rogue_2_band_22",
+                "index": "r_0",
+                "ts": 1783959774
+            }
+        },
+        "trap": null
+    },
+    "map": {
+        "zones": {
+            "1": {
+                "id": "zone_1",
+                "nodes": {
+                    "0": {
+                        "index": "0",
+                        "next": [
+                            {
+                                "x": 1,
+                                "y": 0
+                            },
+                            {
+                                "x": 1,
+                                "y": 1
+                            }
+                        ],
+                        "pos": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "refresh": {
+                            "cost": 1,
+                            "count": 99,
+                            "usedCount": 0
+                        },
+                        "stage": "ro2_e_1_4",
+                        "type": 2
+                    },
+                    "100": {
+                        "index": "100",
+                        "next": [
+                            {
+                                "x": 2,
+                                "y": 0
+                            },
+                            {
+                                "x": 2,
+                                "y": 1
+                            }
+                        ],
+                        "pos": {
+                            "x": 1,
+                            "y": 0
+                        },
+                        "refresh": {
+                            "cost": 1,
+                            "count": 99,
+                            "usedCount": 0
+                        },
+                        "stage": "ro2_n_1_4",
+                        "type": 1
+                    },
+                    "101": {
+                        "index": "101",
+                        "next": [
+                            {
+                                "key": true,
+                                "x": 1,
+                                "y": 0
+                            },
+                            {
+                                "x": 2,
+                                "y": 1
+                            }
+                        ],
+                        "pos": {
+                            "x": 1,
+                            "y": 1
+                        },
+                        "refresh": {
+                            "cost": 1,
+                            "count": 99,
+                            "usedCount": 0
+                        },
+                        "stage": "ro2_n_1_1",
+                        "type": 1
+                    },
+                    "200": {
+                        "index": "200",
+                        "next": [
+                            {
+                                "x": 3,
+                                "y": 0
+                            }
+                        ],
+                        "pos": {
+                            "x": 2,
+                            "y": 0
+                        },
+                        "refresh": {
+                            "cost": 1,
+                            "count": 99,
+                            "usedCount": 0
+                        },
+                        "type": 32
+                    },
+                    "201": {
+                        "index": "201",
+                        "next": [
+                            {
+                                "x": 3,
+                                "y": 0
+                            }
+                        ],
+                        "pos": {
+                            "x": 2,
+                            "y": 1
+                        },
+                        "refresh": {
+                            "cost": 1,
+                            "count": 99,
+                            "usedCount": 0
+                        },
+                        "type": 32
+                    },
+                    "300": {
+                        "index": "300",
+                        "next": [],
+                        "pos": {
+                            "x": 3,
+                            "y": 0
+                        },
+                        "type": 4096,
+                        "zone_end": true
+                    }
+                },
+                "variation": []
+            }
+        }
+    },
+    "module": {
+        "chaos": null,
+        "copper": null,
+        "dice": {
+            "count": 1,
+            "id": ""
+        },
+        "disaster": null,
+        "fragment": null,
+        "nodeUpgrade": null,
+        "san": {
+            "sanity": 100
+        },
+        "sky": null,
+        "totem": null,
+        "vision": null,
+        "wrath": null
+    },
+    "player": {
+        "chgEnding": false,
+        "cursor": {
+            "position": {
+                "x": 0,
+                "y": 0
+            },
+            "zone": 1
+        },
+        "pending": [],
+        "property": {
+            "capacity": 10000,
+            "conPerfectBattle": 0,
+            "exp": 0,
+            "gold": 450,
+            "hp": {
+                "current": 10000,
+                "max": 10000
+            },
+            "level": 10,
+            "maxLevel": 10,
+            "population": {
+                "cost": 0,
+                "max": 6
+            },
+            "shield": 10000
+        },
+        "state": "WAIT_MOVE",
+        "status": {
+            "bankPut": 0
+        },
+        "toEnding": "ro2_ending_1",
+        "trace": []
+    },
+    "record": {
+        "brief": null
+    },
+    "troop": {
+        "chars": {
+            "1": {
+                "charBuff": [],
+                "charId": "char_4080_lin",
+                "currentEquip": "uniequip_003_lin",
+                "defaultSkillIndex": 2,
+                "equip": {
+                    "uniequip_001_lin": {
+                        "hide": 0,
+                        "level": 1,
+                        "locked": 0
+                    },
+                    "uniequip_002_lin": {
+                        "hide": 0,
+                        "level": 3,
+                        "locked": 0
+                    },
+                    "uniequip_003_lin": {
+                        "hide": 0,
+                        "level": 3,
+                        "locked": 0
+                    }
+                },
+                "evolvePhase": 2,
+                "exp": 0,
+                "favorPoint": 25570,
+                "gainTime": 1743132975,
+                "instId": "1",
+                "isCure": false,
+                "isUpgrade": false,
+                "level": 90,
+                "mainSkillLvl": 7,
+                "population": 0,
+                "potentialRank": 5,
+                "skills": [
+                    {
+                        "completeUpgradeTime": -1,
+                        "skillId": "skchr_lin_1",
+                        "specializeLevel": 3,
+                        "state": 0,
+                        "unlock": 1
+                    },
+                    {
+                        "completeUpgradeTime": -1,
+                        "skillId": "skchr_lin_2",
+                        "specializeLevel": 3,
+                        "state": 0,
+                        "unlock": 1
+                    },
+                    {
+                        "completeUpgradeTime": -1,
+                        "skillId": "skchr_lin_3",
+                        "specializeLevel": 3,
+                        "state": 0,
+                        "unlock": 1
+                    }
+                ],
+                "skin": "char_4080_lin@nian#10",
+                "starMark": 0,
+                "troopInstId": "0",
+                "type": "NORMAL",
+                "upgradeLimited": false,
+                "upgradePhase": 1,
+                "voiceLan": "JP"
+            },
+            "2": {
+                "charBuff": [],
+                "charId": "char_4080_lin",
+                "currentEquip": null,
+                "defaultSkillIndex": 1,
+                "equip": {
+                    "uniequip_001_lin": {
+                        "hide": 0,
+                        "level": 1,
+                        "locked": 0
+                    },
+                    "uniequip_002_lin": {
+                        "hide": 0,
+                        "level": 3,
+                        "locked": 0
+                    },
+                    "uniequip_003_lin": {
+                        "hide": 0,
+                        "level": 3,
+                        "locked": 0
+                    }
+                },
+                "evolvePhase": 1,
+                "exp": 0,
+                "favorPoint": 25570,
+                "gainTime": 1743132975,
+                "instId": "2",
+                "isCure": false,
+                "isUpgrade": false,
+                "level": 80,
+                "mainSkillLvl": 7,
+                "population": 0,
+                "potentialRank": 5,
+                "skills": [
+                    {
+                        "completeUpgradeTime": -1,
+                        "skillId": "skchr_lin_1",
+                        "specializeLevel": 0,
+                        "state": 0,
+                        "unlock": 1
+                    },
+                    {
+                        "completeUpgradeTime": -1,
+                        "skillId": "skchr_lin_2",
+                        "specializeLevel": 0,
+                        "state": 0,
+                        "unlock": 1
+                    },
+                    {
+                        "completeUpgradeTime": -1,
+                        "skillId": "skchr_lin_3",
+                        "specializeLevel": 0,
+                        "state": 0,
+                        "unlock": 0
+                    }
+                ],
+                "skin": "char_4080_lin@nian#10",
+                "starMark": 0,
+                "troopInstId": "0",
+                "type": "NORMAL",
+                "upgradeLimited": true,
+                "upgradePhase": 0,
+                "voiceLan": "JP"
+            }
+        },
+        "expedition": [],
+        "expeditionReturn": null,
+        "hasExpeditionReturn": false
+    }
+}

@@ -5,3 +5,4 @@ data/excel
 .DS_Store
 assets/
 mods/
+.runtime/

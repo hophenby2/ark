@@ -2,6 +2,7 @@ import re
 import os
 import requests
 
+from copy import deepcopy
 from flask import request, redirect, Response
 from random import shuffle
 from constants import CONFIG_PATH
@@ -61,7 +62,7 @@ def prodNetworkConfig_new():
             + str(server_config["server"]["port"])
         )
 
-    result = server_config["networkConfig"]["cn_new"]
+    result = deepcopy(server_config["networkConfig"]["cn_new"])
     for index in result:
         if isinstance(result[index], str) and result[index].find("{server}") >= 0:
             result[index] = re.sub("{server}", server, result[index])
@@ -74,7 +75,7 @@ def prodNetworkConfig():
 
     mode = server_config["server"]["mode"]
     server = request.host_url[:-1]
-    network_config = server_config["networkConfig"][mode]
+    network_config = deepcopy(server_config["networkConfig"][mode])
     funcVer = network_config["content"]["funcVer"]
 
     if server_config["assets"]["autoUpdate"]:
@@ -126,7 +127,11 @@ def prodPreAnnouncement():
         case _:
             data = requests.get("https://ak-conf.hypergryph.com/config/prod/announce_meta/Android/preannouncement.meta.json", verify=False)
 
-    return data
+    return Response(
+        data.content,
+        status=data.status_code,
+        content_type=data.headers.get("Content-Type", "application/json"),
+    )
 
 
 def prodAnnouncement():
@@ -135,13 +140,17 @@ def prodAnnouncement():
     mode = server_config["server"]["mode"]
     match mode:
         case "cn":
-            data = requests.get("https://ak-conf.hypergryph.com/config/prod/announce_meta/Android/preannouncement.meta.json", verify=False)
+            data = requests.get("https://ak-conf.hypergryph.com/config/prod/announce_meta/Android/announcement.meta.json", verify=False)
         case "global":
-            data = requests.get("https://ark-us-static-online.yo-star.com/announce/Android/preannouncement.meta.json", verify=False)
+            data = requests.get("https://ark-us-static-online.yo-star.com/announce/Android/announcement.meta.json", verify=False)
         case _:
-            data = requests.get("https://ak-conf.hypergryph.com/config/prod/announce_meta/Android/preannouncement.meta.json", verify=False)
+            data = requests.get("https://ak-conf.hypergryph.com/config/prod/announce_meta/Android/announcement.meta.json", verify=False)
 
-    return data
+    return Response(
+        data.content,
+        status=data.status_code,
+        content_type=data.headers.get("Content-Type", "application/json"),
+    )
 
 def prodGateMeta():
     return {
@@ -266,30 +275,40 @@ def prodGameBulletin():
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36 Edg/105.0.1343.53"
     }
     cache_path = os.path.abspath("./assets/ak-webview/gameBulletin/")
+    cache_file = os.path.join(cache_path, "index.html")
     arch = request.args.get("target", None)
     if arch is None:
         arch = "Android"
 
-    if True:
-        file = requests.get(f"https://ak-webview.hypergryph.com/gameBulletin?target={arch}", stream=True, verify=False, headers=header)
+    try:
+        file = requests.get(
+            f"https://ak-webview.hypergryph.com/gameBulletin?target={arch}",
+            timeout=15,
+            verify=False,
+            headers=header,
+        )
+    except requests.RequestException:
+        file = None
 
-        if file.status_code == 200:
-            if not os.path.exists(cache_path):
-                os.makedirs(cache_path)
+    if file is not None and file.status_code == 200:
+        os.makedirs(cache_path, exist_ok=True)
+        current_file_md5 = hashlib.md5(file.content).hexdigest()
+        old_file_md5 = None
 
-            if os.path.exists(f"{cache_path}/index.html"):
-                with open(f"{cache_path}/index.html", "rb") as old_file:
-                    old_file_md5 = hashlib.md5(old_file.read()).hexdigest()
-                
-                current_file_md5 = hashlib.md5(file.content).hexdigest()
+        if os.path.exists(cache_file):
+            with open(cache_file, "rb") as old_file:
+                old_file_md5 = hashlib.md5(old_file.read()).hexdigest()
 
-                if old_file_md5 != current_file_md5:
-                    os.rename(f"{cache_path}/index.html", f"{cache_path}/index.{datetime.now().strftime('%Y%m%d%H%M%S')}.html")
-                
-                    with open(f"{cache_path}/index.html", "wb") as f:
-                        for chunk in file.iter_content(chunk_size=1024):
-                            if chunk:
-                                f.write(chunk)
+        if old_file_md5 != current_file_md5:
+            if old_file_md5 is not None:
+                archive_file = os.path.join(
+                    cache_path,
+                    f"index.{datetime.now().strftime('%Y%m%d%H%M%S')}.html",
+                )
+                os.replace(cache_file, archive_file)
+
+            with open(cache_file, "wb") as output:
+                output.write(file.content)
 
     server_config = get_memory("config")
     if server_config["server"]["adaptive"]:
@@ -297,8 +316,11 @@ def prodGameBulletin():
     else:
         server = f"http://{server_config['server']['host']}:{server_config['server']['port']}"
 
-    with open(f"{cache_path}/index.html", encoding="utf-8") as f:
-        content = f.read()
+    if os.path.exists(cache_file):
+        with open(cache_file, encoding="utf-8") as f:
+            content = f.read()
+    else:
+        content = "<!doctype html><html><head><meta charset=\"utf-8\"></head><body></body></html>"
     content = content.replace("https://web.hycdn.cn", server)
     # 返回响应，保留 Content-Type
     content_type = "text/html; charset=utf-8"
