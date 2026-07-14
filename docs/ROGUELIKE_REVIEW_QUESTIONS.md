@@ -19,6 +19,7 @@ Q05=B，在拿到 Boss 样本前维持零矩阵收益。
 
 - `待核对`：尚未收到结论。
 - `已确认`：有同版本表、协议样本或可复核资料。
+- `部分确认`：核心选择已确定，但仍有独立子项待确认。
 - `被否定`：当前猜测与证据冲突。
 - `保守方案`：暂时无证据，明确采用不发奖、不推进或返回不支持的安全行为。
 
@@ -32,25 +33,25 @@ Q05=B，在拿到 Boss 样本前维持零矩阵收益。
 - SQLite Repository 是当前局、随机种子和 revision 的唯一真源；非法动作必须事务回滚。
 - 未知 theme、zone、node type 不得 clamp，也不得回退到普通/紧急收益。
 - 普通/紧急基础收益使用 [rlv2_logic.py](../server/rlv2_logic.py) 的 60 格固定矩阵；`rogue_4/5` 仅显式允许 `zone 7 -> 第六档`。
-- 地图硬验收是每个受支持 `theme x zone` 组合 2500 个固定种子；10000 个仅作发布前非阻塞分布审计。
+- 地图硬验收是每个受支持 `theme × zone` 组合 2500 个固定种子；10000 个仅作发布前非阻塞分布审计。
 - 无证据的概率、奖励池和乘区必须标记为近似或保持关闭，不能伪装成原版精确值。
 
 ## 3. 快速决策表
 
 | ID | 优先级 | 待核对主题 | 推荐暂定方案 | 用户结论 | 状态 |
 | --- | --- | --- | --- | --- | --- |
-| Q01 | 阻塞 | 唯一版本基线 | 用客户端 manifest + Data 版本 +表 hash 组成 fixture 版本键 | 待填写 | 待核对 |
+| Q01 | 阻塞 | 唯一版本基线 | Windows 2.7.51 为主，Android 兼容；fixture 仍记录完整版本键 | 以 win 为准，二者可兼容运行 | 部分确认：旧大写配置待定 |
 | Q02 | 阻塞 | 可提供的真实协议样本 | 优先收集去标识完整会话；无样本部分保持保守近似 | 待填写 | 待核对 |
 | Q03 | 阻塞 | 战斗奖励协议外形 | 用真实普通/紧急流程确认当前 EXP/gold 通道和字段类型 | 待填写 | 待核对 |
-| Q04 | 阻塞 | `/rlv2/gameSettle` | 先抓胜利、失败、放弃；证据不足只做防重复骨架 | 待填写 | 待核对 |
+| Q04 | 阻塞 | `finishGame/gameSettle` 与 outer 存储 | 先确认调用顺序，并把 per-UID outer 纳入原子结算边界 | 待填写 | 待核对 |
 | Q05 | 高 | Boss 收益 | 以 `theme + stage/variant + context` 建独立表，缺项不回退 | 待填写 | 待核对 |
-| Q06 | 高 | 特殊/传送区域收益 | 地图生成时显式保存 `rewardZone/rewardVariant`，不解析名称猜测 | 待填写 | 待核对 |
+| Q06 | 高 | 特殊/传送区域收益 | 用不下发客户端的 server context 保存奖励上下文 | 待填写 | 待核对 |
 | Q07 | 高 | RO4 旗帜收益 | 只接受显式 variant；不使用 `levelReplaceIds` 推断 | 待填写 | 待核对 |
 | Q08 | 高 | 紧急额外掉落与乘区 | 分离基础值、倍率和额外池；未知规则默认关闭 | 待填写 | 待核对 |
 | Q09 | 高 | 事件楼层离线映射 | 生成带 revision 的映射；未映射事件默认不可出现 | 待填写 | 待核对 |
 | Q10 | 高 | 事件完整条件与效果 | 条件 AST + 效果解释器；未知效果不静默成功 | 待填写 | 待核对 |
-| Q11 | 高 | 隐藏第六层、RO4/5 zone 7 | 显式 EndingRoute 状态机；证据前不随机开启 | 待填写 | 待核对 |
-| Q12 | 中 | 五主题地图模板和权重 | 先做约束式生成器与 trace，再用同版本样本校准分布 | 待填写 | 待核对 |
+| Q11 | 高 | 各主题 zone 6/7/8 与结局路线 | 显式 EndingRoute 状态机；证据前不随机开启 | 待填写 | 待核对 |
+| Q12 | 中 | 五主题地图模板和权重 | 先移除无 stage Boss 硬死节点，再做约束式生成器与 trace | 待填写 | 待核对 |
 | Q13 | 中 | 状态转移矩阵 | 先按现有成功流程建立保守矩阵，未知顺序返回 4xx | 待填写 | 待核对 |
 | Q14 | 中 | request-id 幂等 | 优先使用客户端稳定 ID；没有时才考虑受限请求指纹 | 待填写 | 待核对 |
 | Q15 | 中 | 空 `202` 接口的错误行为 | 逐接口烟测 501/409，确认客户端不会崩溃或无限重试 | 待填写 | 待核对 |
@@ -65,25 +66,28 @@ Q05=B，在拿到 Boss 样本前维持零矩阵收益。
 已知事实：
 
 - 当前目标客户端是 `2.7.51`。
-- 配置中存在 Android `26-07-10-13-49-06_a14b4a` 与 Windows `26-07-10-13-52-38_fcd8ed` 两个完整资源版本。
+- 配置中有效代码读取小写 `android/windows`，对应 `26-07-10-13-49-06_a14b4a` 与 `26-07-10-13-52-38_fcd8ed`。
+- `config.json` 还残留一个大小写不同、当前版本接口不读取的 `Windows=2.7.11 / 26-03-09-09-45-56_fd97a4` 条目，需要确认是否删除或保留兼容用途。
 - 当前 `roguelike_topic_table.json` SHA-256 为 `643df7574c8955c827bec2645ed09c06df44bc6654a85ead96002a8298b91bb6`。
 
-疑问：后续抓包和 fixture 应以 Android、Windows，还是两者同时为基线？两份资源是否有影响 RLV2 的热更差异？
+已确认：后续以 Windows `2.7.51 / 26-07-10-13-52-38_fcd8ed` 为主基线，Android 作为可兼容运行的平台。
+
+剩余疑问：fixture 是否仍分别记录平台以便定位差异；大写旧 `Windows=2.7.11` 配置是否可以清理？
 
 候选方案：
 
 - **A（推荐）**：每份 fixture 使用 `clientVersion + dataVersion + topicTableHash + platform` 作为版本键，指定一个主基线，另一个只做兼容回归。
 - **B**：暂时只记录 `2.7.51 / 26-07-10`，忽略平台和完整 Data 版本。成本低，但可能把不同热更样本混在一起。
 
-需要核对：
+需要补充核对：
 
-- 主基线平台和完整 Data 版本。
-- 两个平台是否都需要正式支持。
-- 实际运行客户端的 manifest 或版本界面截图/日志。
+- fixture 是否仍记录 platform 字段，以便将来定位兼容差异。
+- 大写旧 `Windows` 配置是否可以清理。
+- Windows 主基线的 manifest 或版本界面截图/日志路径。
 
-用户结论：`待填写`
+用户结论：`走2.7.51就行`
 
-证据：`待填写`
+证据：`官方cdn只提供最新版的资源下载，需要适配最新版；老肉鸽没有改动`
 
 ### Q02：可以提供哪些去标识真实协议样本？
 
@@ -109,9 +113,9 @@ fixtures/rlv2/<platform>/<data-version>/<scenario>/
 
 需要核对：可提供的抓包格式、可否入库、脱敏要求，以及现有样本路径。
 
-用户结论：`待填写`
+用户结论：`奖励池和概率按照prts和tomimi的来，里面有藏品一览和事件一览。可以先同步到本地，在本地创建合适的表与数据结构来存储，藏品有稀有度，仅xx事件可获取等标签，在对应的标签中随机（如ro1中负面藏品原版/变异版仅会在对应难度的开局与进到特定层数的时候获取，ro345中小玩意特指稀有度低（售价8）的藏品，所有boss战奖励必掉16块藏品二选一（若有可选藏品+1的藏品或某些事件导致的藏品数增加可能会增加到三个或更多），按照标签驱动）`
 
-证据：`待填写`
+证据：``
 
 ### Q03：当前战斗奖励协议假设是否正确？
 
@@ -131,22 +135,32 @@ fixtures/rlv2/<platform>/<data-version>/<scenario>/
 
 需要核对：普通/紧急响应、逐次领取请求、每步 current 变化，以及跳过券/跳过 gold 的客户端行为。
 
-用户结论：`待填写`
+用户结论：`gold为独立的reward，而且可以选择不领，经验以外的其他奖励都可以选择不领直接结束奖励阶段；普通和紧急战斗都是掉一张随机职业的券；若为3/5层则为两张随机职业的券二选一；紧急会多掉一个随机藏品`
 
-证据：`待填写`
+证据：``
 
-### Q04：`/rlv2/gameSettle` 的最小正确闭环是什么？
+### Q04：`finishGame/gameSettle` 与 outer 的最小正确闭环是什么？
 
-已知事实：客户端元数据确认该接口存在；当前 `GAME_OVER` 只是不可继续闸门，未结算外层记录、分数、BP、奖励和 seed 生命周期。
+已知事实：
 
-疑问：胜利、失败、放弃是否共用接口；请求和响应字段是什么；何时清空 current；重复结算返回什么；外层记录和奖励何时更新？
+- IL2CPP 已确认 `RoguelikeTopicGameSettleRequest` 是空请求。
+- `RoguelikeTopicGameSettleResponse` 固定包含 `game` 与 `outer`。`game` 下已知有 `brief/record/score/monthTeam/challenge`，`outer` 下已知有任务、各类 BP、解锁列表、GP、特殊干员和 items 等字段。
+- 客户端还定义了 `/rlv2/finishGame`、`GAME_SETTLE` pending 和 `EndingResult(brief, record)`；它们与 `/rlv2/gameSettle` 的调用关系尚未确认。
+- 当前 `GAME_OVER` 只是不可继续闸门，两个终局路由都没有注册。
+- SQLite 当前只保存 active run、seed 和 revision；`SyncData` 只按 UID 合并 `rlv2.current`，`rlv2.outer` 仍来自全局用户 JSON，无法与清局按 UID 原子提交。
+
+疑问分为两组：
+
+1. **协议顺序**：何时产生 `GAME_SETTLE` pending，`finishGame` 和 `gameSettle` 谁先调用；胜利、失败、放弃是否同序；响应字段何时为 null/default；重复调用返回什么。
+2. **存储边界**：是否把每个 UID 的 `rlv2.outer`、任务/解锁/BP 及待领取外层奖励纳入 Repository，并与 run 清理在同一事务提交。
 
 候选方案：
 
-- **A（推荐）**：分别抓正常胜利、失败、主动放弃三条完整终局，再实现精确事务。
-- **B（保守）**：只实现 `settled` 防重复和安全清局骨架，不猜分数、BP 或外层奖励；无法识别的结果明确返回不支持。
+- **A（推荐）**：分别抓正常胜利、失败、主动放弃三条完整终局，确认 `finishGame -> pending -> gameSettle` 顺序；扩展 Repository 保存 per-UID outer，在一个事务中生成结算、更新 outer、标记 settled 并清 current。
+- **B（阶段性）**：先扩展 Repository 和 `settled` 防重复骨架，但不猜分数、BP 或外层奖励；outer 计算规则未确认前不清局并明确返回不支持。
+- **C（不建议）**：只清 current，继续让 outer 使用全局 JSON。该方案会重新引入跨用户污染和非原子结算。
 
-需要核对：三类终局请求/响应、结算前后 SyncData、外层记录/BP/物品变化和重复请求行为。
+需要核对：三类终局中 `finishGame/gameSettle` 的完整请求顺序、每次响应、pending/current 变化、结算前后 SyncData、外层记录/BP/物品变化和重复请求行为；以及是否同意扩展 Repository 的 per-UID outer schema。
 
 用户结论：`待填写`
 
@@ -163,7 +177,8 @@ fixtures/rlv2/<platform>/<data-version>/<scenario>/
 候选方案：
 
 - **A（推荐）**：建立 `(theme, stageId, rewardVariant, context) -> reward rule` 的显式离线表，只发有证据的条目。
-- **B（保守）**：缺少样本的 Boss 维持零矩阵 EXP/gold，或明确返回 unsupported；绝不使用旧 `10/20/100`。
+- **B（当前保守行为）**：缺少样本的 Boss 维持零矩阵 EXP/gold，但允许流程继续并保留占位券。
+- **C（更严格）**：没有匹配规则时返回 unsupported，明确暴露未实现，但会阻塞当前 Boss 流程。两者都绝不使用旧 `10/20/100`。
 
 需要核对：每主题至少一个 Boss 的节点对象、stage ID、战斗结算、奖励领取，以及有/无减半条件的对照。
 
@@ -173,16 +188,21 @@ fixtures/rlv2/<platform>/<data-version>/<scenario>/
 
 ### Q06：特殊/传送区域如何找到所属奖励层？
 
-已知事实：当前 handler 只给 `zone.id == zone_N` 的普通/紧急节点发基础收益，`portal_zone_*`、`zone_s_*`、`zone_sky_*`、`zone_*_b` 等区域不会套用矩阵。
+已知事实：
 
-疑问：特殊区域是使用进入前楼层、区域 ID 中的层号，还是节点自带的独立奖励表？传送前后 cursor.zone 是否可靠？
+- 当前 handler 只给 `zone.id == zone_N` 的普通/紧急节点发基础收益，`portal_zone_*`、`zone_s_*`、`zone_sky_*`、`zone_*_b` 等区域不会套用矩阵。
+- event battle 会改写当前事件节点的 `stage`，但保留原事件 node type，因此当前也不会获得普通/紧急基础收益。
+- 当前 run 会整体作为 `rlv2.current` 回传客户端；未经验证直接添加 `rewardZone/rewardVariant` 会把内部字段暴露给客户端。
+
+疑问：特殊区域使用进入前楼层、区域 ID 中的层号，还是独立奖励表？事件战斗按 stage 类型、原事件节点，还是事件专属规则结算？传送前后 cursor.zone 是否可靠？
 
 候选方案：
 
-- **A（推荐）**：地图生成或进入特殊区时写入服务端内部 `rewardZone` 和 `rewardVariant`，结算只读取显式上下文。
-- **B（保守）**：没有显式上下文时不发基础 EXP/gold，不从 zone 名称或 stage 名称猜测。
+- **A（推荐）**：在 Repository 中增加不下发客户端的 server context，以 `(run, zone, node)` 保存 `rewardZone/rewardVariant/battleKind`，结算只读取显式上下文。
+- **B**：若真实 fixture 证明客户端 node/current 已有对应字段，则复用已验证字段，不新增私有协议字段。
+- **C（保守）**：没有显式上下文时不发基础 EXP/gold，不从 zone 名称或 stage 名称猜测。
 
-需要核对：进入特殊区域前后的 map/current、区域 ID、cursor、节点、battleFinish，以及公开规则所称“所属层”的实例。
+需要核对：进入特殊区域前后的 map/current、区域 ID、cursor、节点、battleFinish，事件战斗的对照样本，以及客户端能否容忍 current 中未知字段。还需决定 server context 是独立 SQLite 字段还是由可重建的动作日志产生。
 
 用户结论：`待填写`
 
@@ -260,18 +280,26 @@ fixtures/rlv2/<platform>/<data-version>/<scenario>/
 
 ## 7. 地图与结局问题
 
-### Q11：隐藏第六层和 RO4/RO5 zone 7 如何进入？
+### Q11：各主题 zone 6/7/8 与结局路线如何对应？
 
-已知事实：当前 `_rlv2.finishNode()` 在 zone 5 结束标准流程；收益 lookup 已能处理合法 zone 6 和 RO4/5 zone 7，但自产地图不会自然进入这些路线。
+已知事实：当前 `_rlv2.finishNode()` 在 zone 5 结束标准流程，自产地图不会自然进入后续区域。客户端表中的区域并非统一的“第六层”：
 
-疑问：进入条件、改线时机、隐藏层与替代层互斥关系、Boss/事件替换，以及 `toEnding/chgEnding` 的真实语义是什么？
+| 主题 | 客户端区域 | `isHiddenZone` | 当前收益 lookup |
+| --- | --- | --- | --- |
+| RO1 | zone 6 | true | 支持第六档普通/紧急 |
+| RO2 | zone 6、7 | true | 支持 zone 6；zone 7 不进入矩阵 |
+| RO3 | zone 6、7 | true | 支持 zone 6；zone 7 不进入矩阵 |
+| RO4 | zone 6、7、8 | false | zone 6/7 共用第六档；zone 8 不进入矩阵 |
+| RO5 | zone 6、7、8 | false | zone 6/7 共用第六档；zone 8 不进入矩阵 |
+
+疑问：每个结局的实际区域序列是什么；进入条件和改线时机是什么；zone 6/7/8 是楼层、替代路线、终局区域还是特殊结算区；Boss/事件如何替换；`toEnding/chgEnding` 的真实语义是什么？
 
 候选方案：
 
-- **A（推荐，有样本后）**：建立显式 `EndingRoute` 状态机，从触发事件/藏品一直记录到 zone、Boss 和 gameSettle。
-- **B（当前保守行为）**：只保证测试或导入的合法 zone 6/7 状态能正确结算；自产地图不随机开启隐藏路线。
+- **A（推荐，有样本后）**：先建立 `ending -> ordered zones -> boss/event -> settle` 核对矩阵，再实现显式 `EndingRoute` 状态机，从触发事件/藏品记录到最终结算。
+- **B（当前保守行为）**：只保证已支持的测试/导入 zone 状态能按明确边界结算；自产地图不随机开启未知路线，zone 7/8 不宽松映射。
 
-需要核对：每主题多结局从触发条件开始到进层、Boss、gameSettle 的完整 current diff。
+需要核对：每主题、每结局从触发条件开始的完整区域序列，以及每次进层、Boss、`finishGame/gameSettle` 的 current diff。
 
 用户结论：`待填写`
 
@@ -279,16 +307,20 @@ fixtures/rlv2/<platform>/<data-version>/<scenario>/
 
 ### Q12：地图模板先做近似生成器还是等待完整样本？
 
-已知事实：当前地图是通用权重随机图；`rollNodeData` 不是自然节点白名单；现有 RO3 紧急约束来自旧视频，只能作为候选性质测试。
+已知事实：
+
+- 当前地图是通用权重随机图；`rollNodeData` 不是自然节点白名单；现有 RO3 紧急约束来自旧视频，只能作为候选性质测试。
+- zone > 1 的普通列权重会随机抽到 `node type=4`，但生成器只为 type 1/2 填 stage。这类无 stage Boss 节点既不能普通进入，也不能开始战斗，是已知硬死节点。
+- 当前 Boss 池只匹配 `roN_b_[1-9]`，会跨楼层抽取，并遗漏后缀变体和编号 10。
 
 疑问：当前版本各主题/楼层的列容量、节点池、保底/上限、结局占位、连线模板，以及模式和结局差异是什么？
 
 候选方案：
 
-- **A（推荐）**：先实现分层的约束式生成器和 `GenerationTrace`，只声明可达性与已证实约束；再用同版本 map 样本校准模板和分布。
+- **A（推荐）**：先从普通列移除无规则的 type 4，只允许显式层末/Boss 槽位生成 Boss；以 stage 表元数据和已确认的 variant/zone 规则构造 Boss 池。同时实现分层约束式生成器和 `GenerationTrace`，再用同版本 map 样本校准模板和分布。
 - **B**：等待足够样本后一次性实现更接近原版的模板。精度更高，但当前通用生成器会长期保留。
 
-需要核对：是否接受 A 的阶段性近似；每个 `theme x zone x mode` 可提供多少 map/current 样本；旧 RO3 约束是否仍可接受。
+需要核对：是否同意立即修复无 stage type 4 硬死节点；是否接受 A 的阶段性近似；每个 `theme × zone × mode` 可提供多少 map/current 样本；旧 RO3 约束是否仍可接受。
 
 用户结论：`待填写`
 
