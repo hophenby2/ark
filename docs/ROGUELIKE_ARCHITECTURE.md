@@ -11,11 +11,11 @@
 
 - 存储层已经从共享 JSON 升级为 SQLite：当前局、主随机种子和种子历史在同一事务提交，具备 UID 隔离能力、revision、自定义 CAS、Legacy 导入和单用户兼容镜像。
 - 当前配置仍是 `enabled=false` 的单用户模式，所有请求实际映射到 `__single_user__`；“支持多用户”不等于“当前已启用多用户”。
-- Flask 共注册 44 个 `/rlv2/*` POST 接口，其中 19 个有实际状态逻辑，24 个返回空对象和 HTTP 202，另 1 个 BP 奖励接口返回空对象和 HTTP 200。也就是说，25/44 的注册接口目前没有业务行为。
+- Flask 共注册 46 个 `/rlv2/*` POST 接口，其中 21 个有实际状态逻辑，24 个返回空对象和 HTTP 202，另 1 个 BP 奖励接口返回空对象和 HTTP 200。也就是说，25/46 的注册接口目前没有业务行为。
 - 开局、初始选择、招募、地图移动、事件、商店、战斗、奖励和跨层已能组成五层基础流程；状态转移仍直接散落在 handler 中，没有独立的领域状态机。
 - RO1、RO2 的人工事件数据包含实际效果；RO3、RO4、RO5 的事件入口和 choice 效果当前全部为空，运行时基本只会出现“离开”。
 - 地图是通用权重随机图，不是按主题和结局模板生成；五主题专属模块大多只初始化了客户端需要的数据外形。
-- 终局只写入 `GAME_OVER`，没有注册客户端需要的 `/rlv2/gameSettle`，外层记录、分数、BP 和奖励没有结算闭环。
+- 终局已具备 `finishGame -> GAME_SETTLE -> gameSettle` 的零奖励安全清局闭环；外层记录、原版分数、BP 和奖励仍未实现。
 
 当前最影响可玩性的缺口不是 SQLite，而是终局协议、地图 Boss 节点、战斗零生命判定、空事件数据和大量空接口。
 
@@ -154,8 +154,10 @@ repository_metadata(key PRIMARY KEY, value)
 | --- | --- |
 | `INIT` | `GAME_INIT_RELIC`、`GAME_INIT_RECRUIT_SET`、`GAME_INIT_RECRUIT`，或压在其上的 `RECRUIT` |
 | `WAIT_MOVE` | `pending=[]`，允许地图移动 |
-| `PENDING` | `SCENE/SHOP/BATTLE/BATTLE_REWARD/RECRUIT/DRAW_COPPER` |
-| `GAME_OVER` | `pending=[]`，`status.gameResult` 存在 |
+| `PENDING` | `SCENE/SHOP/BATTLE/BATTLE_REWARD/RECRUIT/DRAW_COPPER/GAME_SETTLE` |
+| `NONE` | 枚举默认值；当前无活动局实际使用 `player=null` |
+
+`GAME_OVER` 不在客户端 `PlayerRoguelikePlayerState` 枚举中；旧服务产生的该值只作为历史存档输入，读取时立即迁移，绝不能再下发给客户端。
 
 `pending[0]` 是活动项，但这个列表同时具有队列和栈的语义：初始化项用 `append/extend` 顺序排队，嵌套招募、事件战斗和奖励用 `insert(0)` 压栈。状态不变量没有集中校验，各 handler 自己检查和 `pop(0)`；`finishBattleReward()`、`leaveShop()` 甚至直接清空全部 pending。
 
@@ -169,9 +171,9 @@ stateDiagram-v2
     WAIT_MOVE --> PENDING: moveTo / moveAndBattleStart
     PENDING --> PENDING: 场景跳转 / 招募 / 奖励选择
     PENDING --> WAIT_MOVE: 离开事件或商店 / 完成战斗奖励
-    PENDING --> GAME_OVER: 战斗失败 / 事件生命归零
-    WAIT_MOVE --> GAME_OVER: 完成第 5 层终点
-    GAME_OVER --> [*]: 缺少 gameSettle；只能 giveUp 清局
+    PENDING --> PENDING: 战斗失败 / 事件生命归零，生成 GAME_SETTLE
+    WAIT_MOVE --> PENDING: 完成第 5 层终点，生成 GAME_SETTLE
+    PENDING --> [*]: gameSettle 清局并回收 seed
 ```
 
 ### 6.1 创建与初始选择
@@ -218,19 +220,19 @@ stateDiagram-v2
 
 - 战斗开始会校验地图关卡和路线，将状态设为 `PENDING` 并压入 `BATTLE`。
 - 下发内容包括藏品/分队/难度 Buff、固定的 `chestCnt=100`、`goldTrapCnt=100` 和箱子信息；RO2 还会生成 100 个骰点及骰子 token。
-- 战斗完成依赖客户端加密结果中的 `completeState` 和 `leftHp`。成功时结算生命/护盾；失败直接进入 `GAME_OVER`。
+- 战斗完成依赖客户端加密结果中的 `completeState` 和 `leftHp`。`PASS(2)` 与 `COMPLETE(3)` 都是胜利，结算生命/护盾并生成 `BATTLE_REWARD`；只有 `FAIL(1)` 进入 `GAME_SETTLE`。响应补齐 `CommonFinishBattleResponse` 字段，已应用的成功或放弃结果重试时返回当前状态 200，不重复发奖。
 - 当前工作区已改为按 `theme + zone + normal/emergency` 表结算基础经验和源石锭，并校验主题表中的 `expItemId/goldItemId`。经验立即入账，源石锭作为待领取奖励发放。
 - 当前奖励仍固定附带一张全职业券；Boss 节点没有独立基础经验/源石锭规则，只会得到固定券。
 - `chooseBattleReward` 已校验 `index + sub` 并防止同一项重复领取；`finishBattleReward` 不要求所有奖励已领取，可以直接跳过剩余奖励。
-- 成功结果若上报 `leftHp=0`，生命会被结算为 0，但 handler 仍创建奖励，没有转入 `GAME_OVER`。
+- 成功结果若上报 `leftHp=0`，生命会被结算为 0，但 handler 仍创建奖励，没有转入终局结算。
 
 ### 6.6 跨层、终局与放弃
 
 - 完成带 `zone_end` 的节点后，第 1 至第 4 层会丢弃当前地图并生成下一层。
-- 第 5 层结束后固定写入成功的 `status.gameResult`；`toEnding` 只用于结果字段，没有驱动 Boss、隐藏层或结局改线。
-- `GAME_OVER` 只是不可继续的内部闸门。仓库没有 `/rlv2/gameSettle` 路由，也没有外层记录、分数、BP、奖励和 seed 生命周期结算。
+- 第 5 层结束后直接写入成功的 `PENDING + GAME_SETTLE + content.result`；`toEnding` 只用于结果字段，没有驱动 Boss、隐藏层或结局改线。
+- `finishGame` 对已经生成的 `GAME_SETTLE` 幂等返回；`gameSettle` 返回对象型零分和字段完整的零外层收益结构，并原子清空 run、回收 seed。历史 `GAME_OVER` 或旧版错误 pending 会在登录/动作入口先迁移。该流程没有实现原版外层记录、BP 或奖励。
 - `giveUpGame` 可在任意状态清空 run，把当前 seed 插入 `seed_list` 头部并清空活动 seed。
-- 自然胜负不会清理 seed；`seed_list` 没有消费、去重或长度限制。
+- 自然胜负在 `gameSettle` 时回收 seed；`seed_list` 没有消费、去重或长度限制。
 
 ## 7. 地图生成与随机数
 
@@ -339,37 +341,37 @@ specialZone/leave, chooseInitialExploreTool
 
 另外：
 
-- `/rlv2/gameSettle` 完全没有注册。
+- `/rlv2/finishGame` 与 `/rlv2/gameSettle` 已注册，但当前只实现安全清局，不计算外层收益。
 - `rlv2SetTroopCarry()` 存在但没有路由，客户端请求相应能力会得到 404。
 - `rlv2getRewardgetReward()` 是未注册的重复占位函数。
 - 旧 `/activity/roguelike/*` 另有 6 个空 202 接口，不应与 RLV2 主链路混用。
 
 ## 11. 测试现状
 
-仓库原有 38 个 RLV2 测试：
+当前共有 59 个 RLV2 测试：
 
 | 测试组 | 数量 | 覆盖 |
 | --- | ---: | --- |
-| `test_rlv2_logic.py` | 23 | 开局表、等级、招募、生命、事件 delta、RO3 紧急节点 |
+| `test_rlv2_logic.py` | 30 | 开局表、等级、招募、生命、战斗收益、协议迁移、事件 delta、RO3 紧急节点 |
 | `test_rlv2_repository.py` | 11 | UID、双用户隔离、CAS、线程并发、原子提交、Legacy 迁移 |
-| `test_rlv2_transactions.py` | 4 | give-up 隔离、4xx 回滚、嵌套提交、缺 UID |
+| `test_rlv2_transactions.py` | 18 | give-up/终局隔离、PASS/COMPLETE 胜利、战斗与结算重试、奖励事务、4xx 回滚、嵌套提交、缺 UID |
 
-审计开始时，`main@753eab6` 的这 38 项全部通过。当前工作区随后把 `battle_experience()` 替换为 `battle_base_reward()`，但 `test_rlv2_logic.py` 尚未同步导入，因此当前完整命令在收集逻辑测试时失败；仓储与事务的 15 项仍通过。这属于工作区正在进行的修改，不是本文改动。
+审计开始时，`main@753eab6` 的 38 项基线测试全部通过。当前工作区扩展到 59 项，逻辑、仓储与事务测试已全部通过；另用运行中服务验证了历史非法状态的登录迁移、结构化结算响应、清局和 seed 回收。
 
 当前测试缺口：
 
 - 没有真实 Flask app、路由和 `SyncData` 端到端测试；事务测试使用伪造模块。
-- 没有从 `createGame` 到 `GAME_OVER` 的完整状态机测试。
+- 没有从 `createGame` 到自然终局的完整状态机测试；失败战斗到安全清局已有事务和 Flask 请求级验证。
 - 没有 `getMap_new()` 的批量固定种子可达性、无空 stage 和分布性质测试。
 - 没有 RO1/2 完整事件链、商店、战斗奖励、RO5 通宝的 handler 测试。
-- 没有动作重试幂等、多进程锁竞争、busy timeout、数据库/镜像故障注入、损坏记录和 schema 升级测试。
+- 除 `battleFinish` 与 `gameSettle` 外，仍没有系统性的动作重试幂等测试；也缺多进程锁竞争、busy timeout、数据库/镜像故障注入、损坏记录和 schema 升级测试。
 - 自动化 workflow 只更新版本配置，没有运行测试；逻辑测试又依赖被 Git 忽略的客户端表。
 
 ## 12. 主要风险与建议顺序
 
 ### P0：修复基础闭环
 
-1. 实现并通过真实协议验证 `/rlv2/gameSettle`，明确自然胜负后的清局、外层记录、分数、BP、奖励和 seed 生命周期。
+1. 通过同版本真实协议补齐 `/rlv2/gameSettle` 的外层记录、分数、BP 和奖励；保留当前已验证的清局与 seed 生命周期。
 2. 禁止生成没有 stage 的 `type=4` 节点，并按主题、楼层和结局选择 Boss。
 3. 战斗成功后若生命为 0，必须先进入失败终态，不能继续发放奖励。
 4. 对 25 个空接口明确区分“客户端允许忽略”和“主流程必需”；关键能力在实现前不应静默返回成功。

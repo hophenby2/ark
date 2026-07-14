@@ -22,6 +22,7 @@ from rlv2_repository import (
     RunRepositoryError,
     get_run_repository,
 )
+from rlv2_logic import normalize_current_run
 from user import checkin
 from utils import read_json, write_json, get_memory, run_after_response, memory_cache, writeLog
 from virtualtime import time
@@ -31,7 +32,15 @@ def _merge_rlv2_current(player_data):
     """Merge the active run selected by the request's storage identity."""
     repository = get_run_repository()
     uid = repository.uid_from_headers(request.headers)
-    current_run = repository.load_run(uid)
+    snapshot = repository.load(uid)
+    current_run = snapshot.run
+    if normalize_current_run(current_run, int(time())):
+        snapshot = repository.save(
+            uid,
+            current_run,
+            expected_revision=snapshot.revision,
+        )
+        current_run = snapshot.run
 
     user_rlv2 = player_data.get("user", {}).get("rlv2")
     if isinstance(user_rlv2, dict) and isinstance(current_run, dict):

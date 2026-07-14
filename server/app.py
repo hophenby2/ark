@@ -459,6 +459,8 @@ app.add_url_rule("/aprilFool/act3fun/battleStart", methods=["POST"], view_func=q
 app.add_url_rule("/aprilFool/act3fun/battleFinish", methods=["POST"], view_func=quest.questBattleFinish)
 
 app.add_url_rule("/rlv2/giveUpGame", methods=["POST"], view_func=rlv2.rlv2GiveUpGame)
+app.add_url_rule("/rlv2/finishGame", methods=["POST"], view_func=rlv2.rlv2FinishGame)
+app.add_url_rule("/rlv2/gameSettle", methods=["POST"], view_func=rlv2.rlv2GameSettle)
 app.add_url_rule("/rlv2/createGame", methods=["POST"], view_func=rlv2.rlv2CreateGame)
 app.add_url_rule("/rlv2/chooseInitialRelic", methods=["POST"], view_func=rlv2.rlv2ChooseInitialRelic)
 app.add_url_rule("/rlv2/selectChoice", methods=["POST"], view_func=rlv2.rlv2SelectChoice)

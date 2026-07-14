@@ -319,8 +319,18 @@
             "NORM": 0
         }
     },
-    "rlv2_seed": "397c2dd294d31309a01aaa724c858549",
-    "seed_list": [],
+    "rlv2_seed": null,
+    "seed_list": [
+        "547f7cea43848a0085f2132deff2d665",
+        "1d50d68e3f98ccc5c5e386e911588d7a",
+        "f48d6623b234da1f86660a3197b550ee",
+        "f1c87e763d51a716699816289c0fef65",
+        "53552911fb5f83f38468346ce572a786",
+        "812e6be569284d970dbeca637edaf796",
+        "37f28812c8cf149ae027f8210d88958a",
+        "8dfdcc95a0349361e6e3d6f42816b68a",
+        "397c2dd294d31309a01aaa724c858549"
+    ],
     "vecbreakV2": {
         "assistChar": {
             "charId": "char_2014_nian",

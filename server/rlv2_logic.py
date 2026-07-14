@@ -602,3 +602,278 @@ def prepare_recruit_candidates(
         selected["population"] = 0
 
     return result
+
+
+def _protocol_int(value: Any, default: int = 0) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def _mapping_values(value: Any) -> list[dict]:
+    if isinstance(value, dict):
+        values = value.values()
+    elif isinstance(value, list):
+        values = value
+    else:
+        return []
+    return [item for item in values if isinstance(item, dict)]
+
+
+def build_ending_result(
+    run: dict, success: bool, end_ts: int
+) -> dict[str, dict]:
+    """Build the GAME_SETTLE payload represented by the current client model."""
+    player = run.get("player") if isinstance(run, dict) else None
+    player = player if isinstance(player, dict) else {}
+    game = run.get("game") if isinstance(run, dict) else None
+    game = game if isinstance(game, dict) else {}
+    prop = player.get("property")
+    prop = prop if isinstance(prop, dict) else {}
+    cursor = player.get("cursor")
+    cursor = cursor if isinstance(cursor, dict) else {}
+
+    inventory = run.get("inventory") if isinstance(run, dict) else None
+    inventory = inventory if isinstance(inventory, dict) else {}
+    relics = _mapping_values(inventory.get("relic"))
+    band = next(
+        (
+            item.get("id")
+            for item in relics
+            if isinstance(item.get("id"), str) and "_band_" in item["id"]
+        ),
+        None,
+    )
+
+    zone_id = None
+    dungeon = run.get("map") if isinstance(run, dict) else None
+    zones = dungeon.get("zones") if isinstance(dungeon, dict) else None
+    if isinstance(zones, dict):
+        zone = zones.get(str(cursor.get("zone")))
+        if isinstance(zone, dict):
+            zone_id = zone.get("id")
+
+    buff = run.get("buff") if isinstance(run, dict) else None
+    buff = buff if isinstance(buff, dict) else {}
+    capsule = buff.get("capsule")
+    capsule_ids = (
+        [capsule["id"]]
+        if isinstance(capsule, dict) and isinstance(capsule.get("id"), str)
+        else []
+    )
+
+    troop = run.get("troop") if isinstance(run, dict) else None
+    troop = troop if isinstance(troop, dict) else {}
+    char_buffs = []
+    for char in _mapping_values(troop.get("chars")):
+        buffs = char.get("charBuff")
+        if isinstance(buffs, list):
+            char_buffs.extend(item for item in buffs if isinstance(item, str))
+
+    module = run.get("module") if isinstance(run, dict) else None
+    module = module if isinstance(module, dict) else {}
+    totem = module.get("totem")
+    totem_pieces = (
+        _mapping_values(totem.get("totemPiece"))
+        if isinstance(totem, dict)
+        else []
+    )
+    fragment = module.get("fragment")
+    fragments = (
+        _mapping_values(fragment.get("fragments"))
+        if isinstance(fragment, dict)
+        else []
+    )
+
+    copper_counter: dict[str, int] = {}
+    copper = module.get("copper")
+    copper_items = (
+        _mapping_values(copper.get("bag"))
+        if isinstance(copper, dict)
+        else []
+    )
+    for item in copper_items:
+        item_id = item.get("id")
+        if isinstance(item_id, str):
+            copper_counter[item_id] = copper_counter.get(item_id, 0) + max(
+                1, _protocol_int(item.get("count"), 1)
+            )
+
+    scrap_counter: dict[str, int] = {}
+    scrap = module.get("scrap")
+    scrap_items = (
+        _mapping_values(scrap.get("inventory"))
+        if isinstance(scrap, dict)
+        else []
+    )
+    for item in scrap_items:
+        item_id = item.get("id")
+        if isinstance(item_id, str):
+            scrap_counter[item_id] = scrap_counter.get(item_id, 0) + 1
+
+    ending = player.get("toEnding") if success else None
+    brief = {
+        "level": _protocol_int(prop.get("level")),
+        "success": int(bool(success)),
+        "ending": ending,
+        "failEnding": None,
+        "theme": game.get("theme"),
+        "mode": game.get("mode") or "NONE",
+        "predefined": game.get("predefined"),
+        "band": band,
+        "startTs": _protocol_int(game.get("start")),
+        "endTs": _protocol_int(end_ts),
+        "endZoneId": zone_id,
+        "modeGrade": _protocol_int(
+            game.get("modeGrade", game.get("eGrade", 0))
+        ),
+        "seed": game.get("seed"),
+        "activity": game.get("activity"),
+    }
+    squad_buffs = buff.get("squadBuff")
+    squad_buffs = squad_buffs if isinstance(squad_buffs, list) else []
+    record = {
+        "cntZone": _protocol_int(cursor.get("zone")),
+        "relicList": [
+            item["id"] for item in relics if isinstance(item.get("id"), str)
+        ],
+        "capsuleList": capsule_ids,
+        "activeToolList": [],
+        "charBuff": char_buffs,
+        "squadBuff": [
+            item for item in squad_buffs if isinstance(item, str)
+        ],
+        "totemList": [
+            item["id"]
+            for item in totem_pieces
+            if isinstance(item.get("id"), str)
+        ],
+        "exploreToolList": [
+            item["id"]
+            for item in _mapping_values(inventory.get("exploreTool"))
+            if isinstance(item.get("id"), str)
+        ],
+        "fragmentList": [
+            item["id"]
+            for item in fragments
+            if isinstance(item.get("id"), str)
+        ],
+        "copperCounter": copper_counter,
+        "scrapCounter": scrap_counter,
+        "legacyList": [],
+    }
+    return {"brief": brief, "record": record}
+
+
+def queue_game_settlement(
+    run: dict,
+    success: bool,
+    reason: str,
+    end_ts: int,
+) -> dict[str, dict]:
+    """Move a finished run into the only terminal state understood by the client."""
+    result = build_ending_result(run, success, end_ts)
+    player = run["player"]
+    player["state"] = "PENDING"
+    player["pending"] = [
+        {
+            "type": "GAME_SETTLE",
+            "content": {"result": deepcopy(result), "done": False},
+        }
+    ]
+    player["trace"] = []
+    status = player.get("status")
+    if not isinstance(status, dict):
+        status = {}
+        player["status"] = status
+    status.pop("gameResult", None)
+    run["record"] = {
+        "brief": deepcopy(result["brief"]),
+        "record": deepcopy(result["record"]),
+        "reason": reason,
+    }
+    return result
+
+
+def normalize_current_run(run: dict, end_ts: int) -> bool:
+    """Upgrade persisted response shapes that older server revisions emitted."""
+    if not isinstance(run, dict):
+        return False
+    player = run.get("player")
+    if not isinstance(player, dict):
+        return False
+
+    changed = False
+    pending = player.get("pending")
+    first_pending = (
+        pending[0]
+        if isinstance(pending, list)
+        and pending
+        and isinstance(pending[0], dict)
+        else None
+    )
+    if isinstance(first_pending, dict) and first_pending.get("type") == "BATTLE_REWARD":
+        content = first_pending.get("content")
+        reward = content.get("battleReward") if isinstance(content, dict) else None
+        if isinstance(reward, dict):
+            if "state" not in reward:
+                reward["state"] = 3
+                changed = True
+            if "isPerfect" not in reward:
+                earn = reward.get("earn")
+                hp_earn = earn.get("hp") if isinstance(earn, dict) else None
+                reward["isPerfect"] = int(hp_earn == 0)
+                changed = True
+            if reward.get("show") == "1" or "show" not in reward:
+                reward["show"] = None
+                changed = True
+
+    status = player.get("status")
+    game_result = status.get("gameResult") if isinstance(status, dict) else None
+    if player.get("state") == "GAME_OVER":
+        success = bool(
+            game_result.get("success") if isinstance(game_result, dict) else False
+        )
+        reason = (
+            game_result.get("reason", "LEGACY_GAME_OVER")
+            if isinstance(game_result, dict)
+            else "LEGACY_GAME_OVER"
+        )
+        queue_game_settlement(run, success, str(reason), end_ts)
+        return True
+
+    if isinstance(first_pending, dict) and first_pending.get("type") == "GAME_SETTLE":
+        content = first_pending.get("content")
+        content = content if isinstance(content, dict) else {}
+        result = content.get("result")
+        valid_result = (
+            isinstance(result, dict)
+            and isinstance(result.get("brief"), dict)
+            and isinstance(result.get("record"), dict)
+        )
+        if not valid_result:
+            success = bool(
+                game_result.get("success")
+                if isinstance(game_result, dict)
+                else False
+            )
+            reason = (
+                game_result.get("reason", "LEGACY_GAME_SETTLE")
+                if isinstance(game_result, dict)
+                else "LEGACY_GAME_SETTLE"
+            )
+            queue_game_settlement(run, success, str(reason), end_ts)
+            return True
+        if player.get("state") != "PENDING":
+            player["state"] = "PENDING"
+            changed = True
+        if "done" not in content:
+            content["done"] = False
+            changed = True
+        status = player.get("status")
+        if isinstance(status, dict) and "gameResult" in status:
+            status.pop("gameResult")
+            changed = True
+
+    return changed

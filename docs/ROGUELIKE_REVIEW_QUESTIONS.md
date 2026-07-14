@@ -146,7 +146,7 @@ fixtures/rlv2/<platform>/<data-version>/<scenario>/
 - IL2CPP 已确认 `RoguelikeTopicGameSettleRequest` 是空请求。
 - `RoguelikeTopicGameSettleResponse` 固定包含 `game` 与 `outer`。`game` 下已知有 `brief/record/score/monthTeam/challenge`，`outer` 下已知有任务、各类 BP、解锁列表、GP、特殊干员和 items 等字段。
 - 客户端还定义了 `/rlv2/finishGame`、`GAME_SETTLE` pending 和 `EndingResult(brief, record)`；它们与 `/rlv2/gameSettle` 的调用关系尚未确认。
-- 当前 `GAME_OVER` 只是不可继续闸门，两个终局路由都没有注册。
+- 当前已确认 `GAME_OVER` 不属于客户端状态枚举；终局路由已注册，阶段性实现直接生成 `PENDING + GAME_SETTLE + content.result`，并迁移历史非法状态。
 - SQLite 当前只保存 active run、seed 和 revision；`SyncData` 只按 UID 合并 `rlv2.current`，`rlv2.outer` 仍来自全局用户 JSON，无法与清局按 UID 原子提交。
 
 疑问分为两组：

@@ -1,6 +1,6 @@
 # Roguelike 模块完善进度
 
-> 最后更新：2026-07-14（进行中）
+> 最后更新：2026-07-15（进行中）
 > 目标版本：客户端 `2.7.51 / Data 26-07-10`
 > 证据优先级：当前客户端表/协议 > PRTS/官方资料 > 腾讯整理表 > B 站旧版统计
 
@@ -11,7 +11,7 @@
 | 按 UID 持久化 | 已完成，待最终回归 | SQLite 保存 run、随机种子与 revision；每个动作使用 `BEGIN IMMEDIATE` 事务；状态 `<400` 提交，`4xx/5xx` 或异常回滚 | 两用户、嵌套动作、重登与迁移测试全部通过 |
 | Legacy 数据迁移 | 已完成，待最终回归 | 首个显式 UID 原子认领；记录唯一 owner；禁止第二个 UID 重复认领；单用户 sentinel 可原子转移 | 仓储测试已覆盖重复认领和 sentinel 切换 |
 | `SyncData` | 已完成，待最终回归 | 按请求 UID 从仓储合并 `user.rlv2.current` | 完整依赖环境下补接口级回归 |
-| 终局结算 | 研究中 | 当前客户端元数据确认存在 `POST /rlv2/gameSettle`；现有 `GAME_OVER` 仅是内部不可继续闸门 | 确认请求/响应字段后实现最小安全清局流程 |
+| 终局结算 | 最小安全闭环已完成，原版收益待研究 | 终局直接生成合法的 `PENDING + GAME_SETTLE + content.result`；`gameSettle` 原子清局并回收 seed；登录时自动迁移历史 `GAME_OVER`；当前返回类型完整的零分、零外层收益结构 | 用同版本真实终局抓包补齐分数、记录、BP 与外层奖励 |
 | 战斗基础收益 | 已完成，待真实协议回归 | 五主题逐层普通/紧急矩阵已接入；EXP 自动结算升级，源石锭作为独立奖励领取；确认 `exploreExpOnKill` 不是该经验表 | 收集同版本真实 `battleFinish/chooseBattleReward` fixture；另行实现 Boss、特殊区域与主题乘区 |
 | 离线规则事实层 | 第二阶段进行中，未接线 | `data/rlv2/rules` 已分离客户端事实快照与人工规则；固定 `2.7.51`、GameData commit、topic table hash、Schema 和来源状态；事件与区域页资料已完成首轮同步 | 继续固定藏品页面 revision，逐条转录成员关系并保持未知值为 `null` |
 | 事件楼层资格 | 首轮资料转录完成，未接线 | 五个固定 PRTS revision 共 254 条页面事件已映射为 250 条 canonical 注解和 4 条 quarantine；171 条显式楼层范围已结构化，RO3 标准/month 候选分离 | 人工消歧 4 条特殊节点/变体，并补模式、结局条件、权重与效果；禁止全主题随机回退 |
@@ -29,7 +29,9 @@
 - Legacy sidecar 只能由一个 UID 认领，避免同一旧存档被复制给多个用户。
 - 五主题普通/紧急基础收益按 `theme + zone + nodeType` 结算，并校验客户端 `expItemId/goldItemId` 类型。
 - EXP 在 `battleFinish` 自动入账并处理升级；源石锭作为独立 reward，经 `chooseBattleReward` 领取且不能重复发放或未领取即结束。
-- 新增完整矩阵、边界和 handler 事务测试；当前 roguelike 相关测试为 **50 项通过**。
+- 新增完整矩阵、边界和 handler 事务测试；当前 roguelike 相关测试为 **59 项通过**。
+- 补齐 `/rlv2/finishGame` 与 `/rlv2/gameSettle`；`battleFinish` 返回完整公共响应并让已应用请求幂等返回 200；战斗奖励补齐 `state/isPerfect` 且不再下发伪造干员实例 ID。
+- 终局不再写入客户端枚举中不存在的 `GAME_OVER` 或 `status.gameResult`；旧 SQLite 状态在 `SyncData` 和肉鸽动作入口自动迁移，避免结算 30000 和重登循环。
 - 新建 `data/rlv2/rules` 离线事实层：从当前 topic table 提取主题、1489 件藏品、591 个关卡、390 个区域和 2495 个 scene，并将用户确认规则单独保存为未接线注解。
 - 固定五个 PRTS“事件一览”revision 及 SHA-1，转录 254 条页面事件；250 条绑定 canonical scene，4 条歧义记录进入 quarantine，171 条明确楼层完成结构化。
 - 新增确定性事件同步工具，校验页面 revision、客户端 scene 引用、RO3 month 重名候选和生成结果；运行时仍不联网、不加载这些规则。
@@ -39,7 +41,7 @@
 
 ## 进行中
 
-1. 从当前客户端 IL2CPP 元数据继续确认 `/rlv2/gameSettle` 的协议字段。
+1. 从当前客户端 IL2CPP 元数据和真实抓包继续确认 `/rlv2/gameSettle` 的分数、记录、BP 与外层奖励字段。
 2. 按固定 revision 继续将 PRTS/Tomimi 的藏品和模块事实转成版本化注解；事件部分继续补条件、权重、效果及 4 条 quarantine，区域部分继续审入口 AST 与 6 条 quarantine，运行时绝不联网。
 3. 收集同版本真实战斗奖励协议 fixture，并独立建模 Boss、特殊区域、RO4 旗帜与主题乘区。
 
@@ -75,7 +77,10 @@
 
 | 时间 | 验证 | 结果 |
 | --- | --- | --- |
-| 2026-07-14 | `tests.test_rlv2_logic` + `tests.test_rlv2_repository` + `tests.test_rlv2_transactions` | 50/50 通过 |
+| 2026-07-15 | 三组 RLV2 测试、相关 Python 编译 | 59/59 通过 |
+| 2026-07-15 | 运行中服务：历史 `GAME_OVER` 经 `syncData` 迁移，再由 `gameSettle` 清局并回收 seed | HTTP 200；响应类型与 SQLite 状态正确 |
+| 2026-07-14 | `tests.test_rlv2_logic` + `tests.test_rlv2_repository` + `tests.test_rlv2_transactions` | 55/55 通过 |
+| 2026-07-14 | Flask test client：放弃战斗重复 `battleFinish -> finishGame -> gameSettle`，含重复结算 | 通过 |
 | 2026-07-14 | 相关 Python 文件 `py_compile` | 通过 |
 | 2026-07-14 | 相关文件 `git diff --check` | 通过 |
 | 2026-07-14 | `data/rlv2/rules` JSON、Draft 2020-12 Schema、记录数、sourceRefs 与 canonical ID 交叉校验 | 通过 |

@@ -21,14 +21,17 @@ from rlv2_logic import (
     apply_numeric_delta,
     battle_base_reward,
     battle_resource_item_ids,
+    build_ending_result,
     build_initial_property,
     clamp_player_property,
     collect_difficulty_buffs,
     enforce_emergency_node_limits,
     has_numeric_cost,
+    normalize_current_run,
     prepare_recruit_candidates,
     prepare_predefined_characters,
     recruit_group_ticket_ids,
+    queue_game_settlement,
     resolve_player_levels,
     select_equivalent_grade,
     select_init_config,
@@ -40,6 +43,7 @@ from rlv2_repository import (
     LegacyMirrorError,
     MissingUserIdError,
     RunRepositoryError,
+    empty_run,
     get_run_repository,
 )
 import data.rlv2_data
@@ -95,7 +99,9 @@ def _active_transaction():
 
 
 def _load_run() -> dict:
-    return _active_transaction().run
+    run = _active_transaction().run
+    normalize_current_run(run, int(time()))
+    return run
 
 
 def _load_server_data() -> dict:
@@ -109,47 +115,228 @@ def _persist_run(rlv2: dict, server_data: dict | None = None) -> None:
         transaction.server_data = server_data
 
 
+def _current_run_delta(rlv2: dict) -> dict:
+    return {
+        "playerDataDelta": {
+            "modified": {"rlv2": {"current": rlv2}},
+            "deleted": {},
+        },
+        "pushMessage": [],
+    }
+
+
+def _recycle_active_seed(server_data: dict) -> None:
+    seed = server_data.get("rlv2_seed")
+    if seed is not None:
+        seeds = deque(server_data.get("seed_list", []))
+        seeds.appendleft(seed)
+        server_data["seed_list"] = list(seeds)
+    server_data["rlv2_seed"] = None
+
+
+def _ending_result(rlv2: dict) -> dict:
+    player = rlv2.get("player") if isinstance(rlv2, dict) else None
+    pending = player.get("pending") if isinstance(player, dict) else None
+    if (
+        isinstance(pending, list)
+        and pending
+        and isinstance(pending[0], dict)
+        and pending[0].get("type") == "GAME_SETTLE"
+    ):
+        content = pending[0].get("content")
+        result = content.get("result") if isinstance(content, dict) else None
+        if (
+            isinstance(result, dict)
+            and isinstance(result.get("brief"), dict)
+            and isinstance(result.get("record"), dict)
+        ):
+            return deepcopy(result)
+
+    record = rlv2.get("record") if isinstance(rlv2, dict) else None
+    if (
+        isinstance(record, dict)
+        and isinstance(record.get("brief"), dict)
+        and isinstance(record.get("record"), dict)
+    ):
+        return {
+            "brief": deepcopy(record["brief"]),
+            "record": deepcopy(record["record"]),
+        }
+    return build_ending_result(rlv2, False, int(time()))
+
+
+def _zero_settlement_bp() -> dict:
+    return {"cnt": 0.0, "from": 0, "to": 0}
+
+
+def _settlement_game(rlv2: dict) -> dict:
+    result = _ending_result(rlv2)
+    ending_brief = result["brief"]
+    ending_record = result["record"]
+    mode = ending_brief.get("mode") or "NONE"
+
+    month_team = None
+    if mode == "MONTH_TEAM":
+        month_team = {
+            "bp": _zero_settlement_bp(),
+            "gp": 0,
+            "items": [],
+            "mission": {"before": False, "complete": False, "process": []},
+        }
+
+    challenge = None
+    if mode == "CHALLENGE":
+        challenge = {
+            "items": [],
+            "before": False,
+            "complete": False,
+            "tasks": [],
+            "score": 0,
+            "isHighScore": False,
+        }
+
+    return {
+        "brief": {
+            "success": int(bool(ending_brief.get("success"))),
+            "ending": ending_brief.get("ending"),
+            "theme": ending_brief.get("theme"),
+            "mode": mode,
+            "band": ending_brief.get("band"),
+            "level": int(ending_brief.get("level", 0) or 0),
+        },
+        "record": {
+            "cntZone": int(ending_record.get("cntZone", 0) or 0),
+            "cntBattle": int(ending_record.get("cntBattle", 0) or 0),
+            "cntBattleElite": int(
+                ending_record.get("cntBattleElite", 0) or 0
+            ),
+            "cntBattleBoss": int(ending_record.get("cntBattleBoss", 0) or 0),
+            "cntArrivedNode": int(
+                ending_record.get("cntArrivedNode", 0) or 0
+            ),
+            "cntRecruitChar": int(
+                ending_record.get("cntRecruitChar", 0) or 0
+            ),
+            "cntUpgradeChar": int(
+                ending_record.get("cntUpgradeChar", 0) or 0
+            ),
+        },
+        "score": {
+            "detail": [],
+            "scoreFactor": 1.0,
+            "score": 0.0,
+            "buff": 0.0,
+            "bp": _zero_settlement_bp(),
+            "gp": 0,
+            "accumulation": [],
+        },
+        "monthTeam": month_team,
+        "challenge": challenge,
+    }
+
+
+def _settlement_outer() -> dict:
+    return {
+        "mission": {"before": [], "after": []},
+        "missionBp": _zero_settlement_bp(),
+        "relicBp": _zero_settlement_bp(),
+        "totemBp": _zero_settlement_bp(),
+        "fragmentBp": _zero_settlement_bp(),
+        "copperBp": _zero_settlement_bp(),
+        "relicUnlock": [],
+        "totemUnlock": [],
+        "fragmentUnlock": [],
+        "copperUnlock": [],
+        "scrapUnlock": [],
+        "gp": 0,
+        "spOperatorInfo": [],
+        "items": [],
+    }
+
+
+def _game_settle_response(rlv2: dict, current: dict) -> dict:
+    response = _current_run_delta(current)
+    response["game"] = _settlement_game(rlv2)
+    response["outer"] = _settlement_outer()
+    return response
+
+
+def _battle_finish_response(rlv2: dict) -> dict:
+    response = _current_run_delta(rlv2)
+    response.update(
+        {
+            "result": 0,
+            "apFailReturn": 0,
+            "itemReturn": [],
+            "rewards": [],
+            "unusualRewards": [],
+            "overrideRewards": [],
+            "additionalRewards": [],
+            "diamondMaterialRewards": [],
+            "furnitureRewards": [],
+        }
+    )
+    return response
+
+
+def _is_battle_victory(complete_state) -> bool:
+    return complete_state in (2, 3)
+
+
+def _is_game_settle_pending(player: dict) -> bool:
+    pending = player.get("pending")
+    return (
+        isinstance(pending, list)
+        and bool(pending)
+        and isinstance(pending[0], dict)
+        and pending[0].get("type") == "GAME_SETTLE"
+    )
+
+
 @_serialized_run
 def rlv2GiveUpGame():
     server_data = _load_server_data()
-    seed = server_data["rlv2_seed"]
-    deque_seed = deque(server_data["seed_list"])
-    if seed is not None:
-        deque_seed.appendleft(seed)
-    server_data["seed_list"] = list(deque_seed)
-    server_data["rlv2_seed"] = None
+    _recycle_active_seed(server_data)
+    cleared_run = empty_run()
+    _persist_run(cleared_run, server_data)
+    result = _current_run_delta(cleared_run)
+    result["result"] = "ok"
+    return result
 
-    empty_run = {
-        "player": None,
-        "record": None,
-        "map": None,
-        "troop": None,
-        "inventory": None,
-        "game": None,
-        "buff": None,
-        "module": None,
-    }
-    _persist_run(empty_run, server_data)
-    return {
-        "result": "ok",
-        "playerDataDelta": {
-            "modified": {
-                "rlv2": {
-                    "current": {
-                        "player": None,
-                        "record": None,
-                        "map": None,
-                        "troop": None,
-                        "inventory": None,
-                        "game": None,
-                        "buff": None,
-                        "module": None,
-                    }
-                }
-            },
-            "deleted": {},
-        },
-    }
+
+@_serialized_run
+def rlv2FinishGame():
+    rlv2 = _load_run()
+    player = rlv2.get("player") if isinstance(rlv2, dict) else None
+    if player is None:
+        return _current_run_delta(empty_run())
+    if not isinstance(player, dict):
+        return {"error": "invalid roguelike run state"}, 409
+
+    if _is_game_settle_pending(player):
+        _persist_run(rlv2)
+        return _current_run_delta(rlv2)
+    return {"error": "the run is not ready for settlement"}, 409
+
+
+@_serialized_run
+def rlv2GameSettle():
+    rlv2 = _load_run()
+    player = rlv2.get("player") if isinstance(rlv2, dict) else None
+    if player is None:
+        cleared_run = empty_run()
+        return _game_settle_response(cleared_run, cleared_run)
+    if not isinstance(player, dict):
+        return {"error": "invalid roguelike run state"}, 409
+    if not _is_game_settle_pending(player):
+        return {"error": "the run is not ready for settlement"}, 409
+
+    cleared_run = empty_run()
+    response = _game_settle_response(rlv2, cleared_run)
+    server_data = _load_server_data()
+    _recycle_active_seed(server_data)
+    _persist_run(cleared_run, server_data)
+    return response
 
 
 @_serialized_run
@@ -623,7 +810,7 @@ def rlv2SelectChoice():
             else:
                 add_scene_event(scene_id, choice_data.get("choices", []))
 
-    if created_tickets and rlv2["player"]["state"] != "GAME_OVER":
+    if created_tickets and not _is_game_settle_pending(rlv2["player"]):
         for ticket_id in reversed(created_tickets):
             _rlv2.activateTicket(rlv2, ticket_id)
         rlv2["player"]["state"] = "PENDING"
@@ -1096,12 +1283,34 @@ def rlv2BattleFinish():
         return {"error": "invalid encrypted battle result"}, 400
 
     rlv2 = _load_run()
-    pending = rlv2["player"]["pending"]
+    player = rlv2.get("player") if isinstance(rlv2, dict) else None
+    if not isinstance(player, dict):
+        return {"error": "battle result is not pending"}, 409
+    pending = player.get("pending")
     if not pending or pending[0].get("type") != "BATTLE":
+        complete_state = battle_data.get("completeState")
+        repeated_success = (
+            _is_battle_victory(complete_state)
+            and isinstance(pending, list)
+            and bool(pending)
+            and isinstance(pending[0], dict)
+            and pending[0].get("type") == "BATTLE_REWARD"
+        )
+        repeated_abort = (
+            not _is_battle_victory(complete_state)
+            and _is_game_settle_pending(player)
+            and not bool(
+                player["pending"][0]["content"]["result"]["brief"].get(
+                    "success"
+                )
+            )
+        )
+        if repeated_success or repeated_abort:
+            return _battle_finish_response(rlv2)
         return {"error": "battle result is not pending"}, 409
 
     theme = rlv2["game"]["theme"]
-    if battle_data.get("completeState") == 3:
+    if _is_battle_victory(battle_data.get("completeState")):
         stats = battle_data.get("battleData", {}).get("stats", {})
         if not isinstance(stats.get("leftHp"), (int, float)):
             return {"error": "successful battle result is missing leftHp"}, 400
@@ -1183,7 +1392,12 @@ def rlv2BattleFinish():
                             "maxHpUp": level_earn["maxHpUp"],
                         },
                         "rewards": rewards,
-                        "show": "1",
+                        "show": None,
+                        "state": int(battle_data["completeState"]),
+                        "isPerfect": int(
+                            battle_data["completeState"] == 3
+                            and life_earn["hp"] == 0
+                        ),
                     }
                 },
             },
@@ -1192,18 +1406,7 @@ def rlv2BattleFinish():
         _rlv2.endRun(rlv2, False, "BATTLE_ABORTED")
     _persist_run(rlv2)
 
-    data = {
-        "playerDataDelta": {
-            "modified": {
-                "rlv2": {
-                    "current": rlv2,
-                }
-            },
-            "deleted": {},
-        }
-    }
-
-    return data
+    return _battle_finish_response(rlv2)
 
 
 @_serialized_run
@@ -1708,14 +1911,7 @@ def rlv2getRewardgetReward():
 
 class _rlv2:
     def endRun(rlv2: dict, success: bool, reason: str) -> None:
-        rlv2["player"]["state"] = "GAME_OVER"
-        rlv2["player"]["pending"] = []
-        rlv2["player"]["trace"] = []
-        rlv2["player"]["status"]["gameResult"] = {
-            "success": success,
-            "reason": reason,
-            "ending": rlv2["player"].get("toEnding") if success else None,
-        }
+        queue_game_settlement(rlv2, success, reason, int(time()))
 
     def unlockRoute(rlv2: dict, edge: dict) -> bool:
         if not edge.get("key"):

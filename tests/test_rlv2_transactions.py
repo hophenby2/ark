@@ -144,6 +144,7 @@ class Rlv2TransactionIntegrationTest(unittest.TestCase):
                 "property": self._player_property(),
                 "cursor": {"zone": 1, "position": {"x": 0, "y": 0}},
                 "trace": [],
+                "status": {"bankPut": 0},
             },
             "game": {
                 "theme": "rogue_1",
@@ -178,6 +179,18 @@ class Rlv2TransactionIntegrationTest(unittest.TestCase):
             "record": {},
             "troop": {"chars": {}},
         }
+
+    def _game_over_run(self):
+        run = self._battle_run()
+        run["player"]["state"] = "GAME_OVER"
+        run["player"]["pending"] = []
+        run["player"]["status"]["gameResult"] = {
+            "success": False,
+            "reason": "BATTLE_ABORTED",
+            "ending": None,
+        }
+        run["record"] = {"brief": {"zone": 1}}
+        return run
 
     def _battle_reward_run(self):
         run = self._battle_run()
@@ -221,6 +234,37 @@ class Rlv2TransactionIntegrationTest(unittest.TestCase):
             }
         ]
         return run
+
+    def assert_battle_finish_response(self, response):
+        self.assertEqual(
+            set(response),
+            {
+                "result",
+                "apFailReturn",
+                "itemReturn",
+                "rewards",
+                "unusualRewards",
+                "overrideRewards",
+                "additionalRewards",
+                "diamondMaterialRewards",
+                "furnitureRewards",
+                "playerDataDelta",
+                "pushMessage",
+            },
+        )
+        self.assertEqual(response["result"], 0)
+        self.assertEqual(response["apFailReturn"], 0)
+        for key in (
+            "itemReturn",
+            "rewards",
+            "unusualRewards",
+            "overrideRewards",
+            "additionalRewards",
+            "diamondMaterialRewards",
+            "furnitureRewards",
+            "pushMessage",
+        ):
+            self.assertEqual(response[key], [])
 
     def test_give_up_only_changes_the_requesting_user(self):
         self.repository.save(
@@ -304,7 +348,7 @@ class Rlv2TransactionIntegrationTest(unittest.TestCase):
 
         response = self.rlv2.rlv2BattleFinish()
 
-        self.assertIn("playerDataDelta", response)
+        self.assert_battle_finish_response(response)
         snapshot = self.repository.load("alice")
         self.assertEqual(snapshot.revision, initial.revision + 1)
         prop = snapshot.run["player"]["property"]
@@ -341,6 +385,9 @@ class Rlv2TransactionIntegrationTest(unittest.TestCase):
             },
         )
         self.assertEqual(len(battle_reward["rewards"]), 2)
+        self.assertIsNone(battle_reward["show"])
+        self.assertEqual(battle_reward["state"], 3)
+        self.assertEqual(battle_reward["isPerfect"], 1)
         gold_reward, ticket_reward = battle_reward["rewards"]
         self.assertEqual(gold_reward["index"], "0")
         self.assertEqual(
@@ -381,6 +428,178 @@ class Rlv2TransactionIntegrationTest(unittest.TestCase):
         self.assertEqual(finished.run["player"]["state"], "WAIT_MOVE")
         self.assertEqual(finished.run["player"]["pending"], [])
         self.assertEqual(finished.run["player"]["property"]["gold"], 9)
+
+    def test_aborted_battle_enters_client_game_settlement_and_can_be_settled(self):
+        initial = self.repository.save(
+            "alice",
+            self._battle_run(),
+            {"rlv2_seed": "active", "seed_list": ["old"]},
+        )
+        self.request.headers = {"Uid": "alice"}
+        self.request.get_json = lambda: {"data": "encrypted"}
+        self.rlv2.decrypt_battle_data = lambda value: {"completeState": 1}
+
+        response = self.rlv2.rlv2BattleFinish()
+
+        self.assert_battle_finish_response(response)
+        game_settle = self.repository.load("alice")
+        self.assertEqual(game_settle.revision, initial.revision + 1)
+        player = game_settle.run["player"]
+        self.assertEqual(player["state"], "PENDING")
+        self.assertEqual(player["pending"][0]["type"], "GAME_SETTLE")
+        self.assertNotIn("gameResult", player["status"])
+        content = player["pending"][0]["content"]
+        self.assertIs(content["done"], False)
+        self.assertEqual(content["result"]["brief"]["success"], 0)
+        self.assertEqual(content["result"]["brief"]["mode"], "NORMAL")
+        self.assertEqual(content["result"]["brief"]["theme"], "rogue_1")
+        self.assertIsInstance(content["result"]["record"], dict)
+
+        retry = self.rlv2.rlv2BattleFinish()
+        self.assert_battle_finish_response(retry)
+        after_retry = self.repository.load("alice")
+        self.assertEqual(after_retry.run, game_settle.run)
+
+        response = self.rlv2.rlv2FinishGame()
+        self.assertIn("playerDataDelta", response)
+        pending = self.repository.load("alice")
+        self.assertEqual(pending.run["player"]["state"], "PENDING")
+        self.assertEqual(
+            pending.run["player"]["pending"][0]["type"], "GAME_SETTLE"
+        )
+
+        response = self.rlv2.rlv2GameSettle()
+        self.assertEqual(
+            set(response["game"]["score"]),
+            {
+                "detail",
+                "scoreFactor",
+                "score",
+                "buff",
+                "bp",
+                "gp",
+                "accumulation",
+            },
+        )
+        self.assertEqual(response["game"]["score"]["score"], 0.0)
+        self.assertEqual(response["outer"]["items"], [])
+        self.assertIn("playerDataDelta", response)
+        self.assertEqual(response["pushMessage"], [])
+        settled = self.repository.load("alice")
+        self.assertIsNone(settled.run["player"])
+        self.assertIsNone(settled.rlv2_seed)
+        self.assertEqual(settled.seed_list, ["active", "old"])
+
+    def test_successful_battle_finish_retry_returns_complete_response(self):
+        initial = self.repository.save("alice", self._battle_reward_run())
+        self.request.headers = {"Uid": "alice"}
+        self.request.get_json = lambda: {"data": "encrypted"}
+        self.rlv2.decrypt_battle_data = lambda value: {"completeState": 3}
+
+        response = self.rlv2.rlv2BattleFinish()
+
+        self.assert_battle_finish_response(response)
+        snapshot = self.repository.load("alice")
+        self.assertEqual(snapshot.revision, initial.revision + 1)
+        reward = snapshot.run["player"]["pending"][0]["content"][
+            "battleReward"
+        ]
+        self.assertIsNone(reward["show"])
+        self.assertEqual(reward["state"], 3)
+        self.assertEqual(reward["isPerfect"], 0)
+
+    def test_pass_rank_is_a_battle_victory(self):
+        initial = self.repository.save("alice", self._battle_run())
+        self.request.headers = {"Uid": "alice"}
+        self.request.get_json = lambda: {"data": "encrypted"}
+        self.rlv2.decrypt_battle_data = lambda value: {
+            "completeState": 2,
+            "battleData": {"stats": {"leftHp": 3}},
+        }
+
+        response = self.rlv2.rlv2BattleFinish()
+
+        self.assert_battle_finish_response(response)
+        snapshot = self.repository.load("alice")
+        self.assertEqual(snapshot.revision, initial.revision + 1)
+        player = snapshot.run["player"]
+        self.assertEqual(player["state"], "PENDING")
+        self.assertEqual(player["pending"][0]["type"], "BATTLE_REWARD")
+        reward = player["pending"][0]["content"]["battleReward"]
+        self.assertEqual(reward["state"], 2)
+        self.assertEqual(reward["isPerfect"], 0)
+        self.assertEqual(player["property"]["hp"]["current"], 4)
+
+    def test_existing_game_over_run_settles_directly_and_retry_is_safe(self):
+        self.repository.save(
+            "alice",
+            self._game_over_run(),
+            {"rlv2_seed": "active", "seed_list": ["old"]},
+        )
+        self.request.headers = {"Uid": "alice"}
+
+        response = self.rlv2.rlv2GameSettle()
+
+        self.assertEqual(response["game"]["brief"]["success"], 0)
+        self.assertEqual(response["game"]["brief"]["mode"], "NORMAL")
+        self.assertEqual(response["game"]["record"]["cntZone"], 1)
+        self.assertEqual(response["game"]["score"]["score"], 0.0)
+        self.assertEqual(response["outer"]["gp"], 0)
+        self.assertIn("playerDataDelta", response)
+        settled = self.repository.load("alice")
+        self.assertIsNone(settled.run["player"])
+        self.assertEqual(settled.seed_list, ["active", "old"])
+
+        retry = self.rlv2.rlv2GameSettle()
+        self.assertEqual(retry["game"]["score"]["score"], 0.0)
+        self.assertEqual(retry["outer"]["gp"], 0)
+        after_retry = self.repository.load("alice")
+        self.assertIsNone(after_retry.run["player"])
+        self.assertIsNone(after_retry.rlv2_seed)
+        self.assertEqual(after_retry.seed_list, ["active", "old"])
+
+    def test_game_settlement_only_clears_the_requesting_user(self):
+        self.repository.save(
+            "alice",
+            self._game_over_run(),
+            {"rlv2_seed": "alice-seed", "seed_list": []},
+        )
+        bob_run = self._battle_run()
+        self.repository.save(
+            "bob",
+            bob_run,
+            {"rlv2_seed": "bob-seed", "seed_list": ["bob-old"]},
+        )
+        self.request.headers = {"Uid": "alice"}
+
+        self.rlv2.rlv2FinishGame()
+        self.rlv2.rlv2GameSettle()
+
+        alice = self.repository.load("alice")
+        bob = self.repository.load("bob")
+        self.assertIsNone(alice.run["player"])
+        self.assertEqual(alice.seed_list, ["alice-seed"])
+        self.assertEqual(bob.run, bob_run)
+        self.assertEqual(bob.rlv2_seed, "bob-seed")
+        self.assertEqual(bob.seed_list, ["bob-old"])
+
+    def test_finish_game_rejects_an_active_run_without_clearing_it(self):
+        initial = self.repository.save("alice", self._battle_run())
+        self.request.headers = {"Uid": "alice"}
+
+        response, status = self.rlv2.rlv2FinishGame()
+
+        self.assertEqual(status, 409)
+        self.assertIn("not ready", response["error"])
+        after = self.repository.load("alice")
+        self.assertEqual(after.revision, initial.revision)
+        self.assertEqual(after.run, initial.run)
+
+    def test_settlement_routes_are_registered(self):
+        app_source = (ROOT / "server/app.py").read_text(encoding="utf-8")
+
+        self.assertIn('app.add_url_rule("/rlv2/finishGame"', app_source)
+        self.assertIn('app.add_url_rule("/rlv2/gameSettle"', app_source)
 
     def test_battle_finish_excludes_nonstandard_zones_from_base_rewards(self):
         run = self._battle_run()

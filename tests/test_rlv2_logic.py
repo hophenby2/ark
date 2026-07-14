@@ -18,6 +18,7 @@ from rlv2_logic import (  # noqa: E402
     collect_difficulty_buffs,
     enforce_emergency_node_limits,
     has_numeric_cost,
+    normalize_current_run,
     prepare_predefined_characters,
     prepare_recruit_candidates,
     recruit_group_ticket_ids,
@@ -61,6 +62,83 @@ class Rlv2LogicTest(unittest.TestCase):
                     len(config["initialBandRelic"]),
                 )
                 self.assertEqual(actual, values)
+
+    def test_legacy_game_over_is_migrated_to_client_settlement_state(self):
+        run = {
+            "player": {
+                "state": "GAME_OVER",
+                "pending": [],
+                "trace": [{"zone": 1}],
+                "status": {
+                    "bankPut": 0,
+                    "gameResult": {
+                        "success": False,
+                        "reason": "BATTLE_ABORTED",
+                    },
+                },
+                "property": {"level": 2},
+                "cursor": {"zone": 1, "position": {"x": 0, "y": 0}},
+                "toEnding": "ro_ending_1",
+            },
+            "game": {
+                "theme": "rogue_1",
+                "mode": "NORMAL",
+                "eGrade": 0,
+                "start": 10,
+            },
+            "map": {"zones": {"1": {"id": "zone_1"}}},
+            "inventory": {
+                "relic": {
+                    "r_0": {"id": "rogue_1_band_1", "count": 1}
+                },
+                "exploreTool": {},
+            },
+            "troop": {"chars": {}},
+            "buff": {"squadBuff": []},
+            "module": {},
+        }
+
+        self.assertTrue(normalize_current_run(run, 20))
+
+        player = run["player"]
+        self.assertEqual(player["state"], "PENDING")
+        self.assertEqual(player["trace"], [])
+        self.assertNotIn("gameResult", player["status"])
+        pending = player["pending"][0]
+        self.assertEqual(pending["type"], "GAME_SETTLE")
+        result = pending["content"]["result"]
+        self.assertEqual(result["brief"]["success"], 0)
+        self.assertEqual(result["brief"]["mode"], "NORMAL")
+        self.assertEqual(result["brief"]["band"], "rogue_1_band_1")
+        self.assertEqual(result["record"]["cntZone"], 1)
+        self.assertFalse(normalize_current_run(run, 21))
+
+    def test_legacy_battle_reward_fields_are_normalized(self):
+        run = {
+            "player": {
+                "state": "PENDING",
+                "pending": [
+                    {
+                        "type": "BATTLE_REWARD",
+                        "content": {
+                            "battleReward": {
+                                "earn": {"hp": 0},
+                                "rewards": [],
+                                "show": "1",
+                            }
+                        },
+                    }
+                ],
+                "status": {},
+            }
+        }
+
+        self.assertTrue(normalize_current_run(run, 1))
+
+        reward = run["player"]["pending"][0]["content"]["battleReward"]
+        self.assertIsNone(reward["show"])
+        self.assertEqual(reward["state"], 3)
+        self.assertEqual(reward["isPerfect"], 1)
 
     def test_init_property_uses_table_level_and_resource_limits(self):
         config = select_init_config(
