@@ -77,9 +77,150 @@ class Rlv2TransactionIntegrationTest(unittest.TestCase):
             legacy_server_data_path=root / "serverData.json",
         )
         self.rlv2.get_run_repository = lambda: self.repository
+        self.request.headers = {}
+        self.request.get_json = lambda: {}
+        self.rlv2.decrypt_battle_data = lambda value: {}
+        self.topic_table = {
+            "details": {"rogue_1": self._battle_theme_data()}
+        }
+        self.rlv2.get_memory = lambda key: (
+            self.topic_table if key == "roguelike_topic_table" else {}
+        )
 
     def tearDown(self):
         self.temporary_directory.cleanup()
+
+    @staticmethod
+    def _battle_theme_data():
+        return {
+            "gameConst": {
+                "expItemId": "rogue_1_exp",
+                "goldItemId": "rogue_1_gold",
+            },
+            "items": {
+                "rogue_1_exp": {"type": "EXP"},
+                "rogue_1_gold": {"type": "GOLD"},
+                "rogue_1_recruit_ticket_all": {"type": "RECRUIT_TICKET"},
+            },
+            "detailConst": {
+                "playerLevelTable": {
+                    "1": {
+                        "exp": 0,
+                        "populationUp": 0,
+                        "squadCapacityUp": 0,
+                        "maxHpUp": 0,
+                        "battleCharLimitUp": 0,
+                    },
+                    "2": {
+                        "exp": 10,
+                        "populationUp": 2,
+                        "squadCapacityUp": 1,
+                        "maxHpUp": 1,
+                        "battleCharLimitUp": 0,
+                    },
+                }
+            },
+        }
+
+    @staticmethod
+    def _player_property():
+        return {
+            "exp": 5,
+            "level": 1,
+            "maxLevel": 2,
+            "hp": {"current": 4, "max": 4},
+            "gold": 6,
+            "shield": 0,
+            "capacity": 6,
+            "population": {"cost": 0, "max": 6},
+            "conPerfectBattle": 0,
+        }
+
+    def _battle_run(self):
+        return {
+            "player": {
+                "state": "PENDING",
+                "pending": [{"type": "BATTLE"}],
+                "property": self._player_property(),
+                "cursor": {"zone": 1, "position": {"x": 0, "y": 0}},
+                "trace": [],
+            },
+            "game": {
+                "theme": "rogue_1",
+                "mode": "NORMAL",
+                "eGrade": 0,
+                "predefined": None,
+            },
+            "map": {
+                "zones": {
+                    "1": {
+                        "id": "zone_1",
+                        "nodes": {
+                            "0": {
+                                "index": "0",
+                                "pos": {"x": 0, "y": 0},
+                                "type": 1,
+                                "stage": "ro1_n_1_test",
+                            }
+                        }
+                    }
+                }
+            },
+            "inventory": {
+                "recruit": {},
+                "relic": {},
+                "consumable": {},
+                "exploreTool": {},
+                "trap": None,
+            },
+            "buff": {"tmpHP": 0, "squadBuff": []},
+            "module": {},
+            "record": {},
+            "troop": {"chars": {}},
+        }
+
+    def _battle_reward_run(self):
+        run = self._battle_run()
+        run["player"]["pending"] = [
+            {
+                "type": "BATTLE_REWARD",
+                "content": {
+                    "battleReward": {
+                        "earn": {},
+                        "rewards": [
+                            {
+                                "index": "4",
+                                "items": [
+                                    {
+                                        "sub": 0,
+                                        "id": "rogue_1_gold",
+                                        "count": 3,
+                                    },
+                                    {
+                                        "sub": 1,
+                                        "id": "rogue_1_gold",
+                                        "count": 7,
+                                    },
+                                ],
+                                "done": False,
+                            },
+                            {
+                                "index": "9",
+                                "items": [
+                                    {
+                                        "sub": 0,
+                                        "id": "rogue_1_gold",
+                                        "count": 11,
+                                    }
+                                ],
+                                "done": False,
+                            },
+                        ],
+                    }
+                },
+            }
+        ]
+        return run
 
     def test_give_up_only_changes_the_requesting_user(self):
         self.repository.save(
@@ -147,6 +288,228 @@ class Rlv2TransactionIntegrationTest(unittest.TestCase):
         snapshot = self.repository.load("alice")
         self.assertEqual(snapshot.run["count"], 2)
         self.assertEqual(snapshot.revision, initial.revision + 1)
+
+    def test_battle_finish_grants_exp_and_queues_gold_as_a_separate_reward(self):
+        initial = self.repository.save(
+            "alice",
+            self._battle_run(),
+            {"rlv2_seed": "seed", "seed_list": []},
+        )
+        self.request.headers = {"Uid": "alice"}
+        self.request.get_json = lambda: {"data": "encrypted"}
+        self.rlv2.decrypt_battle_data = lambda value: {
+            "completeState": 3,
+            "battleData": {"stats": {"leftHp": 4}},
+        }
+
+        response = self.rlv2.rlv2BattleFinish()
+
+        self.assertIn("playerDataDelta", response)
+        snapshot = self.repository.load("alice")
+        self.assertEqual(snapshot.revision, initial.revision + 1)
+        prop = snapshot.run["player"]["property"]
+        self.assertEqual(prop["level"], 2)
+        self.assertEqual(prop["exp"], 5)
+        self.assertEqual(prop["population"]["max"], 8)
+        self.assertEqual(prop["capacity"], 7)
+        self.assertEqual(prop["hp"], {"current": 5, "max": 5})
+        self.assertEqual(prop["gold"], 6)
+
+        battle_reward = snapshot.run["player"]["pending"][0]["content"][
+            "battleReward"
+        ]
+        self.assertEqual(
+            set(battle_reward["earn"]),
+            {
+                "exp",
+                "populationMax",
+                "squadCapacity",
+                "hp",
+                "shield",
+                "maxHpUp",
+            },
+        )
+        self.assertEqual(
+            battle_reward["earn"],
+            {
+                "exp": 10,
+                "populationMax": 2,
+                "squadCapacity": 1,
+                "hp": 0,
+                "shield": 0,
+                "maxHpUp": 1,
+            },
+        )
+        self.assertEqual(len(battle_reward["rewards"]), 2)
+        gold_reward, ticket_reward = battle_reward["rewards"]
+        self.assertEqual(gold_reward["index"], "0")
+        self.assertEqual(
+            gold_reward["items"],
+            [{"sub": 0, "id": "rogue_1_gold", "count": 3}],
+        )
+        self.assertIs(gold_reward["done"], False)
+        self.assertEqual(ticket_reward["index"], "1")
+        self.assertEqual(
+            ticket_reward["items"],
+            [
+                {
+                    "sub": 0,
+                    "id": "rogue_1_recruit_ticket_all",
+                    "count": 1,
+                }
+            ],
+        )
+        self.assertIs(ticket_reward["done"], False)
+
+        self.request.get_json = lambda: {"index": 0, "sub": 0}
+        response = self.rlv2.rlv2ChooseBattleReward()
+        self.assertIn("playerDataDelta", response)
+        claimed = self.repository.load("alice")
+        self.assertEqual(claimed.revision, snapshot.revision + 1)
+        self.assertEqual(claimed.run["player"]["property"]["gold"], 9)
+        self.assertIs(
+            claimed.run["player"]["pending"][0]["content"]["battleReward"][
+                "rewards"
+            ][0]["done"],
+            True,
+        )
+
+        response = self.rlv2.rlv2FinishBattleReward()
+        self.assertIn("playerDataDelta", response)
+        finished = self.repository.load("alice")
+        self.assertEqual(finished.revision, claimed.revision + 1)
+        self.assertEqual(finished.run["player"]["state"], "WAIT_MOVE")
+        self.assertEqual(finished.run["player"]["pending"], [])
+        self.assertEqual(finished.run["player"]["property"]["gold"], 9)
+
+    def test_battle_finish_excludes_nonstandard_zones_from_base_rewards(self):
+        run = self._battle_run()
+        run["map"]["zones"]["1"]["id"] = "portal_zone_1"
+        initial = self.repository.save("alice", run)
+        self.request.headers = {"Uid": "alice"}
+        self.request.get_json = lambda: {"data": "encrypted"}
+        self.rlv2.decrypt_battle_data = lambda value: {
+            "completeState": 3,
+            "battleData": {"stats": {"leftHp": 4}},
+        }
+
+        response = self.rlv2.rlv2BattleFinish()
+
+        self.assertIn("playerDataDelta", response)
+        snapshot = self.repository.load("alice")
+        self.assertEqual(snapshot.revision, initial.revision + 1)
+        prop = snapshot.run["player"]["property"]
+        self.assertEqual(prop["exp"], 5)
+        self.assertEqual(prop["gold"], 6)
+        battle_reward = snapshot.run["player"]["pending"][0]["content"][
+            "battleReward"
+        ]
+        self.assertEqual(battle_reward["earn"]["exp"], 0)
+        self.assertEqual(len(battle_reward["rewards"]), 1)
+        self.assertEqual(
+            battle_reward["rewards"][0]["items"][0]["id"],
+            "rogue_1_recruit_ticket_all",
+        )
+
+    def test_battle_finish_does_not_fall_back_for_boss_rewards(self):
+        run = self._battle_run()
+        run["map"]["zones"]["1"]["nodes"]["0"]["type"] = 4
+        initial = self.repository.save("alice", run)
+        self.request.headers = {"Uid": "alice"}
+        self.request.get_json = lambda: {"data": "encrypted"}
+        self.rlv2.decrypt_battle_data = lambda value: {
+            "completeState": 3,
+            "battleData": {"stats": {"leftHp": 4}},
+        }
+
+        response = self.rlv2.rlv2BattleFinish()
+
+        self.assertIn("playerDataDelta", response)
+        snapshot = self.repository.load("alice")
+        self.assertEqual(snapshot.revision, initial.revision + 1)
+        self.assertEqual(snapshot.run["player"]["property"]["exp"], 5)
+        self.assertEqual(snapshot.run["player"]["property"]["gold"], 6)
+        battle_reward = snapshot.run["player"]["pending"][0]["content"][
+            "battleReward"
+        ]
+        self.assertEqual(battle_reward["earn"]["exp"], 0)
+        self.assertEqual(len(battle_reward["rewards"]), 1)
+
+    def test_choose_battle_reward_selects_one_index_and_sub_only_once(self):
+        initial = self.repository.save("alice", self._battle_reward_run())
+        self.request.headers = {"Uid": "alice"}
+        self.request.get_json = lambda: {"index": 4, "sub": 1}
+
+        response = self.rlv2.rlv2ChooseBattleReward()
+
+        self.assertIn("playerDataDelta", response)
+        selected = self.repository.load("alice")
+        self.assertEqual(selected.revision, initial.revision + 1)
+        self.assertEqual(selected.run["player"]["property"]["gold"], 13)
+        rewards = selected.run["player"]["pending"][0]["content"][
+            "battleReward"
+        ]["rewards"]
+        self.assertIs(rewards[0]["done"], True)
+        self.assertIs(rewards[1]["done"], False)
+
+        response, status = self.rlv2.rlv2ChooseBattleReward()
+        self.assertEqual(status, 400)
+        self.assertIn("unavailable", response["error"])
+        after_retry = self.repository.load("alice")
+        self.assertEqual(after_retry.revision, selected.revision)
+        self.assertEqual(after_retry.run, selected.run)
+
+    def test_choose_battle_reward_rejects_invalid_sub_without_committing(self):
+        initial = self.repository.save("alice", self._battle_reward_run())
+        self.request.headers = {"Uid": "alice"}
+        self.request.get_json = lambda: {"index": 4, "sub": 99}
+
+        response, status = self.rlv2.rlv2ChooseBattleReward()
+
+        self.assertEqual(status, 400)
+        self.assertIn("4/99", response["error"])
+        snapshot = self.repository.load("alice")
+        self.assertEqual(snapshot.revision, initial.revision)
+        self.assertEqual(snapshot.run, initial.run)
+
+    def test_choose_battle_reward_rejects_non_integer_index_and_sub(self):
+        initial = self.repository.save("alice", self._battle_reward_run())
+        self.request.headers = {"Uid": "alice"}
+
+        for selection in (
+            {"index": True, "sub": 0},
+            {"index": 4.9, "sub": 0},
+            {"index": "4", "sub": 0},
+            {"index": 4, "sub": "0"},
+        ):
+            with self.subTest(selection=selection):
+                self.request.get_json = lambda selection=selection: selection
+                response, status = self.rlv2.rlv2ChooseBattleReward()
+                self.assertEqual(status, 400)
+                self.assertIn("invalid", response["error"])
+
+        snapshot = self.repository.load("alice")
+        self.assertEqual(snapshot.revision, initial.revision)
+        self.assertEqual(snapshot.run, initial.run)
+
+    def test_finish_battle_reward_requires_base_gold_to_be_claimed(self):
+        run = self._battle_reward_run()
+        rewards = run["player"]["pending"][0]["content"]["battleReward"][
+            "rewards"
+        ]
+        rewards[0]["items"] = [
+            {"sub": 0, "id": "rogue_1_gold", "count": 3}
+        ]
+        initial = self.repository.save("alice", run)
+        self.request.headers = {"Uid": "alice"}
+
+        response, status = self.rlv2.rlv2FinishBattleReward()
+
+        self.assertEqual(status, 409)
+        self.assertIn("must be claimed", response["error"])
+        snapshot = self.repository.load("alice")
+        self.assertEqual(snapshot.revision, initial.revision)
+        self.assertEqual(snapshot.run, initial.run)
 
     def test_multi_user_request_without_uid_is_rejected(self):
         self.request.headers = {}

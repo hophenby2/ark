@@ -11,7 +11,8 @@ sys.path.insert(0, str(ROOT / "server"))
 
 from rlv2_logic import (  # noqa: E402
     apply_numeric_delta,
-    battle_experience,
+    battle_base_reward,
+    battle_resource_item_ids,
     build_initial_property,
     clamp_player_property,
     collect_difficulty_buffs,
@@ -292,7 +293,124 @@ class Rlv2LogicTest(unittest.TestCase):
                         self.topic_table["details"][theme]["recruitTickets"],
                     )
 
-    def test_battle_experience_levels_up_with_table_defined_gains(self):
+    def test_battle_base_rewards_match_the_verified_sixty_cell_matrix(self):
+        expected = {
+            "rogue_1": (
+                ((10, 3), (12, 4)),
+                ((12, 3), (18, 4)),
+                ((16, 3), (24, 5)),
+                ((20, 4), (30, 5)),
+                ((25, 4), (38, 6)),
+                ((25, 4), (45, 6)),
+            ),
+            "rogue_2": (
+                ((10, 2), (12, 3)),
+                ((12, 2), (18, 3)),
+                ((14, 2), (24, 4)),
+                ((16, 3), (30, 4)),
+                ((20, 3), (36, 5)),
+                ((20, 3), (36, 5)),
+            ),
+            "rogue_3": (
+                ((10, 2), (12, 3)),
+                ((12, 2), (18, 3)),
+                ((14, 2), (24, 4)),
+                ((16, 3), (30, 4)),
+                ((20, 3), (36, 5)),
+                ((20, 3), (36, 5)),
+            ),
+            "rogue_4": (
+                ((10, 1), (12, 2)),
+                ((12, 2), (18, 2)),
+                ((13, 2), (25, 3)),
+                ((15, 3), (30, 3)),
+                ((20, 3), (36, 5)),
+                ((20, 5), (36, 5)),
+            ),
+            "rogue_5": (
+                ((10, 1), (12, 2)),
+                ((12, 2), (18, 2)),
+                ((13, 2), (25, 3)),
+                ((15, 2), (30, 3)),
+                ((20, 2), (36, 5)),
+                ((20, 5), (36, 5)),
+            ),
+        }
+
+        checked = 0
+        for theme, zones in expected.items():
+            for zone, (normal, emergency) in enumerate(zones, start=1):
+                for node_type, reward in ((1, normal), (2, emergency)):
+                    with self.subTest(
+                        theme=theme, zone=zone, node_type=node_type
+                    ):
+                        self.assertEqual(
+                            battle_base_reward(theme, zone, node_type), reward
+                        )
+                        checked += 1
+        self.assertEqual(checked, 60)
+
+    def test_battle_base_reward_aliases_late_ro4_and_ro5_zones(self):
+        for theme in ("rogue_4", "rogue_5"):
+            for node_type in (1, 2):
+                with self.subTest(theme=theme, node_type=node_type):
+                    self.assertEqual(
+                        battle_base_reward(theme, 7, node_type),
+                        battle_base_reward(theme, 6, node_type),
+                    )
+
+    def test_battle_base_reward_rejects_unknown_cells(self):
+        for theme in (None, "", "rogue_0", "rogue_6"):
+            with self.subTest(theme=theme):
+                with self.assertRaises(ValueError):
+                    battle_base_reward(theme, 1, 1)
+
+        for theme in tuple(f"rogue_{index}" for index in range(1, 6)):
+            invalid_zones = (-1, 0, 8, True, "1")
+            if theme not in {"rogue_4", "rogue_5"}:
+                invalid_zones = (*invalid_zones, 7)
+            for zone in invalid_zones:
+                with self.subTest(theme=theme, zone=zone):
+                    with self.assertRaises(ValueError):
+                        battle_base_reward(theme, zone, 1)
+
+            for node_type in (-1, 0, 3, 4, True, "1"):
+                with self.subTest(theme=theme, node_type=node_type):
+                    with self.assertRaises(ValueError):
+                        battle_base_reward(theme, 1, node_type)
+
+    def test_battle_resource_item_ids_match_all_theme_item_types(self):
+        for theme in tuple(f"rogue_{index}" for index in range(1, 6)):
+            with self.subTest(theme=theme):
+                theme_data = self.topic_table["details"][theme]
+                resource_ids = battle_resource_item_ids(theme_data)
+                self.assertEqual(
+                    resource_ids,
+                    {
+                        "exp": theme_data["gameConst"]["expItemId"],
+                        "gold": theme_data["gameConst"]["goldItemId"],
+                    },
+                )
+                self.assertEqual(
+                    theme_data["items"][resource_ids["exp"]]["type"], "EXP"
+                )
+                self.assertEqual(
+                    theme_data["items"][resource_ids["gold"]]["type"], "GOLD"
+                )
+
+    def test_battle_resource_item_ids_reject_invalid_item_references(self):
+        theme_data = deepcopy(self.topic_table["details"]["rogue_1"])
+        theme_data["gameConst"]["expItemId"] = "missing_exp"
+        with self.assertRaisesRegex(ValueError, "exp item"):
+            battle_resource_item_ids(theme_data)
+
+        theme_data = deepcopy(self.topic_table["details"]["rogue_1"])
+        gold_id = theme_data["gameConst"]["goldItemId"]
+        theme_data["items"][gold_id]["type"] = "EXP"
+        with self.assertRaisesRegex(ValueError, "gold item"):
+            battle_resource_item_ids(theme_data)
+
+    def test_player_experience_levels_up_with_table_defined_gains(self):
         theme_data = self.topic_table["details"]["rogue_3"]
         levels, max_level = select_player_level_table(
             theme_data, "NORMAL", 0, None
@@ -302,10 +420,6 @@ class Rlv2LogicTest(unittest.TestCase):
         )
         prop = build_initial_property(init, levels, max_level)
 
-        self.assertEqual(
-            [battle_experience(theme_data, node_type) for node_type in (1, 2, 4)],
-            [10, 20, 100],
-        )
         prop["exp"] = 34
         gains = resolve_player_levels(prop, levels)
         self.assertEqual(prop["level"], 3)

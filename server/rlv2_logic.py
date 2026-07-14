@@ -82,6 +82,56 @@ SPECIAL_RECRUIT_GROUPS = {
     "ro3_recruit_group_c1": ("all", "all"),
 }
 
+# Each zone contains (normal, emergency), and each reward is (exp, gold).
+# Source: PRTS roguelike theme pages, revisions 408420-408424 (2026-07-13).
+BATTLE_BASE_REWARDS = {
+    "rogue_1": (
+        ((10, 3), (12, 4)),
+        ((12, 3), (18, 4)),
+        ((16, 3), (24, 5)),
+        ((20, 4), (30, 5)),
+        ((25, 4), (38, 6)),
+        ((25, 4), (45, 6)),
+    ),
+    "rogue_2": (
+        ((10, 2), (12, 3)),
+        ((12, 2), (18, 3)),
+        ((14, 2), (24, 4)),
+        ((16, 3), (30, 4)),
+        ((20, 3), (36, 5)),
+        ((20, 3), (36, 5)),
+    ),
+    "rogue_3": (
+        ((10, 2), (12, 3)),
+        ((12, 2), (18, 3)),
+        ((14, 2), (24, 4)),
+        ((16, 3), (30, 4)),
+        ((20, 3), (36, 5)),
+        ((20, 3), (36, 5)),
+    ),
+    "rogue_4": (
+        ((10, 1), (12, 2)),
+        ((12, 2), (18, 2)),
+        ((13, 2), (25, 3)),
+        ((15, 3), (30, 3)),
+        ((20, 3), (36, 5)),
+        ((20, 5), (36, 5)),
+    ),
+    "rogue_5": (
+        ((10, 1), (12, 2)),
+        ((12, 2), (18, 2)),
+        ((13, 2), (25, 3)),
+        ((15, 2), (30, 3)),
+        ((20, 2), (36, 5)),
+        ((20, 5), (36, 5)),
+    ),
+}
+
+BATTLE_REWARD_ZONE_ALIASES = {
+    ("rogue_4", 7): 6,
+    ("rogue_5", 7): 6,
+}
+
 
 def select_init_config(
     topic_table: dict,
@@ -357,13 +407,47 @@ def prepare_predefined_characters(
     return result
 
 
-def battle_experience(theme_data: dict, node_type: int) -> int:
-    values = theme_data["gameConst"].get("exploreExpOnKill")
+def battle_base_reward(theme: str, zone: int, node_type: int) -> tuple[int, int]:
+    """Return the verified base EXP and gold for a normal or emergency battle."""
+    if not isinstance(theme, str) or theme not in BATTLE_BASE_REWARDS:
+        raise ValueError(f"unsupported roguelike theme: {theme}")
+    if type(zone) is not int:
+        raise ValueError(f"unsupported battle reward zone: {theme}/{zone}")
+    if type(node_type) is not int or node_type not in {1, 2}:
+        raise ValueError(f"unsupported battle reward node type: {node_type}")
+
+    reward_zone = BATTLE_REWARD_ZONE_ALIASES.get((theme, zone), zone)
+    zones = BATTLE_BASE_REWARDS[theme]
+    if reward_zone < 1 or reward_zone > len(zones):
+        raise ValueError(f"unsupported battle reward zone: {theme}/{zone}")
+    return zones[reward_zone - 1][node_type - 1]
+
+
+def battle_resource_item_ids(theme_data: dict) -> dict[str, str]:
+    """Return table-defined battle resource IDs after validating their item types."""
     try:
-        normal, elite, boss = (int(value) for value in values.split(","))
-    except (AttributeError, TypeError, ValueError):
-        normal, elite, boss = 10, 20, 100
-    return {1: normal, 2: elite, 4: boss}.get(node_type, normal)
+        game_const = theme_data["gameConst"]
+        items = theme_data["items"]
+    except (KeyError, TypeError) as exc:
+        raise ValueError("invalid roguelike theme resource table") from exc
+    if not isinstance(game_const, dict) or not isinstance(items, dict):
+        raise ValueError("invalid roguelike theme resource table")
+
+    resource_ids = {}
+    for resource, expected_type in (("exp", "EXP"), ("gold", "GOLD")):
+        item_id = game_const.get(f"{resource}ItemId")
+        item_data = items.get(item_id)
+        if (
+            not isinstance(item_id, str)
+            or not item_id
+            or not isinstance(item_data, dict)
+            or item_data.get("type") != expected_type
+        ):
+            raise ValueError(
+                f"invalid roguelike {resource} item: {item_id}"
+            )
+        resource_ids[resource] = item_id
+    return resource_ids
 
 
 def enforce_emergency_node_limits(

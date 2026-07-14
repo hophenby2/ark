@@ -19,7 +19,8 @@ from constants import (
 from utils import read_json, decrypt_battle_data, writeLog, get_memory
 from rlv2_logic import (
     apply_numeric_delta,
-    battle_experience,
+    battle_base_reward,
+    battle_resource_item_ids,
     build_initial_property,
     clamp_player_property,
     collect_difficulty_buffs,
@@ -1115,16 +1116,26 @@ def rlv2BattleFinish():
         theme_data = rlv2_table["details"][theme]
         cursor = rlv2["player"]["cursor"]
         node_id = str(cursor["position"]["x"] * 100 + cursor["position"]["y"])
-        node = rlv2["map"]["zones"][str(cursor["zone"])]["nodes"][node_id]
-        stage_data = theme_data["stages"].get(node.get("stage"), {})
-        if stage_data.get("isBoss"):
-            battle_node_type = 4
-        elif stage_data.get("isElite"):
-            battle_node_type = 2
-        else:
-            battle_node_type = 1
-        exp_gain = battle_experience(theme_data, battle_node_type)
-        rlv2["player"]["property"]["exp"] += exp_gain
+        zone = rlv2["map"]["zones"][str(cursor["zone"])]
+        node = zone["nodes"][node_id]
+        node_type = node.get("type")
+        exp_gain = 0
+        gold_gain = 0
+        resource_ids = None
+        is_standard_zone = zone.get("id") == f"zone_{cursor['zone']}"
+        # Boss, portal, and event-battle rewards have separate conditional rules.
+        if node_type in {1, 2} and is_standard_zone:
+            try:
+                exp_gain, gold_gain = battle_base_reward(
+                    theme, cursor["zone"], node_type
+                )
+                resource_ids = battle_resource_item_ids(theme_data)
+            except ValueError as exc:
+                return {"error": str(exc)}, 500
+            if not _rlv2.grant_resource(
+                rlv2, resource_ids["exp"], exp_gain
+            ):
+                return {"error": "failed to grant roguelike battle EXP"}, 500
         player_level_table, _ = select_player_level_table(
             theme_data,
             rlv2["game"]["mode"],
@@ -1135,6 +1146,28 @@ def rlv2BattleFinish():
             rlv2["player"]["property"], player_level_table
         )
         ticket = f"{theme}_recruit_ticket_all"
+        rewards = []
+        if gold_gain:
+            rewards.append(
+                {
+                    "index": "0",
+                    "items": [
+                        {
+                            "sub": 0,
+                            "id": resource_ids["gold"],
+                            "count": gold_gain,
+                        }
+                    ],
+                    "done": False,
+                }
+            )
+        rewards.append(
+            {
+                "index": str(len(rewards)),
+                "items": [{"sub": 0, "id": ticket, "count": 1}],
+                "done": False,
+            }
+        )
         rlv2["player"]["pending"].insert(
             0,
             {
@@ -1142,19 +1175,14 @@ def rlv2BattleFinish():
                 "content": {
                     "battleReward": {
                         "earn": {
-                            **life_earn,
                             "exp": exp_gain,
                             "populationMax": level_earn["populationMax"],
                             "squadCapacity": level_earn["squadCapacity"],
+                            "hp": life_earn["hp"],
+                            "shield": life_earn["shield"],
                             "maxHpUp": level_earn["maxHpUp"],
                         },
-                        "rewards": [
-                            {
-                                "index": 0,
-                                "items": [{"sub": 0, "id": ticket, "count": 1}],
-                                "done": 0,
-                            }
-                        ],
+                        "rewards": rewards,
                         "show": "1",
                     }
                 },
@@ -1185,6 +1213,21 @@ def rlv2FinishBattleReward():
     pending = rlv2["player"]["pending"]
     if not pending or pending[0].get("type") != "BATTLE_REWARD":
         return {"error": "battle reward settlement is not pending"}, 409
+    theme = rlv2["game"]["theme"]
+    theme_data = get_memory("roguelike_topic_table")["details"][theme]
+    try:
+        gold_item_id = battle_resource_item_ids(theme_data)["gold"]
+    except ValueError as exc:
+        return {"error": str(exc)}, 500
+    rewards = pending[0]["content"]["battleReward"].get("rewards", [])
+    has_unclaimed_gold = any(
+        not reward.get("done")
+        and len(reward.get("items", [])) == 1
+        and reward["items"][0].get("id") == gold_item_id
+        for reward in rewards
+    )
+    if has_unclaimed_gold:
+        return {"error": "battle gold reward must be claimed first"}, 409
     rlv2["player"]["state"] = "WAIT_MOVE"
     rlv2["player"]["pending"] = []
     if rlv2["player"]["trace"]:
@@ -1450,19 +1493,36 @@ def rlv2shopAction():
 @_serialized_run
 def rlv2ChooseBattleReward():
     request_data = request.get_json()
-    index = int(request_data["index"])
+    if not isinstance(request_data, dict):
+        return {"error": "invalid battle reward selection"}, 400
+    index = request_data.get("index")
+    sub = request_data.get("sub")
+    if type(index) is not int or type(sub) is not int:
+        return {"error": "invalid battle reward selection"}, 400
 
     rlv2 = _load_run()
     pending = rlv2["player"]["pending"]
     if not pending or pending[0].get("type") != "BATTLE_REWARD":
         return {"error": "battle reward selection is not pending"}, 409
     rewards = pending[0]["content"]["battleReward"]["rewards"]
-    reward = next((item for item in rewards if item["index"] == index), None)
+    reward = next(
+        (item for item in rewards if item.get("index") in (index, str(index))),
+        None,
+    )
     if reward is None or reward.get("done"):
         return {"error": f"battle reward is unavailable: {index}"}, 400
-    reward["done"] = 1
+    selected_items = [
+        item
+        for item in reward.get("items", [])
+        if item.get("sub", 0) in (sub, str(sub))
+    ]
+    if not selected_items:
+        return {
+            "error": f"battle reward option is unavailable: {index}/{sub}"
+        }, 400
+    reward["done"] = True
     created = []
-    for item in reward["items"]:
+    for item in selected_items:
         result = _rlv2.add_item(rlv2, item["id"], int(item.get("count", 1)))
         if isinstance(result, list):
             created.extend(result)
