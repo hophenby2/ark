@@ -1,0 +1,1194 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ark.local/schema/rlv2-rules-v1.json",
+  "title": "RLV2 offline rule documents",
+  "description": "Schema for generated client catalogs and curated, runtime-disabled roguelike rules.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/manifestDocument"
+    },
+    {
+      "$ref": "#/$defs/themeCatalog"
+    },
+    {
+      "$ref": "#/$defs/collectibleCatalog"
+    },
+    {
+      "$ref": "#/$defs/stageCatalog"
+    },
+    {
+      "$ref": "#/$defs/zoneCatalog"
+    },
+    {
+      "$ref": "#/$defs/sceneCatalog"
+    },
+    {
+      "$ref": "#/$defs/relicTagsDocument"
+    },
+    {
+      "$ref": "#/$defs/eventTagsDocument"
+    },
+    {
+      "$ref": "#/$defs/battleRewardsDocument"
+    },
+    {
+      "$ref": "#/$defs/zoneRoutesDocument"
+    },
+    {
+      "$ref": "#/$defs/modulesDocument"
+    }
+  ],
+  "$defs": {
+    "factStatus": {
+      "type": "string",
+      "enum": [
+        "client_verified",
+        "public_sourced",
+        "user_confirmed",
+        "needs_review",
+        "rejected"
+      ]
+    },
+    "implementationStatus": {
+      "type": "string",
+      "enum": [
+        "not_connected",
+        "document_only",
+        "existing_hardcoded",
+        "pending",
+        "unsupported"
+      ]
+    },
+    "evidence": {
+      "type": "object",
+      "required": [
+        "reviewStatus",
+        "sourceRefs"
+      ],
+      "properties": {
+        "reviewStatus": {
+          "$ref": "#/$defs/factStatus"
+        },
+        "sourceRefs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "notes": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "ruleRecord": {
+      "type": "object",
+      "required": [
+        "id",
+        "evidence",
+        "implementationStatus",
+        "runtimeEnabled"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidence"
+        },
+        "implementationStatus": {
+          "$ref": "#/$defs/implementationStatus"
+        },
+        "runtimeEnabled": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    },
+    "source": {
+      "type": "object",
+      "required": [
+        "id",
+        "kind",
+        "locator",
+        "revision",
+        "accessedOn",
+        "reviewStatus"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "client_table",
+            "public_source",
+            "user_review",
+            "repository_document"
+          ]
+        },
+        "locator": {
+          "type": "string",
+          "minLength": 1
+        },
+        "revision": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "accessedOn": {
+          "type": "string",
+          "format": "date"
+        },
+        "reviewStatus": {
+          "$ref": "#/$defs/factStatus"
+        },
+        "scope": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "constraints": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "manifestDocument": {
+      "type": "object",
+      "required": [
+        "$schema",
+        "kind",
+        "schemaVersion",
+        "ruleSetId",
+        "runtimeEnabled",
+        "target",
+        "gameData",
+        "sources",
+        "documents",
+        "recordCounts",
+        "constraints"
+      ],
+      "properties": {
+        "$schema": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "rlv2_rule_manifest"
+        },
+        "schemaVersion": {
+          "const": 1
+        },
+        "ruleSetId": {
+          "const": "rlv2-cn-2.7.51"
+        },
+        "runtimeEnabled": {
+          "const": false
+        },
+        "target": {
+          "type": "object",
+          "required": [
+            "clientVersion",
+            "locale",
+            "platformBaselines",
+            "fieldEvidence",
+            "evidence"
+          ],
+          "properties": {
+            "clientVersion": {
+              "const": "2.7.51"
+            },
+            "locale": {
+              "const": "zh_CN"
+            },
+            "platformBaselines": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "required": [
+                  "platform",
+                  "dataVersion",
+                  "role"
+                ],
+                "properties": {
+                  "platform": {
+                    "type": "string",
+                    "enum": [
+                      "windows",
+                      "android"
+                    ]
+                  },
+                  "dataVersion": {
+                    "type": "string"
+                  },
+                  "role": {
+                    "type": "string",
+                    "enum": [
+                      "primary",
+                      "working_primary",
+                      "compatible"
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "fieldEvidence": {
+              "type": "object",
+              "required": [
+                "clientVersion",
+                "platformRoles"
+              ],
+              "properties": {
+                "clientVersion": {
+                  "$ref": "#/$defs/evidence"
+                },
+                "platformRoles": {
+                  "$ref": "#/$defs/evidence"
+                }
+              },
+              "additionalProperties": false
+            },
+            "evidence": {
+              "$ref": "#/$defs/evidence"
+            }
+          },
+          "additionalProperties": false
+        },
+        "gameData": {
+          "type": "object",
+          "required": [
+            "platform",
+            "clientVersion",
+            "dataVersion",
+            "repository",
+            "commit",
+            "table"
+          ],
+          "properties": {
+            "platform": {
+              "const": "android"
+            },
+            "clientVersion": {
+              "const": "2.7.51"
+            },
+            "dataVersion": {
+              "type": "string"
+            },
+            "repository": {
+              "type": "string"
+            },
+            "commit": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{40}$"
+            },
+            "table": {
+              "type": "object",
+              "required": [
+                "path",
+                "sha256"
+              ],
+              "properties": {
+                "path": {
+                  "const": "data/excel/roguelike_topic_table.json"
+                },
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/source"
+          },
+          "minItems": 1
+        },
+        "documents": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "path",
+              "kind",
+              "runtimeEnabled"
+            ],
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "kind": {
+                "type": "string"
+              },
+              "runtimeEnabled": {
+                "const": false
+              }
+            },
+            "additionalProperties": false
+          },
+          "minItems": 1
+        },
+        "recordCounts": {
+          "type": "object",
+          "patternProperties": {
+            "^rogue_[1-5]$": {
+              "type": "object",
+              "required": [
+                "collectibles",
+                "stages",
+                "zones",
+                "scenes"
+              ],
+              "properties": {
+                "collectibles": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "stages": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "zones": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "scenes": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false,
+          "minProperties": 5,
+          "maxProperties": 5
+        },
+        "constraints": {
+          "type": "object",
+          "required": [
+            "runtimeNetworkAccess",
+            "runtimeIntegration",
+            "unknownValue",
+            "emptyCollection",
+            "missingField"
+          ],
+          "properties": {
+            "runtimeNetworkAccess": {
+              "const": false
+            },
+            "runtimeIntegration": {
+              "const": false
+            },
+            "unknownValue": {
+              "const": "null"
+            },
+            "emptyCollection": {
+              "const": "confirmed_empty"
+            },
+            "missingField": {
+              "const": "not_applicable"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "themeCatalog": {
+      "type": "object",
+      "required": [
+        "$schema",
+        "kind",
+        "schemaVersion",
+        "runtimeEnabled",
+        "sourceRef",
+        "themes"
+      ],
+      "properties": {
+        "$schema": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "rlv2_theme_catalog"
+        },
+        "schemaVersion": {
+          "const": 1
+        },
+        "runtimeEnabled": {
+          "const": false
+        },
+        "sourceRef": {
+          "type": "string",
+          "minLength": 1
+        },
+        "themes": {
+          "type": "object",
+          "patternProperties": {
+            "^rogue_[1-5]$": {
+              "type": "object",
+              "required": [
+                "themeId",
+                "name",
+                "moduleTypes",
+                "resources"
+              ],
+              "properties": {
+                "themeId": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "moduleTypes": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "uniqueItems": true
+                },
+                "resources": {
+                  "type": "object",
+                  "required": [
+                    "goldItemId",
+                    "expItemId",
+                    "hpItemId",
+                    "maxHpItemId",
+                    "populationItemId",
+                    "shieldItemId",
+                    "squadCapacityItemId"
+                  ],
+                  "properties": {
+                    "goldItemId": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "expItemId": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "hpItemId": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "maxHpItemId": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "populationItemId": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "shieldItemId": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "squadCapacityItemId": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false,
+          "minProperties": 5,
+          "maxProperties": 5
+        }
+      },
+      "additionalProperties": false
+    },
+    "collectibleCatalog": {
+      "type": "object",
+      "required": [
+        "$schema",
+        "kind",
+        "schemaVersion",
+        "runtimeEnabled",
+        "sourceRef",
+        "themes"
+      ],
+      "properties": {
+        "$schema": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "rlv2_collectible_catalog"
+        },
+        "schemaVersion": {
+          "const": 1
+        },
+        "runtimeEnabled": {
+          "const": false
+        },
+        "sourceRef": {
+          "type": "string",
+          "minLength": 1
+        },
+        "themes": {
+          "type": "object",
+          "patternProperties": {
+            "^rogue_[1-5]$": {
+              "type": "object",
+              "required": [
+                "items"
+              ],
+              "properties": {
+                "items": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object",
+                    "required": [
+                      "itemId",
+                      "name",
+                      "rarity",
+                      "subType",
+                      "canSacrifice",
+                      "unlockConditionDescription"
+                    ],
+                    "properties": {
+                      "itemId": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "rarity": {
+                        "type": "string",
+                        "enum": [
+                          "NORMAL",
+                          "RARE",
+                          "SUPER_RARE"
+                        ]
+                      },
+                      "subType": {
+                        "type": "string",
+                        "enum": [
+                          "NONE",
+                          "CURSE",
+                          "SECRET"
+                        ]
+                      },
+                      "canSacrifice": {
+                        "type": "boolean"
+                      },
+                      "unlockConditionDescription": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false,
+          "minProperties": 5,
+          "maxProperties": 5
+        }
+      },
+      "additionalProperties": false
+    },
+    "stageCatalog": {
+      "type": "object",
+      "required": [
+        "$schema",
+        "kind",
+        "schemaVersion",
+        "runtimeEnabled",
+        "sourceRef",
+        "themes"
+      ],
+      "properties": {
+        "$schema": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "rlv2_stage_catalog"
+        },
+        "schemaVersion": {
+          "const": 1
+        },
+        "runtimeEnabled": {
+          "const": false
+        },
+        "sourceRef": {
+          "type": "string",
+          "minLength": 1
+        },
+        "themes": {
+          "type": "object",
+          "patternProperties": {
+            "^rogue_[1-5]$": {
+              "type": "object",
+              "required": [
+                "stages"
+              ],
+              "properties": {
+                "stages": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object",
+                    "required": [
+                      "stageId",
+                      "name",
+                      "difficulty",
+                      "isBoss",
+                      "isElite",
+                      "linkedStageId",
+                      "levelId",
+                      "levelReplaceIds",
+                      "specialNodeId"
+                    ],
+                    "properties": {
+                      "stageId": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "difficulty": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "isBoss": {
+                        "type": "integer"
+                      },
+                      "isElite": {
+                        "type": "integer"
+                      },
+                      "linkedStageId": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "levelId": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "levelReplaceIds": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "specialNodeId": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false,
+          "minProperties": 5,
+          "maxProperties": 5
+        }
+      },
+      "additionalProperties": false
+    },
+    "zoneCatalog": {
+      "type": "object",
+      "required": [
+        "$schema",
+        "kind",
+        "schemaVersion",
+        "runtimeEnabled",
+        "sourceRef",
+        "themes"
+      ],
+      "properties": {
+        "$schema": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "rlv2_zone_catalog"
+        },
+        "schemaVersion": {
+          "const": 1
+        },
+        "runtimeEnabled": {
+          "const": false
+        },
+        "sourceRef": {
+          "type": "string",
+          "minLength": 1
+        },
+        "themes": {
+          "type": "object",
+          "patternProperties": {
+            "^rogue_[1-5]$": {
+              "type": "object",
+              "required": [
+                "zones"
+              ],
+              "properties": {
+                "zones": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object",
+                    "required": [
+                      "zoneId",
+                      "name",
+                      "isHiddenZone",
+                      "backgroundId",
+                      "zoneIconId"
+                    ],
+                    "properties": {
+                      "zoneId": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "isHiddenZone": {
+                        "type": "boolean"
+                      },
+                      "backgroundId": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "zoneIconId": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false,
+          "minProperties": 5,
+          "maxProperties": 5
+        }
+      },
+      "additionalProperties": false
+    },
+    "sceneCatalog": {
+      "type": "object",
+      "required": [
+        "$schema",
+        "kind",
+        "schemaVersion",
+        "runtimeEnabled",
+        "sourceRef",
+        "themes"
+      ],
+      "properties": {
+        "$schema": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "rlv2_scene_catalog"
+        },
+        "schemaVersion": {
+          "const": 1
+        },
+        "runtimeEnabled": {
+          "const": false
+        },
+        "sourceRef": {
+          "type": "string",
+          "minLength": 1
+        },
+        "themes": {
+          "type": "object",
+          "patternProperties": {
+            "^rogue_[1-5]$": {
+              "type": "object",
+              "required": [
+                "scenes"
+              ],
+              "properties": {
+                "scenes": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object",
+                    "required": [
+                      "sceneId",
+                      "title",
+                      "subTypeId",
+                      "useHiddenMusic"
+                    ],
+                    "properties": {
+                      "sceneId": {
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "subTypeId": {
+                        "type": [
+                          "integer",
+                          "null"
+                        ]
+                      },
+                      "useHiddenMusic": {
+                        "type": "boolean"
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false,
+          "minProperties": 5,
+          "maxProperties": 5
+        }
+      },
+      "additionalProperties": false
+    },
+    "relicTagsDocument": {
+      "type": "object",
+      "required": [
+        "$schema",
+        "kind",
+        "schemaVersion",
+        "runtimeEnabled",
+        "tagDefinitions",
+        "poolDefinitions",
+        "annotations",
+        "unresolved"
+      ],
+      "properties": {
+        "$schema": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "rlv2_relic_tags"
+        },
+        "schemaVersion": {
+          "const": 1
+        },
+        "runtimeEnabled": {
+          "const": false
+        },
+        "tagDefinitions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ruleRecord"
+          }
+        },
+        "poolDefinitions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ruleRecord"
+          }
+        },
+        "annotations": {
+          "type": "object",
+          "patternProperties": {
+            "^rogue_[1-5]:.+$": {
+              "$ref": "#/$defs/ruleRecord"
+            }
+          },
+          "additionalProperties": false
+        },
+        "unresolved": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ruleRecord"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "eventTagsDocument": {
+      "type": "object",
+      "required": [
+        "$schema",
+        "kind",
+        "schemaVersion",
+        "runtimeEnabled",
+        "tagDefinitions",
+        "identityPolicy",
+        "annotations",
+        "unresolved"
+      ],
+      "properties": {
+        "$schema": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "rlv2_event_tags"
+        },
+        "schemaVersion": {
+          "const": 1
+        },
+        "runtimeEnabled": {
+          "const": false
+        },
+        "tagDefinitions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ruleRecord"
+          }
+        },
+        "identityPolicy": {
+          "$ref": "#/$defs/ruleRecord"
+        },
+        "annotations": {
+          "type": "object",
+          "patternProperties": {
+            "^rogue_[1-5]:.+$": {
+              "$ref": "#/$defs/ruleRecord"
+            }
+          },
+          "additionalProperties": false
+        },
+        "unresolved": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ruleRecord"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "battleRewardsDocument": {
+      "type": "object",
+      "required": [
+        "$schema",
+        "kind",
+        "schemaVersion",
+        "runtimeEnabled",
+        "baseResourceMatrix",
+        "zoneAliases",
+        "claimPolicies",
+        "poolDefinitions",
+        "rewardIntents",
+        "modifierRules",
+        "bossStageRules",
+        "unresolved"
+      ],
+      "properties": {
+        "$schema": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "rlv2_battle_reward_rules"
+        },
+        "schemaVersion": {
+          "const": 1
+        },
+        "runtimeEnabled": {
+          "const": false
+        },
+        "baseResourceMatrix": {
+          "$ref": "#/$defs/ruleRecord"
+        },
+        "zoneAliases": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ruleRecord"
+          }
+        },
+        "claimPolicies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ruleRecord"
+          }
+        },
+        "poolDefinitions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ruleRecord"
+          }
+        },
+        "rewardIntents": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ruleRecord"
+          }
+        },
+        "modifierRules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ruleRecord"
+          }
+        },
+        "bossStageRules": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/$defs/ruleRecord"
+          }
+        },
+        "unresolved": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ruleRecord"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "zoneRoutesDocument": {
+      "type": "object",
+      "required": [
+        "$schema",
+        "kind",
+        "schemaVersion",
+        "runtimeEnabled",
+        "stageRewardPolicy",
+        "endingZones",
+        "specialRegions",
+        "flagVariantMapping",
+        "unresolved"
+      ],
+      "properties": {
+        "$schema": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "rlv2_zone_routes"
+        },
+        "schemaVersion": {
+          "const": 1
+        },
+        "runtimeEnabled": {
+          "const": false
+        },
+        "stageRewardPolicy": {
+          "$ref": "#/$defs/ruleRecord"
+        },
+        "endingZones": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ruleRecord"
+          }
+        },
+        "specialRegions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ruleRecord"
+          }
+        },
+        "flagVariantMapping": {
+          "$ref": "#/$defs/ruleRecord"
+        },
+        "unresolved": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ruleRecord"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "modulesDocument": {
+      "type": "object",
+      "required": [
+        "$schema",
+        "kind",
+        "schemaVersion",
+        "runtimeEnabled",
+        "modules",
+        "unresolved"
+      ],
+      "properties": {
+        "$schema": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "rlv2_modules"
+        },
+        "schemaVersion": {
+          "const": 1
+        },
+        "runtimeEnabled": {
+          "const": false
+        },
+        "modules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ruleRecord"
+          }
+        },
+        "unresolved": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ruleRecord"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

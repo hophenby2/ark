@@ -1,0 +1,838 @@
+{
+  "$schema": "./rules.schema.json",
+  "kind": "rlv2_battle_reward_rules",
+  "schemaVersion": 1,
+  "runtimeEnabled": false,
+  "baseResourceMatrix": {
+    "id": "normal-emergency-base-resources",
+    "dimensions": [
+      "theme",
+      "logicalDepth",
+      "battleKind"
+    ],
+    "resources": [
+      "exp",
+      "gold"
+    ],
+    "excludedModifiers": [
+      "difficulty",
+      "relic",
+      "themeModule",
+      "nodeVariant",
+      "extraDrop"
+    ],
+    "cells": [
+      {
+        "theme": "rogue_1",
+        "logicalDepth": 1,
+        "normal": {
+          "exp": 10,
+          "gold": 3
+        },
+        "emergency": {
+          "exp": 12,
+          "gold": 4
+        },
+        "sourceRef": "prts:rogue-1:408420"
+      },
+      {
+        "theme": "rogue_1",
+        "logicalDepth": 2,
+        "normal": {
+          "exp": 12,
+          "gold": 3
+        },
+        "emergency": {
+          "exp": 18,
+          "gold": 4
+        },
+        "sourceRef": "prts:rogue-1:408420"
+      },
+      {
+        "theme": "rogue_1",
+        "logicalDepth": 3,
+        "normal": {
+          "exp": 16,
+          "gold": 3
+        },
+        "emergency": {
+          "exp": 24,
+          "gold": 5
+        },
+        "sourceRef": "prts:rogue-1:408420"
+      },
+      {
+        "theme": "rogue_1",
+        "logicalDepth": 4,
+        "normal": {
+          "exp": 20,
+          "gold": 4
+        },
+        "emergency": {
+          "exp": 30,
+          "gold": 5
+        },
+        "sourceRef": "prts:rogue-1:408420"
+      },
+      {
+        "theme": "rogue_1",
+        "logicalDepth": 5,
+        "normal": {
+          "exp": 25,
+          "gold": 4
+        },
+        "emergency": {
+          "exp": 38,
+          "gold": 6
+        },
+        "sourceRef": "prts:rogue-1:408420"
+      },
+      {
+        "theme": "rogue_1",
+        "logicalDepth": 6,
+        "normal": {
+          "exp": 25,
+          "gold": 4
+        },
+        "emergency": {
+          "exp": 45,
+          "gold": 6
+        },
+        "sourceRef": "prts:rogue-1:408420"
+      },
+      {
+        "theme": "rogue_2",
+        "logicalDepth": 1,
+        "normal": {
+          "exp": 10,
+          "gold": 2
+        },
+        "emergency": {
+          "exp": 12,
+          "gold": 3
+        },
+        "sourceRef": "prts:rogue-2:408421"
+      },
+      {
+        "theme": "rogue_2",
+        "logicalDepth": 2,
+        "normal": {
+          "exp": 12,
+          "gold": 2
+        },
+        "emergency": {
+          "exp": 18,
+          "gold": 3
+        },
+        "sourceRef": "prts:rogue-2:408421"
+      },
+      {
+        "theme": "rogue_2",
+        "logicalDepth": 3,
+        "normal": {
+          "exp": 14,
+          "gold": 2
+        },
+        "emergency": {
+          "exp": 24,
+          "gold": 4
+        },
+        "sourceRef": "prts:rogue-2:408421"
+      },
+      {
+        "theme": "rogue_2",
+        "logicalDepth": 4,
+        "normal": {
+          "exp": 16,
+          "gold": 3
+        },
+        "emergency": {
+          "exp": 30,
+          "gold": 4
+        },
+        "sourceRef": "prts:rogue-2:408421"
+      },
+      {
+        "theme": "rogue_2",
+        "logicalDepth": 5,
+        "normal": {
+          "exp": 20,
+          "gold": 3
+        },
+        "emergency": {
+          "exp": 36,
+          "gold": 5
+        },
+        "sourceRef": "prts:rogue-2:408421"
+      },
+      {
+        "theme": "rogue_2",
+        "logicalDepth": 6,
+        "normal": {
+          "exp": 20,
+          "gold": 3
+        },
+        "emergency": {
+          "exp": 36,
+          "gold": 5
+        },
+        "sourceRef": "prts:rogue-2:408421"
+      },
+      {
+        "theme": "rogue_3",
+        "logicalDepth": 1,
+        "normal": {
+          "exp": 10,
+          "gold": 2
+        },
+        "emergency": {
+          "exp": 12,
+          "gold": 3
+        },
+        "sourceRef": "prts:rogue-3:408422"
+      },
+      {
+        "theme": "rogue_3",
+        "logicalDepth": 2,
+        "normal": {
+          "exp": 12,
+          "gold": 2
+        },
+        "emergency": {
+          "exp": 18,
+          "gold": 3
+        },
+        "sourceRef": "prts:rogue-3:408422"
+      },
+      {
+        "theme": "rogue_3",
+        "logicalDepth": 3,
+        "normal": {
+          "exp": 14,
+          "gold": 2
+        },
+        "emergency": {
+          "exp": 24,
+          "gold": 4
+        },
+        "sourceRef": "prts:rogue-3:408422"
+      },
+      {
+        "theme": "rogue_3",
+        "logicalDepth": 4,
+        "normal": {
+          "exp": 16,
+          "gold": 3
+        },
+        "emergency": {
+          "exp": 30,
+          "gold": 4
+        },
+        "sourceRef": "prts:rogue-3:408422"
+      },
+      {
+        "theme": "rogue_3",
+        "logicalDepth": 5,
+        "normal": {
+          "exp": 20,
+          "gold": 3
+        },
+        "emergency": {
+          "exp": 36,
+          "gold": 5
+        },
+        "sourceRef": "prts:rogue-3:408422"
+      },
+      {
+        "theme": "rogue_3",
+        "logicalDepth": 6,
+        "normal": {
+          "exp": 20,
+          "gold": 3
+        },
+        "emergency": {
+          "exp": 36,
+          "gold": 5
+        },
+        "sourceRef": "prts:rogue-3:408422"
+      },
+      {
+        "theme": "rogue_4",
+        "logicalDepth": 1,
+        "normal": {
+          "exp": 10,
+          "gold": 1
+        },
+        "emergency": {
+          "exp": 12,
+          "gold": 2
+        },
+        "sourceRef": "prts:rogue-4:408423"
+      },
+      {
+        "theme": "rogue_4",
+        "logicalDepth": 2,
+        "normal": {
+          "exp": 12,
+          "gold": 2
+        },
+        "emergency": {
+          "exp": 18,
+          "gold": 2
+        },
+        "sourceRef": "prts:rogue-4:408423"
+      },
+      {
+        "theme": "rogue_4",
+        "logicalDepth": 3,
+        "normal": {
+          "exp": 13,
+          "gold": 2
+        },
+        "emergency": {
+          "exp": 25,
+          "gold": 3
+        },
+        "sourceRef": "prts:rogue-4:408423"
+      },
+      {
+        "theme": "rogue_4",
+        "logicalDepth": 4,
+        "normal": {
+          "exp": 15,
+          "gold": 3
+        },
+        "emergency": {
+          "exp": 30,
+          "gold": 3
+        },
+        "sourceRef": "prts:rogue-4:408423"
+      },
+      {
+        "theme": "rogue_4",
+        "logicalDepth": 5,
+        "normal": {
+          "exp": 20,
+          "gold": 3
+        },
+        "emergency": {
+          "exp": 36,
+          "gold": 5
+        },
+        "sourceRef": "prts:rogue-4:408423"
+      },
+      {
+        "theme": "rogue_4",
+        "logicalDepth": 6,
+        "normal": {
+          "exp": 20,
+          "gold": 5
+        },
+        "emergency": {
+          "exp": 36,
+          "gold": 5
+        },
+        "sourceRef": "prts:rogue-4:408423"
+      },
+      {
+        "theme": "rogue_5",
+        "logicalDepth": 1,
+        "normal": {
+          "exp": 10,
+          "gold": 1
+        },
+        "emergency": {
+          "exp": 12,
+          "gold": 2
+        },
+        "sourceRef": "prts:rogue-5:408424"
+      },
+      {
+        "theme": "rogue_5",
+        "logicalDepth": 2,
+        "normal": {
+          "exp": 12,
+          "gold": 2
+        },
+        "emergency": {
+          "exp": 18,
+          "gold": 2
+        },
+        "sourceRef": "prts:rogue-5:408424"
+      },
+      {
+        "theme": "rogue_5",
+        "logicalDepth": 3,
+        "normal": {
+          "exp": 13,
+          "gold": 2
+        },
+        "emergency": {
+          "exp": 25,
+          "gold": 3
+        },
+        "sourceRef": "prts:rogue-5:408424"
+      },
+      {
+        "theme": "rogue_5",
+        "logicalDepth": 4,
+        "normal": {
+          "exp": 15,
+          "gold": 2
+        },
+        "emergency": {
+          "exp": 30,
+          "gold": 3
+        },
+        "sourceRef": "prts:rogue-5:408424"
+      },
+      {
+        "theme": "rogue_5",
+        "logicalDepth": 5,
+        "normal": {
+          "exp": 20,
+          "gold": 2
+        },
+        "emergency": {
+          "exp": 36,
+          "gold": 5
+        },
+        "sourceRef": "prts:rogue-5:408424"
+      },
+      {
+        "theme": "rogue_5",
+        "logicalDepth": 6,
+        "normal": {
+          "exp": 20,
+          "gold": 5
+        },
+        "emergency": {
+          "exp": 36,
+          "gold": 5
+        },
+        "sourceRef": "prts:rogue-5:408424"
+      }
+    ],
+    "evidence": {
+      "reviewStatus": "public_sourced",
+      "sourceRefs": [
+        "prts:rogue-1:408420",
+        "prts:rogue-2:408421",
+        "prts:rogue-3:408422",
+        "prts:rogue-4:408423",
+        "prts:rogue-5:408424"
+      ],
+      "notes": "The 60-cell matrix is already hardcoded and tested; this file is not yet its runtime source."
+    },
+    "implementationStatus": "existing_hardcoded",
+    "runtimeEnabled": false
+  },
+  "zoneAliases": [
+    {
+      "id": "rogue_4:zone_7->reward_tier_6",
+      "theme": "rogue_4",
+      "zoneId": "zone_7",
+      "rewardTier": 6,
+      "genericClampAllowed": false,
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "prts:rogue-4:408423"
+        ],
+        "notes": "Existing explicit alias; does not authorize zone 8 or special regions."
+      },
+      "implementationStatus": "existing_hardcoded",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_5:zone_7->reward_tier_6",
+      "theme": "rogue_5",
+      "zoneId": "zone_7",
+      "rewardTier": 6,
+      "genericClampAllowed": false,
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "prts:rogue-5:408424"
+        ],
+        "notes": "Existing explicit alias; does not authorize zone 8 or special regions."
+      },
+      "implementationStatus": "existing_hardcoded",
+      "runtimeEnabled": false
+    }
+  ],
+  "claimPolicies": [
+    {
+      "id": "claim-exp",
+      "rewardType": "exp",
+      "settlement": "automatic",
+      "skippable": false,
+      "evidence": {
+        "reviewStatus": "user_confirmed",
+        "sourceRefs": [
+          "user-review:2026-07-14"
+        ],
+        "notes": "Q03."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "claim-gold",
+      "rewardType": "gold",
+      "settlement": "selectable_reward",
+      "skippable": true,
+      "evidence": {
+        "reviewStatus": "user_confirmed",
+        "sourceRefs": [
+          "user-review:2026-07-14"
+        ],
+        "notes": "Q03; current code conflicts by requiring claim."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "claim-recruit-ticket",
+      "rewardType": "recruit_ticket",
+      "settlement": "selectable_reward",
+      "skippable": true,
+      "evidence": {
+        "reviewStatus": "user_confirmed",
+        "sourceRefs": [
+          "user-review:2026-07-14"
+        ],
+        "notes": "Q03."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "claim-collectible",
+      "rewardType": "collectible",
+      "settlement": "selectable_reward",
+      "skippable": true,
+      "evidence": {
+        "reviewStatus": "user_confirmed",
+        "sourceRefs": [
+          "user-review:2026-07-14"
+        ],
+        "notes": "Q03."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "finish-with-unclaimed-selectables",
+      "finishAllowed": true,
+      "appliesTo": [
+        "gold",
+        "recruit_ticket",
+        "collectible"
+      ],
+      "evidence": {
+        "reviewStatus": "user_confirmed",
+        "sourceRefs": [
+          "user-review:2026-07-14"
+        ],
+        "notes": "Q03; only EXP is mandatory because it is automatic."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    }
+  ],
+  "poolDefinitions": [
+    {
+      "id": "random_class_ticket_pool",
+      "themes": [
+        "rogue_1",
+        "rogue_2",
+        "rogue_3",
+        "rogue_4",
+        "rogue_5"
+      ],
+      "rewardType": "recruit_ticket",
+      "memberItemIds": null,
+      "selectionWeightPolicy": null,
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "user-review:2026-07-14",
+          "client:roguelike-topic-table:634e7e7"
+        ],
+        "notes": "The random-class intent is user-confirmed; exact ticket IDs and weights have not been mapped."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    }
+  ],
+  "rewardIntents": [
+    {
+      "id": "normal-random-class-ticket",
+      "appliesTo": {
+        "battleKinds": [
+          "normal"
+        ],
+        "logicalDepths": null,
+        "stageIds": null
+      },
+      "rewardType": "recruit_ticket",
+      "poolRef": "random_class_ticket_pool",
+      "candidateCount": 1,
+      "chooseCount": 1,
+      "distinctCandidates": null,
+      "weightPolicy": null,
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "user-review:2026-07-14"
+        ],
+        "notes": "Reward kind/count are confirmed; pool members and weights are unknown."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "emergency-random-class-ticket",
+      "appliesTo": {
+        "battleKinds": [
+          "emergency"
+        ],
+        "logicalDepths": null,
+        "stageIds": null
+      },
+      "rewardType": "recruit_ticket",
+      "poolRef": "random_class_ticket_pool",
+      "candidateCount": 1,
+      "chooseCount": 1,
+      "distinctCandidates": null,
+      "weightPolicy": null,
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "user-review:2026-07-14"
+        ],
+        "notes": "Reward kind/count are confirmed; pool members and weights are unknown."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "depth-3-5-class-ticket-choice",
+      "appliesTo": {
+        "battleKinds": null,
+        "logicalDepths": [
+          3,
+          5
+        ],
+        "stageIds": null
+      },
+      "rewardType": "recruit_ticket",
+      "poolRef": "random_class_ticket_pool",
+      "candidateCount": 2,
+      "chooseCount": 1,
+      "distinctCandidates": null,
+      "weightPolicy": null,
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "user-review:2026-07-14"
+        ],
+        "notes": "Depths and choice size are confirmed; battle scope and candidate uniqueness remain ambiguous."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "emergency-extra-collectible",
+      "appliesTo": {
+        "battleKinds": [
+          "emergency"
+        ],
+        "logicalDepths": null,
+        "stageIds": null
+      },
+      "rewardType": "collectible",
+      "poolRef": "emergency_collectible_pool",
+      "candidateCount": 1,
+      "chooseCount": 1,
+      "evaluation": "independent",
+      "probability": null,
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "user-review:2026-07-14"
+        ],
+        "notes": "The extra independent drop is confirmed; probability and members are unknown."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "boss-value-16-collectible-choice",
+      "appliesTo": {
+        "battleKinds": [
+          "boss"
+        ],
+        "themes": [
+          "rogue_1",
+          "rogue_2",
+          "rogue_3",
+          "rogue_4",
+          "rogue_5"
+        ],
+        "stageIds": null,
+        "variants": null,
+        "contexts": null
+      },
+      "rewardType": "collectible",
+      "poolRef": "boss_value_16_pool",
+      "candidateCount": 2,
+      "chooseCount": 1,
+      "optionCountAdjustment": "additive",
+      "noFallback": true,
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "user-review:2026-07-14"
+        ],
+        "notes": "Selection intent is confirmed; explicit stage/variant/context bindings and pool members are not."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    }
+  ],
+  "modifierRules": [
+    {
+      "id": "exp-modifiers-multiply",
+      "resource": "exp",
+      "aggregation": "multiply",
+      "modifierIds": null,
+      "order": null,
+      "rounding": null,
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "user-review:2026-07-14"
+        ],
+        "notes": "Aggregation is confirmed; exact modifiers/order/rounding are unknown."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "gold-modifiers-multiply",
+      "resource": "gold",
+      "aggregation": "multiply",
+      "modifierIds": null,
+      "order": null,
+      "rounding": null,
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "user-review:2026-07-14"
+        ],
+        "notes": "Aggregation is confirmed; exact modifiers/order/rounding are unknown."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "other-modifiers-add",
+      "resourceScope": null,
+      "aggregation": "add",
+      "modifierIds": null,
+      "order": null,
+      "rounding": null,
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "user-review:2026-07-14"
+        ],
+        "notes": "The phrase 'other' is not yet mapped to explicit reward/effect types."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "extra-drops-independent",
+      "resourceScope": "extra_drop",
+      "aggregation": "independent_evaluation",
+      "modifierIds": null,
+      "evidence": {
+        "reviewStatus": "user_confirmed",
+        "sourceRefs": [
+          "user-review:2026-07-14"
+        ],
+        "notes": "Q08."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    }
+  ],
+  "bossStageRules": null,
+  "unresolved": [
+    {
+      "id": "battle-reward-protocol-shape",
+      "fields": [
+        "reward.index",
+        "reward.sub",
+        "exDrop",
+        "exDropSrc",
+        "skipSequence"
+      ],
+      "description": "No same-version request/response fixture is available.",
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "user-review:2026-07-14"
+        ],
+        "notes": "Data intent must not be mistaken for exact wire shape."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "boss-stage-matrix",
+      "fields": [
+        "theme",
+        "stageId",
+        "variant",
+        "context",
+        "exp",
+        "gold",
+        "rounding",
+        "reduction"
+      ],
+      "description": "Q05 selects an explicit rule table, but no concrete stage entries are verified.",
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "user-review:2026-07-14",
+          "client:roguelike-topic-table:634e7e7"
+        ],
+        "notes": "bossStageRules remains null and no fallback is allowed."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "class-ticket-pool",
+      "fields": [
+        "itemIds",
+        "classWeights",
+        "distinctCandidates"
+      ],
+      "description": "Random class ticket members, weighting, and de-duplication are unresolved.",
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "user-review:2026-07-14"
+        ],
+        "notes": null
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    }
+  ]
+}

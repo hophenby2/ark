@@ -1,0 +1,240 @@
+{
+  "$schema": "./rules.schema.json",
+  "kind": "rlv2_rule_manifest",
+  "schemaVersion": 1,
+  "ruleSetId": "rlv2-cn-2.7.51",
+  "runtimeEnabled": false,
+  "target": {
+    "clientVersion": "2.7.51",
+    "locale": "zh_CN",
+    "platformBaselines": [
+      {
+        "platform": "windows",
+        "dataVersion": "26-07-10-13-52-38_fcd8ed",
+        "role": "working_primary"
+      },
+      {
+        "platform": "android",
+        "dataVersion": "26-07-10-13-49-06_a14b4a",
+        "role": "compatible"
+      }
+    ],
+    "fieldEvidence": {
+      "clientVersion": {
+        "reviewStatus": "user_confirmed",
+        "sourceRefs": [
+          "user-review:2026-07-14"
+        ],
+        "notes": "Q01 confirms client version 2.7.51."
+      },
+      "platformRoles": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "user-review:2026-07-14"
+        ],
+        "notes": "Windows is the current working configuration, but Q01 does not make platform part of the verified rule-set key."
+      }
+    },
+    "evidence": {
+      "reviewStatus": "needs_review",
+      "sourceRefs": [
+        "user-review:2026-07-14"
+      ],
+      "notes": "The client version is confirmed; platform roles are operational metadata and remain separately marked needs_review."
+    }
+  },
+  "gameData": {
+    "platform": "android",
+    "clientVersion": "2.7.51",
+    "dataVersion": "26-07-10-13-49-06_a14b4a",
+    "repository": "https://github.com/Kengxxiao/ArknightsGameData.git",
+    "commit": "634e7e7d12c9d099c55896d51b4cf8ef633fa2a5",
+    "table": {
+      "path": "data/excel/roguelike_topic_table.json",
+      "sha256": "643df7574c8955c827bec2645ed09c06df44bc6654a85ead96002a8298b91bb6"
+    }
+  },
+  "sources": [
+    {
+      "id": "client:roguelike-topic-table:634e7e7",
+      "kind": "client_table",
+      "locator": "data/excel/roguelike_topic_table.json",
+      "revision": "634e7e7d12c9d099c55896d51b4cf8ef633fa2a5",
+      "accessedOn": "2026-07-14",
+      "reviewStatus": "client_verified",
+      "scope": "Canonical theme, item, stage, zone, scene, module type, and resource IDs.",
+      "constraints": "The linked local table is the Android Data snapshot; it is compatible evidence, not a Windows extraction."
+    },
+    {
+      "id": "user-review:2026-07-14",
+      "kind": "user_review",
+      "locator": "docs/ROGUELIKE_REVIEW_QUESTIONS.md",
+      "revision": null,
+      "accessedOn": "2026-07-14",
+      "reviewStatus": "user_confirmed",
+      "scope": "Answers Q01-Q18.",
+      "constraints": "Most evidence fields are empty; conclusions are not client-verified."
+    },
+    {
+      "id": "repository:roguelike-analysis:e0e7bbf",
+      "kind": "repository_document",
+      "locator": "docs/ROGUELIKE_ANALYSIS.md",
+      "revision": "e0e7bbf",
+      "accessedOn": "2026-07-14",
+      "reviewStatus": "needs_review",
+      "scope": "Repository audit summary used to frame module descriptions and unresolved work.",
+      "constraints": "Analysis text is not direct client or public-source evidence."
+    },
+    {
+      "id": "prts:rogue-1:408420",
+      "kind": "public_source",
+      "locator": "https://prts.wiki/w/Special:PermanentLink/408420",
+      "revision": "408420",
+      "accessedOn": "2026-07-14",
+      "reviewStatus": "public_sourced",
+      "scope": "RO1 public base battle resource values.",
+      "constraints": "Does not establish protocol shape, private pool weights, or unrelated event/relic facts."
+    },
+    {
+      "id": "prts:rogue-2:408421",
+      "kind": "public_source",
+      "locator": "https://prts.wiki/w/Special:PermanentLink/408421",
+      "revision": "408421",
+      "accessedOn": "2026-07-14",
+      "reviewStatus": "public_sourced",
+      "scope": "RO2 public base battle resource values.",
+      "constraints": "Does not establish protocol shape, private pool weights, or unrelated event/relic facts."
+    },
+    {
+      "id": "prts:rogue-3:408422",
+      "kind": "public_source",
+      "locator": "https://prts.wiki/w/Special:PermanentLink/408422",
+      "revision": "408422",
+      "accessedOn": "2026-07-14",
+      "reviewStatus": "public_sourced",
+      "scope": "RO3 public base battle resource values.",
+      "constraints": "Does not establish protocol shape, private pool weights, or unrelated event/relic facts."
+    },
+    {
+      "id": "prts:rogue-4:408423",
+      "kind": "public_source",
+      "locator": "https://prts.wiki/w/Special:PermanentLink/408423",
+      "revision": "408423",
+      "accessedOn": "2026-07-14",
+      "reviewStatus": "public_sourced",
+      "scope": "RO4 public base battle resource values.",
+      "constraints": "Does not establish protocol shape, private pool weights, or unrelated event/relic facts."
+    },
+    {
+      "id": "prts:rogue-5:408424",
+      "kind": "public_source",
+      "locator": "https://prts.wiki/w/Special:PermanentLink/408424",
+      "revision": "408424",
+      "accessedOn": "2026-07-14",
+      "reviewStatus": "public_sourced",
+      "scope": "RO5 public base battle resource values.",
+      "constraints": "Does not establish protocol shape, private pool weights, or unrelated event/relic facts."
+    },
+    {
+      "id": "tomimi:sheet:BB08J2",
+      "kind": "public_source",
+      "locator": "https://docs.qq.com/sheet/DQkhoWVpEcUF2T3FV?tab=BB08J2",
+      "revision": null,
+      "accessedOn": "2026-07-14",
+      "reviewStatus": "needs_review",
+      "scope": "Manual cross-check source for relic, event, and module rules.",
+      "constraints": "Do not copy or mirror the restricted sheet; only store individually reviewed facts with precise locators."
+    }
+  ],
+  "documents": [
+    {
+      "path": "themes.json",
+      "kind": "rlv2_theme_catalog",
+      "runtimeEnabled": false
+    },
+    {
+      "path": "collectibles.json",
+      "kind": "rlv2_collectible_catalog",
+      "runtimeEnabled": false
+    },
+    {
+      "path": "stages.json",
+      "kind": "rlv2_stage_catalog",
+      "runtimeEnabled": false
+    },
+    {
+      "path": "zones.json",
+      "kind": "rlv2_zone_catalog",
+      "runtimeEnabled": false
+    },
+    {
+      "path": "scenes.json",
+      "kind": "rlv2_scene_catalog",
+      "runtimeEnabled": false
+    },
+    {
+      "path": "relic_tags.json",
+      "kind": "rlv2_relic_tags",
+      "runtimeEnabled": false
+    },
+    {
+      "path": "event_tags.json",
+      "kind": "rlv2_event_tags",
+      "runtimeEnabled": false
+    },
+    {
+      "path": "battle_reward_rules.json",
+      "kind": "rlv2_battle_reward_rules",
+      "runtimeEnabled": false
+    },
+    {
+      "path": "zone_routes.json",
+      "kind": "rlv2_zone_routes",
+      "runtimeEnabled": false
+    },
+    {
+      "path": "modules.json",
+      "kind": "rlv2_modules",
+      "runtimeEnabled": false
+    }
+  ],
+  "recordCounts": {
+    "rogue_1": {
+      "collectibles": 245,
+      "stages": 90,
+      "zones": 10,
+      "scenes": 172
+    },
+    "rogue_2": {
+      "collectibles": 256,
+      "stages": 97,
+      "zones": 7,
+      "scenes": 227
+    },
+    "rogue_3": {
+      "collectibles": 305,
+      "stages": 99,
+      "zones": 337,
+      "scenes": 381
+    },
+    "rogue_4": {
+      "collectibles": 350,
+      "stages": 127,
+      "zones": 21,
+      "scenes": 328
+    },
+    "rogue_5": {
+      "collectibles": 333,
+      "stages": 178,
+      "zones": 15,
+      "scenes": 1387
+    }
+  },
+  "constraints": {
+    "runtimeNetworkAccess": false,
+    "runtimeIntegration": false,
+    "unknownValue": "null",
+    "emptyCollection": "confirmed_empty",
+    "missingField": "not_applicable"
+  }
+}

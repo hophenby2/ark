@@ -1,0 +1,335 @@
+{
+  "$schema": "./rules.schema.json",
+  "kind": "rlv2_relic_tags",
+  "schemaVersion": 1,
+  "runtimeEnabled": false,
+  "tagDefinitions": [
+    {
+      "id": "polarity_positive",
+      "description": "正面藏品；成员必须逐条核对。",
+      "evidence": {
+        "reviewStatus": "user_confirmed",
+        "sourceRefs": [
+          "user-review:2026-07-14"
+        ],
+        "notes": "Q02 requires positive/negative classification."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "polarity_negative",
+      "description": "负面藏品；不能只由 client rarity 或 subtype 自动推断。",
+      "evidence": {
+        "reviewStatus": "user_confirmed",
+        "sourceRefs": [
+          "user-review:2026-07-14"
+        ],
+        "notes": "Q02 and the RO1 negative collectible rules."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "event_limited",
+      "description": "仅由特定事件或来源获得；关系需携带 scene/event ID。",
+      "evidence": {
+        "reviewStatus": "user_confirmed",
+        "sourceRefs": [
+          "user-review:2026-07-14"
+        ],
+        "notes": "Q02 requires event/source eligibility tags."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "difficulty_gated",
+      "description": "获取资格受难度或难度区间限制。",
+      "evidence": {
+        "reviewStatus": "user_confirmed",
+        "sourceRefs": [
+          "user-review:2026-07-14"
+        ],
+        "notes": "Q02 confirms difficulty-sensitive RO1 negative pools."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "logical_depth_gated",
+      "description": "获取资格受逻辑层数限制，不从 stage ID 前缀猜测。",
+      "evidence": {
+        "reviewStatus": "user_confirmed",
+        "sourceRefs": [
+          "user-review:2026-07-14"
+        ],
+        "notes": "Q02 confirms floor-sensitive acquisition."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "variant_original",
+      "description": "原版负面藏品变体。",
+      "evidence": {
+        "reviewStatus": "user_confirmed",
+        "sourceRefs": [
+          "user-review:2026-07-14"
+        ],
+        "notes": "Q02; exact member pairs remain unresolved."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "variant_mutated",
+      "description": "变异版负面藏品变体。",
+      "evidence": {
+        "reviewStatus": "user_confirmed",
+        "sourceRefs": [
+          "user-review:2026-07-14"
+        ],
+        "notes": "Q02; exact member pairs remain unresolved."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "trinket_value_8",
+      "description": "RO3/RO4/RO5“小玩意”候选；原始资料术语为售价 8，规范价格字段待核对。",
+      "evidence": {
+        "reviewStatus": "user_confirmed",
+        "sourceRefs": [
+          "user-review:2026-07-14"
+        ],
+        "notes": "Q02."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "boss_value_16",
+      "description": "Boss 奖励候选；原始资料术语为售价 16，规范价格字段待核对。",
+      "evidence": {
+        "reviewStatus": "user_confirmed",
+        "sourceRefs": [
+          "user-review:2026-07-14"
+        ],
+        "notes": "Q02."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "emergency_drop_pool",
+      "description": "紧急作战额外随机藏品的候选池。",
+      "evidence": {
+        "reviewStatus": "user_confirmed",
+        "sourceRefs": [
+          "user-review:2026-07-14"
+        ],
+        "notes": "Q03."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    }
+  ],
+  "poolDefinitions": [
+    {
+      "id": "ro1_negative_original_pool",
+      "themes": [
+        "rogue_1"
+      ],
+      "requiredTags": [
+        "polarity_negative",
+        "variant_original"
+      ],
+      "memberItemIds": null,
+      "eligibilityAst": null,
+      "confirmedIntent": "只在对应难度的开局与特定层数获取。",
+      "exactDifficultyRange": null,
+      "exactLogicalDepths": null,
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "user-review:2026-07-14"
+        ],
+        "notes": "Pool intent is confirmed; members and exact eligibility are unknown."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "ro1_negative_mutated_pool",
+      "themes": [
+        "rogue_1"
+      ],
+      "requiredTags": [
+        "polarity_negative",
+        "variant_mutated"
+      ],
+      "memberItemIds": null,
+      "eligibilityAst": null,
+      "confirmedIntent": "只在对应难度的开局与特定层数获取。",
+      "exactDifficultyRange": null,
+      "exactLogicalDepths": null,
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "user-review:2026-07-14"
+        ],
+        "notes": "Pool intent is confirmed; members, pairing, and exact eligibility are unknown."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "trinket_value_8_pool",
+      "themes": [
+        "rogue_3",
+        "rogue_4",
+        "rogue_5"
+      ],
+      "requiredTags": [
+        "trinket_value_8"
+      ],
+      "priceClaim": {
+        "sourceTerm": "售价",
+        "amount": 8,
+        "canonicalField": null
+      },
+      "memberItemIds": null,
+      "selectionWeightPolicy": null,
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "user-review:2026-07-14"
+        ],
+        "notes": "The amount and themes are user-confirmed; the canonical price field and members need source review."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "boss_value_16_pool",
+      "themes": [
+        "rogue_1",
+        "rogue_2",
+        "rogue_3",
+        "rogue_4",
+        "rogue_5"
+      ],
+      "requiredTags": [
+        "boss_value_16"
+      ],
+      "priceClaim": {
+        "sourceTerm": "售价",
+        "amount": 16,
+        "canonicalField": null
+      },
+      "memberItemIds": null,
+      "selection": {
+        "baseCandidateCount": 2,
+        "chooseCount": 1,
+        "optionCountAdjustment": "additive"
+      },
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "user-review:2026-07-14"
+        ],
+        "notes": "Selection behavior is user-confirmed; the canonical price field and pool members need source review."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "emergency_collectible_pool",
+      "themes": [
+        "rogue_1",
+        "rogue_2",
+        "rogue_3",
+        "rogue_4",
+        "rogue_5"
+      ],
+      "requiredTags": [
+        "emergency_drop_pool"
+      ],
+      "memberItemIds": null,
+      "selectionWeightPolicy": null,
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "user-review:2026-07-14"
+        ],
+        "notes": "The extra collectible is user-confirmed; theme-specific members and weights are unknown."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    }
+  ],
+  "annotations": {},
+  "unresolved": [
+    {
+      "id": "relic-price-semantics",
+      "fields": [
+        "shopPrice",
+        "sellValue",
+        "rewardValue",
+        "priceContext"
+      ],
+      "description": "The client topic item rows do not contain the claimed 8/16 price. Determine which external economic field the source term means.",
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "user-review:2026-07-14"
+        ],
+        "notes": "Do not add a generic price field until resolved."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "relic-pool-membership",
+      "fields": [
+        "event_limited",
+        "trinket_value_8",
+        "boss_value_16",
+        "emergency_drop_pool"
+      ],
+      "description": "No member list has been transcribed from a fixed PRTS/Tomimi revision.",
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "user-review:2026-07-14",
+          "tomimi:sheet:BB08J2"
+        ],
+        "notes": "Membership remains null, not an empty confirmed pool."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "ro1-negative-eligibility",
+      "fields": [
+        "variantPairs",
+        "difficultyRange",
+        "logicalDepths",
+        "startOnly"
+      ],
+      "description": "Exact original/mutated pairs and acquisition boundaries remain unknown.",
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "user-review:2026-07-14"
+        ],
+        "notes": "Q02 confirms the mechanism but not its exact table."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    }
+  ]
+}
+

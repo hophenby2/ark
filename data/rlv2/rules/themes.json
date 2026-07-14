@@ -1,0 +1,95 @@
+{
+  "$schema": "./rules.schema.json",
+  "kind": "rlv2_theme_catalog",
+  "runtimeEnabled": false,
+  "schemaVersion": 1,
+  "sourceRef": "client:roguelike-topic-table:634e7e7",
+  "themes": {
+    "rogue_1": {
+      "moduleTypes": [],
+      "name": "傀影与猩红孤钻",
+      "resources": {
+        "expItemId": "rogue_1_exp",
+        "goldItemId": "rogue_1_gold",
+        "hpItemId": "rogue_1_hp",
+        "maxHpItemId": null,
+        "populationItemId": "rogue_1_population",
+        "shieldItemId": null,
+        "squadCapacityItemId": "rogue_1_squad_capacity"
+      },
+      "themeId": "rogue_1"
+    },
+    "rogue_2": {
+      "moduleTypes": [
+        "SANCHECK",
+        "DICE"
+      ],
+      "name": "水月与深蓝之树",
+      "resources": {
+        "expItemId": "rogue_2_exp",
+        "goldItemId": "rogue_2_gold",
+        "hpItemId": "rogue_2_hp",
+        "maxHpItemId": "rogue_2_hpmax",
+        "populationItemId": "rogue_2_population",
+        "shieldItemId": "rogue_2_shield",
+        "squadCapacityItemId": "rogue_2_squad_capacity"
+      },
+      "themeId": "rogue_2"
+    },
+    "rogue_3": {
+      "moduleTypes": [
+        "CHAOS",
+        "TOTEMBUFF",
+        "VISION"
+      ],
+      "name": "探索者的银凇止境",
+      "resources": {
+        "expItemId": "rogue_3_exp",
+        "goldItemId": "rogue_3_gold",
+        "hpItemId": "rogue_3_hp",
+        "maxHpItemId": "rogue_3_hpmax",
+        "populationItemId": "rogue_3_population",
+        "shieldItemId": "rogue_3_shield",
+        "squadCapacityItemId": "rogue_3_squad_capacity"
+      },
+      "themeId": "rogue_3"
+    },
+    "rogue_4": {
+      "moduleTypes": [
+        "FRAGMENT",
+        "DISASTER",
+        "NODE_UPGRADE"
+      ],
+      "name": "萨卡兹的无终奇语",
+      "resources": {
+        "expItemId": "rogue_4_exp",
+        "goldItemId": "rogue_4_gold",
+        "hpItemId": "rogue_4_hp",
+        "maxHpItemId": "rogue_4_hpmax",
+        "populationItemId": "rogue_4_population",
+        "shieldItemId": "rogue_4_shield",
+        "squadCapacityItemId": "rogue_4_squad_capacity"
+      },
+      "themeId": "rogue_4"
+    },
+    "rogue_5": {
+      "moduleTypes": [
+        "COPPER",
+        "WRATH",
+        "CANDLE",
+        "SKY"
+      ],
+      "name": "岁的界园志异",
+      "resources": {
+        "expItemId": "rogue_5_exp",
+        "goldItemId": "rogue_5_gold",
+        "hpItemId": "rogue_5_hp",
+        "maxHpItemId": "rogue_5_hpmax",
+        "populationItemId": "rogue_5_population",
+        "shieldItemId": "rogue_5_shield",
+        "squadCapacityItemId": "rogue_5_squad_capacity"
+      },
+      "themeId": "rogue_5"
+    }
+  }
+}

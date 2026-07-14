@@ -1,0 +1,119 @@
+{
+  "$schema": "./rules.schema.json",
+  "kind": "rlv2_event_tags",
+  "schemaVersion": 1,
+  "runtimeEnabled": false,
+  "tagDefinitions": [
+    {
+      "id": "special_region_ro3",
+      "description": "RO3 special-region-only event pool marker reserved for manual assignment.",
+      "memberSceneKeys": null,
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "user-review:2026-07-14"
+        ],
+        "notes": "The tag type is confirmed; concrete (theme, sceneId) members are unknown."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "event_pool_inherit_entry_region",
+      "description": "Special region reuses the event pool of the region from which it was entered.",
+      "memberSceneKeys": null,
+      "evidence": {
+        "reviewStatus": "user_confirmed",
+        "sourceRefs": [
+          "user-review:2026-07-14"
+        ],
+        "notes": "Q06; applied by zone_routes policies rather than automatically to every scene."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    }
+  ],
+  "identityPolicy": {
+    "id": "event-identity-policy",
+    "canonicalKey": [
+      "theme",
+      "sceneId"
+    ],
+    "sourceAliasesAffectCanonicalId": false,
+    "temporaryAliasExample": "xx123",
+    "temporaryAliasPattern": null,
+    "aliasField": "sourceAliases",
+    "evidence": {
+      "reviewStatus": "needs_review",
+      "sourceRefs": [
+        "client:roguelike-topic-table:634e7e7",
+        "user-review:2026-07-14"
+      ],
+      "notes": "Canonical keys are fixed; a stable alias naming rule beyond the example remains open."
+    },
+    "implementationStatus": "document_only",
+    "runtimeEnabled": false
+  },
+  "annotations": {},
+  "unresolved": [
+    {
+      "id": "event-floor-mapping",
+      "fields": [
+        "logicalDepths",
+        "zoneIds",
+        "modes",
+        "endingIds",
+        "weight"
+      ],
+      "description": "PRTS event pages have not yet been transcribed into this versioned file.",
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "user-review:2026-07-14"
+        ],
+        "notes": "Do not fall back to the full theme scene pool."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "ro3-duplicate-scenes",
+      "fields": [
+        "sourceAliases",
+        "sceneMappings",
+        "monthVariants"
+      ],
+      "description": "RO3 duplicate display names and month variants still need canonical scene mapping.",
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "user-review:2026-07-14"
+        ],
+        "notes": "Aliases must never replace sceneId."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "event-condition-effects",
+      "fields": [
+        "conditionAst",
+        "effects",
+        "oneShot",
+        "weight"
+      ],
+      "description": "Q10 selects a condition AST plus effect interpreter, but does not establish any missing rule values.",
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "user-review:2026-07-14"
+        ],
+        "notes": "Unknown events remain runtime-disabled."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    }
+  ]
+}
+

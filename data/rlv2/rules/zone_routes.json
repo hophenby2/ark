@@ -1,0 +1,659 @@
+{
+  "$schema": "./rules.schema.json",
+  "kind": "rlv2_zone_routes",
+  "schemaVersion": 1,
+  "runtimeEnabled": false,
+  "stageRewardPolicy": {
+    "id": "special-region-reward-by-stage",
+    "basis": [
+      "theme",
+      "stageId",
+      "variant",
+      "context"
+    ],
+    "cursorZoneFallbackAllowed": false,
+    "rewardTierFallbackAllowed": false,
+    "evidence": {
+      "reviewStatus": "user_confirmed",
+      "sourceRefs": [
+        "user-review:2026-07-14"
+      ],
+      "notes": "Q06: reward contents follow the stage rather than the floor containing the node."
+    },
+    "implementationStatus": "pending",
+    "runtimeEnabled": false
+  },
+  "endingZones": [
+    {
+      "id": "rogue_1:zone_6",
+      "theme": "rogue_1",
+      "zoneId": "zone_6",
+      "name": "渴欲大厅",
+      "isHiddenZone": true,
+      "routeRole": null,
+      "endingIds": null,
+      "entryConditionText": null,
+      "entryConditionAst": null,
+      "predecessors": null,
+      "successors": null,
+      "bossStageIds": null,
+      "eventPoolTag": null,
+      "rewardTier": 6,
+      "fieldEvidence": {
+        "clientFields": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId, name, and isHiddenZone."
+        },
+        "rewardTier": {
+          "reviewStatus": "user_confirmed",
+          "sourceRefs": [
+            "user-review:2026-07-14"
+          ],
+          "notes": "Q11; this does not activate the route or override special-region stage rewards."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "user-review:2026-07-14"
+        ],
+        "notes": "Client fields and reward tier are known at different evidence levels; route semantics remain unresolved."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_2:zone_6",
+      "theme": "rogue_2",
+      "zoneId": "zone_6",
+      "name": "幽海丛林",
+      "isHiddenZone": true,
+      "routeRole": null,
+      "endingIds": null,
+      "entryConditionText": null,
+      "entryConditionAst": null,
+      "predecessors": null,
+      "successors": null,
+      "bossStageIds": null,
+      "eventPoolTag": null,
+      "rewardTier": 6,
+      "fieldEvidence": {
+        "clientFields": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId, name, and isHiddenZone."
+        },
+        "rewardTier": {
+          "reviewStatus": "user_confirmed",
+          "sourceRefs": [
+            "user-review:2026-07-14"
+          ],
+          "notes": "Q11; this does not activate the route or override special-region stage rewards."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "user-review:2026-07-14"
+        ],
+        "notes": "Client fields and reward tier are known at different evidence levels; route semantics remain unresolved."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_2:zone_7",
+      "theme": "rogue_2",
+      "zoneId": "zone_7",
+      "name": "绀碧摇篮",
+      "isHiddenZone": true,
+      "routeRole": null,
+      "endingIds": null,
+      "entryConditionText": null,
+      "entryConditionAst": null,
+      "predecessors": null,
+      "successors": null,
+      "bossStageIds": null,
+      "eventPoolTag": null,
+      "rewardTier": 6,
+      "fieldEvidence": {
+        "clientFields": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId, name, and isHiddenZone."
+        },
+        "rewardTier": {
+          "reviewStatus": "user_confirmed",
+          "sourceRefs": [
+            "user-review:2026-07-14"
+          ],
+          "notes": "Q11; this does not activate the route or override special-region stage rewards."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "user-review:2026-07-14"
+        ],
+        "notes": "Client fields and reward tier are known at different evidence levels; route semantics remain unresolved."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_3:zone_6",
+      "theme": "rogue_3",
+      "zoneId": "zone_6",
+      "name": "远见之构",
+      "isHiddenZone": true,
+      "routeRole": null,
+      "endingIds": null,
+      "entryConditionText": null,
+      "entryConditionAst": null,
+      "predecessors": null,
+      "successors": null,
+      "bossStageIds": null,
+      "eventPoolTag": null,
+      "rewardTier": 6,
+      "fieldEvidence": {
+        "clientFields": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId, name, and isHiddenZone."
+        },
+        "rewardTier": {
+          "reviewStatus": "user_confirmed",
+          "sourceRefs": [
+            "user-review:2026-07-14"
+          ],
+          "notes": "Q11; this does not activate the route or override special-region stage rewards."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "user-review:2026-07-14"
+        ],
+        "notes": "Client fields and reward tier are known at different evidence levels; route semantics remain unresolved."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_3:zone_7",
+      "theme": "rogue_3",
+      "zoneId": "zone_7",
+      "name": "永恒之尘",
+      "isHiddenZone": true,
+      "routeRole": null,
+      "endingIds": null,
+      "entryConditionText": null,
+      "entryConditionAst": null,
+      "predecessors": null,
+      "successors": null,
+      "bossStageIds": null,
+      "eventPoolTag": null,
+      "rewardTier": 6,
+      "fieldEvidence": {
+        "clientFields": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId, name, and isHiddenZone."
+        },
+        "rewardTier": {
+          "reviewStatus": "user_confirmed",
+          "sourceRefs": [
+            "user-review:2026-07-14"
+          ],
+          "notes": "Q11; this does not activate the route or override special-region stage rewards."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "user-review:2026-07-14"
+        ],
+        "notes": "Client fields and reward tier are known at different evidence levels; route semantics remain unresolved."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_4:zone_6",
+      "theme": "rogue_4",
+      "zoneId": "zone_6",
+      "name": "辉光天顶",
+      "isHiddenZone": false,
+      "routeRole": null,
+      "endingIds": null,
+      "entryConditionText": null,
+      "entryConditionAst": null,
+      "predecessors": null,
+      "successors": null,
+      "bossStageIds": null,
+      "eventPoolTag": null,
+      "rewardTier": 6,
+      "fieldEvidence": {
+        "clientFields": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId, name, and isHiddenZone."
+        },
+        "rewardTier": {
+          "reviewStatus": "user_confirmed",
+          "sourceRefs": [
+            "user-review:2026-07-14"
+          ],
+          "notes": "Q11; this does not activate the route or override special-region stage rewards."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "user-review:2026-07-14"
+        ],
+        "notes": "Client fields and reward tier are known at different evidence levels; route semantics remain unresolved."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_4:zone_7",
+      "theme": "rogue_4",
+      "zoneId": "zone_7",
+      "name": "逍遥兰若",
+      "isHiddenZone": false,
+      "routeRole": null,
+      "endingIds": null,
+      "entryConditionText": null,
+      "entryConditionAst": null,
+      "predecessors": null,
+      "successors": null,
+      "bossStageIds": null,
+      "eventPoolTag": null,
+      "rewardTier": 6,
+      "fieldEvidence": {
+        "clientFields": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId, name, and isHiddenZone."
+        },
+        "rewardTier": {
+          "reviewStatus": "user_confirmed",
+          "sourceRefs": [
+            "user-review:2026-07-14"
+          ],
+          "notes": "Q11; this does not activate the route or override special-region stage rewards."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "user-review:2026-07-14"
+        ],
+        "notes": "Client fields and reward tier are known at different evidence levels; route semantics remain unresolved."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_4:zone_8",
+      "theme": "rogue_4",
+      "zoneId": "zone_8",
+      "name": "无终安息",
+      "isHiddenZone": false,
+      "routeRole": null,
+      "endingIds": null,
+      "entryConditionText": null,
+      "entryConditionAst": null,
+      "predecessors": null,
+      "successors": null,
+      "bossStageIds": null,
+      "eventPoolTag": null,
+      "rewardTier": 6,
+      "fieldEvidence": {
+        "clientFields": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId, name, and isHiddenZone."
+        },
+        "rewardTier": {
+          "reviewStatus": "user_confirmed",
+          "sourceRefs": [
+            "user-review:2026-07-14"
+          ],
+          "notes": "Q11; this does not activate the route or override special-region stage rewards."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "user-review:2026-07-14"
+        ],
+        "notes": "Client fields and reward tier are known at different evidence levels; route semantics remain unresolved."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_5:zone_6",
+      "theme": "rogue_5",
+      "zoneId": "zone_6",
+      "name": "始末陵",
+      "isHiddenZone": false,
+      "routeRole": null,
+      "endingIds": null,
+      "entryConditionText": null,
+      "entryConditionAst": null,
+      "predecessors": null,
+      "successors": null,
+      "bossStageIds": null,
+      "eventPoolTag": null,
+      "rewardTier": 6,
+      "fieldEvidence": {
+        "clientFields": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId, name, and isHiddenZone."
+        },
+        "rewardTier": {
+          "reviewStatus": "user_confirmed",
+          "sourceRefs": [
+            "user-review:2026-07-14"
+          ],
+          "notes": "Q11; this does not activate the route or override special-region stage rewards."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "user-review:2026-07-14"
+        ],
+        "notes": "Client fields and reward tier are known at different evidence levels; route semantics remain unresolved."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_5:zone_7",
+      "theme": "rogue_5",
+      "zoneId": "zone_7",
+      "name": "明灭顶",
+      "isHiddenZone": false,
+      "routeRole": null,
+      "endingIds": null,
+      "entryConditionText": null,
+      "entryConditionAst": null,
+      "predecessors": null,
+      "successors": null,
+      "bossStageIds": null,
+      "eventPoolTag": null,
+      "rewardTier": 6,
+      "fieldEvidence": {
+        "clientFields": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId, name, and isHiddenZone."
+        },
+        "rewardTier": {
+          "reviewStatus": "user_confirmed",
+          "sourceRefs": [
+            "user-review:2026-07-14"
+          ],
+          "notes": "Q11; this does not activate the route or override special-region stage rewards."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "user-review:2026-07-14"
+        ],
+        "notes": "Client fields and reward tier are known at different evidence levels; route semantics remain unresolved."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_5:zone_8",
+      "theme": "rogue_5",
+      "zoneId": "zone_8",
+      "name": "来去处",
+      "isHiddenZone": false,
+      "routeRole": null,
+      "endingIds": null,
+      "entryConditionText": null,
+      "entryConditionAst": null,
+      "predecessors": null,
+      "successors": null,
+      "bossStageIds": null,
+      "eventPoolTag": null,
+      "rewardTier": 6,
+      "fieldEvidence": {
+        "clientFields": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId, name, and isHiddenZone."
+        },
+        "rewardTier": {
+          "reviewStatus": "user_confirmed",
+          "sourceRefs": [
+            "user-review:2026-07-14"
+          ],
+          "notes": "Q11; this does not activate the route or override special-region stage rewards."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "user-review:2026-07-14"
+        ],
+        "notes": "Client fields and reward tier are known at different evidence levels; route semantics remain unresolved."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    }
+  ],
+  "specialRegions": [
+    {
+      "id": "rogue_2:special-region",
+      "theme": "rogue_2",
+      "regionIds": null,
+      "stageDepthPolicy": {
+        "type": "fixed_candidates",
+        "logicalDepths": [
+          5,
+          6
+        ]
+      },
+      "stageIds": null,
+      "stageWeights": null,
+      "eventPoolPolicy": {
+        "type": "inherit_entry_region",
+        "tag": "event_pool_inherit_entry_region"
+      },
+      "nodeLayout": null,
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "user-review:2026-07-14"
+        ],
+        "notes": "Generation policy is confirmed; IDs, weights, and layout still require fixed PRTS evidence."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_3:special-region",
+      "theme": "rogue_3",
+      "regionIds": null,
+      "stageDepthPolicy": {
+        "type": "relative_candidates",
+        "offsetsFromCurrentDepth": [
+          0
+        ]
+      },
+      "stageIds": null,
+      "stageWeights": null,
+      "eventPoolPolicy": {
+        "type": "dedicated",
+        "tag": "special_region_ro3",
+        "memberSceneKeys": null
+      },
+      "nodeLayout": null,
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "user-review:2026-07-14"
+        ],
+        "notes": "Policy and dedicated tag are confirmed; members, IDs, weights, and layout are unknown."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_4:special-region",
+      "theme": "rogue_4",
+      "regionIds": null,
+      "stageDepthPolicy": {
+        "type": "relative_candidates",
+        "offsetsFromCurrentDepth": [
+          0,
+          1
+        ],
+        "upperBoundary": null
+      },
+      "stageIds": null,
+      "stageWeights": null,
+      "eventPoolPolicy": {
+        "type": "inherit_entry_region",
+        "tag": "event_pool_inherit_entry_region"
+      },
+      "nodeLayout": null,
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "user-review:2026-07-14"
+        ],
+        "notes": "Policy is confirmed; upper boundary, IDs, weights, stage kinds, and layout are unknown."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_5:special-region",
+      "theme": "rogue_5",
+      "regionIds": null,
+      "stageDepthPolicy": null,
+      "stageIds": null,
+      "stageWeights": null,
+      "eventPoolPolicy": null,
+      "nodeLayout": null,
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "user-review:2026-07-14"
+        ],
+        "notes": "Q06 describes RO2-RO4 generation. Whether the phrase 'except RO3' also covers RO5 needs explicit confirmation, so both policies remain null."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    }
+  ],
+  "flagVariantMapping": {
+    "id": "rogue_4:flag-impression-reconstruction",
+    "theme": "rogue_4",
+    "sourceTerm": "旗帜",
+    "possiblePrtsTerm": "印象重建",
+    "equivalent": null,
+    "clientDetectionField": null,
+    "stageIds": null,
+    "rewardVariant": null,
+    "evidence": {
+      "reviewStatus": "needs_review",
+      "sourceRefs": [
+        "user-review:2026-07-14",
+        "client:roguelike-topic-table:634e7e7"
+      ],
+      "notes": "Do not infer from levelReplaceIds; fixed PRTS text and a protocol/client field are required."
+    },
+    "implementationStatus": "pending",
+    "runtimeEnabled": false
+  },
+  "unresolved": [
+    {
+      "id": "ending-route-matrix",
+      "fields": [
+        "endingIds",
+        "orderedZones",
+        "entryConditions",
+        "bossStageIds",
+        "eventReplacements",
+        "settleSequence"
+      ],
+      "description": "No ending route has a complete, fixed-revision matrix yet.",
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "user-review:2026-07-14"
+        ],
+        "notes": "Routes remain runtime-disabled."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "region-node-layouts",
+      "fields": [
+        "columns",
+        "slotCounts",
+        "nodeTypes",
+        "connections",
+        "guarantees"
+      ],
+      "description": "Q12 requests a PRTS region-layout summary before generator changes.",
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "user-review:2026-07-14"
+        ],
+        "notes": "No approximate layout is encoded in this first phase."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    }
+  ]
+}

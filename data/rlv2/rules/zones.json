@@ -1,0 +1,2759 @@
+{
+  "$schema": "./rules.schema.json",
+  "kind": "rlv2_zone_catalog",
+  "runtimeEnabled": false,
+  "schemaVersion": 1,
+  "sourceRef": "client:roguelike-topic-table:634e7e7",
+  "themes": {
+    "rogue_1": {
+      "zones": {
+        "portal_zone_1": {
+          "backgroundId": "rogue_1_map_1",
+          "isHiddenZone": false,
+          "name": "迷雾歧途",
+          "zoneIconId": "portal_zone_1",
+          "zoneId": "portal_zone_1"
+        },
+        "portal_zone_2": {
+          "backgroundId": "rogue_1_map_2",
+          "isHiddenZone": false,
+          "name": "落阳庭院",
+          "zoneIconId": "portal_zone_2",
+          "zoneId": "portal_zone_2"
+        },
+        "portal_zone_3": {
+          "backgroundId": "rogue_1_map_3",
+          "isHiddenZone": false,
+          "name": "故土残躯",
+          "zoneIconId": "portal_zone_3",
+          "zoneId": "portal_zone_3"
+        },
+        "portal_zone_4": {
+          "backgroundId": "rogue_1_map_4",
+          "isHiddenZone": false,
+          "name": "噩梦之始",
+          "zoneIconId": "portal_zone_4",
+          "zoneId": "portal_zone_4"
+        },
+        "zone_1": {
+          "backgroundId": "rogue_1_map_1",
+          "isHiddenZone": false,
+          "name": "迷雾歧途",
+          "zoneIconId": "zone_1",
+          "zoneId": "zone_1"
+        },
+        "zone_2": {
+          "backgroundId": "rogue_1_map_2",
+          "isHiddenZone": false,
+          "name": "落阳庭院",
+          "zoneIconId": "zone_2",
+          "zoneId": "zone_2"
+        },
+        "zone_3": {
+          "backgroundId": "rogue_1_map_3",
+          "isHiddenZone": false,
+          "name": "故土残躯",
+          "zoneIconId": "zone_3",
+          "zoneId": "zone_3"
+        },
+        "zone_4": {
+          "backgroundId": "rogue_1_map_4",
+          "isHiddenZone": false,
+          "name": "噩梦之始",
+          "zoneIconId": "zone_4",
+          "zoneId": "zone_4"
+        },
+        "zone_5": {
+          "backgroundId": "rogue_1_map_5",
+          "isHiddenZone": false,
+          "name": "血月长廊",
+          "zoneIconId": "zone_5",
+          "zoneId": "zone_5"
+        },
+        "zone_6": {
+          "backgroundId": "rogue_1_map_6",
+          "isHiddenZone": true,
+          "name": "渴欲大厅",
+          "zoneIconId": "zone_6",
+          "zoneId": "zone_6"
+        }
+      }
+    },
+    "rogue_2": {
+      "zones": {
+        "zone_1": {
+          "backgroundId": "rogue_2_map_1",
+          "isHiddenZone": false,
+          "name": "天光海岸",
+          "zoneIconId": "zone_1",
+          "zoneId": "zone_1"
+        },
+        "zone_2": {
+          "backgroundId": "rogue_2_map_2",
+          "isHiddenZone": false,
+          "name": "离岸孤岛",
+          "zoneIconId": "zone_2",
+          "zoneId": "zone_2"
+        },
+        "zone_3": {
+          "backgroundId": "rogue_2_map_3",
+          "isHiddenZone": false,
+          "name": "波涛略地",
+          "zoneIconId": "zone_3",
+          "zoneId": "zone_3"
+        },
+        "zone_4": {
+          "backgroundId": "rogue_2_map_4",
+          "isHiddenZone": false,
+          "name": "隐秘温床",
+          "zoneIconId": "zone_4",
+          "zoneId": "zone_4"
+        },
+        "zone_5": {
+          "backgroundId": "rogue_2_map_5",
+          "isHiddenZone": false,
+          "name": "失尘岩洞",
+          "zoneIconId": "zone_5",
+          "zoneId": "zone_5"
+        },
+        "zone_6": {
+          "backgroundId": "rogue_2_map_6",
+          "isHiddenZone": true,
+          "name": "幽海丛林",
+          "zoneIconId": "zone_6",
+          "zoneId": "zone_6"
+        },
+        "zone_7": {
+          "backgroundId": "rogue_2_map_7",
+          "isHiddenZone": true,
+          "name": "绀碧摇篮",
+          "zoneIconId": "zone_7",
+          "zoneId": "zone_7"
+        }
+      }
+    },
+    "rogue_3": {
+      "zones": {
+        "zone_1": {
+          "backgroundId": "rogue_3_map_1",
+          "isHiddenZone": false,
+          "name": "初霜湖泽",
+          "zoneIconId": "zone_1",
+          "zoneId": "zone_1"
+        },
+        "zone_2": {
+          "backgroundId": "rogue_3_map_2",
+          "isHiddenZone": false,
+          "name": "密静林地",
+          "zoneIconId": "zone_2",
+          "zoneId": "zone_2"
+        },
+        "zone_3": {
+          "backgroundId": "rogue_3_map_3",
+          "isHiddenZone": false,
+          "name": "昧明冻土",
+          "zoneIconId": "zone_3",
+          "zoneId": "zone_3"
+        },
+        "zone_4": {
+          "backgroundId": "rogue_3_map_4",
+          "isHiddenZone": false,
+          "name": "积冰岩骸",
+          "zoneIconId": "zone_4",
+          "zoneId": "zone_4"
+        },
+        "zone_5": {
+          "backgroundId": "rogue_3_map_5",
+          "isHiddenZone": false,
+          "name": "无瑕花园",
+          "zoneIconId": "zone_5",
+          "zoneId": "zone_5"
+        },
+        "zone_6": {
+          "backgroundId": "rogue_3_map_6",
+          "isHiddenZone": true,
+          "name": "远见之构",
+          "zoneIconId": "zone_6",
+          "zoneId": "zone_6"
+        },
+        "zone_7": {
+          "backgroundId": "rogue_3_map_8",
+          "isHiddenZone": true,
+          "name": "永恒之尘",
+          "zoneIconId": "zone_7",
+          "zoneId": "zone_7"
+        },
+        "zone_s_2_1a_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_1a_1"
+        },
+        "zone_s_2_1a_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_1a_2"
+        },
+        "zone_s_2_1a_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_1a_3"
+        },
+        "zone_s_2_1a_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_1a_4"
+        },
+        "zone_s_2_1a_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_1a_5"
+        },
+        "zone_s_2_1a_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_1a_6"
+        },
+        "zone_s_2_1b_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_1b_1"
+        },
+        "zone_s_2_1b_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_1b_2"
+        },
+        "zone_s_2_1b_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_1b_3"
+        },
+        "zone_s_2_1b_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_1b_4"
+        },
+        "zone_s_2_1b_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_1b_5"
+        },
+        "zone_s_2_1b_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_1b_6"
+        },
+        "zone_s_2_1c_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_1c_1"
+        },
+        "zone_s_2_1c_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_1c_2"
+        },
+        "zone_s_2_1c_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_1c_3"
+        },
+        "zone_s_2_1c_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_1c_4"
+        },
+        "zone_s_2_1c_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_1c_5"
+        },
+        "zone_s_2_1c_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_1c_6"
+        },
+        "zone_s_2_1d_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_1d_1"
+        },
+        "zone_s_2_1d_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_1d_2"
+        },
+        "zone_s_2_1d_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_1d_3"
+        },
+        "zone_s_2_1d_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_1d_4"
+        },
+        "zone_s_2_1d_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_1d_5"
+        },
+        "zone_s_2_1d_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_1d_6"
+        },
+        "zone_s_2_1e_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_1e_1"
+        },
+        "zone_s_2_1e_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_1e_2"
+        },
+        "zone_s_2_1e_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_1e_3"
+        },
+        "zone_s_2_1e_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_1e_4"
+        },
+        "zone_s_2_1e_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_1e_5"
+        },
+        "zone_s_2_1e_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_1e_6"
+        },
+        "zone_s_2_2a_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_2a_1"
+        },
+        "zone_s_2_2a_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_2a_2"
+        },
+        "zone_s_2_2a_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_2a_3"
+        },
+        "zone_s_2_2a_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_2a_4"
+        },
+        "zone_s_2_2a_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_2a_5"
+        },
+        "zone_s_2_2a_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_2a_6"
+        },
+        "zone_s_2_2b_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_2b_1"
+        },
+        "zone_s_2_2b_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_2b_2"
+        },
+        "zone_s_2_2b_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_2b_3"
+        },
+        "zone_s_2_2b_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_2b_4"
+        },
+        "zone_s_2_2b_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_2b_5"
+        },
+        "zone_s_2_2b_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_2b_6"
+        },
+        "zone_s_2_2c_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_2c_1"
+        },
+        "zone_s_2_2c_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_2c_2"
+        },
+        "zone_s_2_2c_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_2c_3"
+        },
+        "zone_s_2_2c_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_2c_4"
+        },
+        "zone_s_2_2c_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_2c_5"
+        },
+        "zone_s_2_2c_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_2c_6"
+        },
+        "zone_s_2_3a_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_3a_1"
+        },
+        "zone_s_2_3a_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_3a_2"
+        },
+        "zone_s_2_3a_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_3a_3"
+        },
+        "zone_s_2_3a_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_3a_4"
+        },
+        "zone_s_2_3a_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_3a_5"
+        },
+        "zone_s_2_3a_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_3a_6"
+        },
+        "zone_s_2_3b_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_3b_1"
+        },
+        "zone_s_2_3b_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_3b_2"
+        },
+        "zone_s_2_3b_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_3b_3"
+        },
+        "zone_s_2_3b_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_3b_4"
+        },
+        "zone_s_2_3b_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_3b_5"
+        },
+        "zone_s_2_3b_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_3b_6"
+        },
+        "zone_s_2_3c_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_3c_1"
+        },
+        "zone_s_2_3c_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_3c_2"
+        },
+        "zone_s_2_3c_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_3c_3"
+        },
+        "zone_s_2_3c_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_3c_4"
+        },
+        "zone_s_2_3c_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_3c_5"
+        },
+        "zone_s_2_3c_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_2_3c_6"
+        },
+        "zone_s_3_1a_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_1a_1"
+        },
+        "zone_s_3_1a_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_1a_2"
+        },
+        "zone_s_3_1a_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_1a_3"
+        },
+        "zone_s_3_1a_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_1a_4"
+        },
+        "zone_s_3_1a_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_1a_5"
+        },
+        "zone_s_3_1a_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_1a_6"
+        },
+        "zone_s_3_1b_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_1b_1"
+        },
+        "zone_s_3_1b_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_1b_2"
+        },
+        "zone_s_3_1b_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_1b_3"
+        },
+        "zone_s_3_1b_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_1b_4"
+        },
+        "zone_s_3_1b_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_1b_5"
+        },
+        "zone_s_3_1b_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_1b_6"
+        },
+        "zone_s_3_1c_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_1c_1"
+        },
+        "zone_s_3_1c_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_1c_2"
+        },
+        "zone_s_3_1c_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_1c_3"
+        },
+        "zone_s_3_1c_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_1c_4"
+        },
+        "zone_s_3_1c_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_1c_5"
+        },
+        "zone_s_3_1c_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_1c_6"
+        },
+        "zone_s_3_1d_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_1d_1"
+        },
+        "zone_s_3_1d_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_1d_2"
+        },
+        "zone_s_3_1d_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_1d_3"
+        },
+        "zone_s_3_1d_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_1d_4"
+        },
+        "zone_s_3_1d_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_1d_5"
+        },
+        "zone_s_3_1d_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_1d_6"
+        },
+        "zone_s_3_1e_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_1e_1"
+        },
+        "zone_s_3_1e_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_1e_2"
+        },
+        "zone_s_3_1e_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_1e_3"
+        },
+        "zone_s_3_1e_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_1e_4"
+        },
+        "zone_s_3_1e_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_1e_5"
+        },
+        "zone_s_3_1e_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_1e_6"
+        },
+        "zone_s_3_2a_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_2a_1"
+        },
+        "zone_s_3_2a_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_2a_2"
+        },
+        "zone_s_3_2a_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_2a_3"
+        },
+        "zone_s_3_2a_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_2a_4"
+        },
+        "zone_s_3_2a_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_2a_5"
+        },
+        "zone_s_3_2a_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_2a_6"
+        },
+        "zone_s_3_2b_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_2b_1"
+        },
+        "zone_s_3_2b_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_2b_2"
+        },
+        "zone_s_3_2b_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_2b_3"
+        },
+        "zone_s_3_2b_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_2b_4"
+        },
+        "zone_s_3_2b_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_2b_5"
+        },
+        "zone_s_3_2b_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_2b_6"
+        },
+        "zone_s_3_2c_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_2c_1"
+        },
+        "zone_s_3_2c_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_2c_2"
+        },
+        "zone_s_3_2c_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_2c_3"
+        },
+        "zone_s_3_2c_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_2c_4"
+        },
+        "zone_s_3_2c_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_2c_5"
+        },
+        "zone_s_3_2c_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_2c_6"
+        },
+        "zone_s_3_3a_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_3a_1"
+        },
+        "zone_s_3_3a_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_3a_2"
+        },
+        "zone_s_3_3a_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_3a_3"
+        },
+        "zone_s_3_3a_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_3a_4"
+        },
+        "zone_s_3_3a_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_3a_5"
+        },
+        "zone_s_3_3a_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_3a_6"
+        },
+        "zone_s_3_3b_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_3b_1"
+        },
+        "zone_s_3_3b_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_3b_2"
+        },
+        "zone_s_3_3b_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_3b_3"
+        },
+        "zone_s_3_3b_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_3b_4"
+        },
+        "zone_s_3_3b_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_3b_5"
+        },
+        "zone_s_3_3b_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_3b_6"
+        },
+        "zone_s_3_3c_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_3c_1"
+        },
+        "zone_s_3_3c_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_3c_2"
+        },
+        "zone_s_3_3c_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_3c_3"
+        },
+        "zone_s_3_3c_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_3c_4"
+        },
+        "zone_s_3_3c_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_3c_5"
+        },
+        "zone_s_3_3c_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_3_3c_6"
+        },
+        "zone_s_4_1a_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_1a_1"
+        },
+        "zone_s_4_1a_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_1a_2"
+        },
+        "zone_s_4_1a_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_1a_3"
+        },
+        "zone_s_4_1a_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_1a_4"
+        },
+        "zone_s_4_1a_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_1a_5"
+        },
+        "zone_s_4_1a_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_1a_6"
+        },
+        "zone_s_4_1b_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_1b_1"
+        },
+        "zone_s_4_1b_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_1b_2"
+        },
+        "zone_s_4_1b_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_1b_3"
+        },
+        "zone_s_4_1b_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_1b_4"
+        },
+        "zone_s_4_1b_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_1b_5"
+        },
+        "zone_s_4_1b_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_1b_6"
+        },
+        "zone_s_4_1c_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_1c_1"
+        },
+        "zone_s_4_1c_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_1c_2"
+        },
+        "zone_s_4_1c_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_1c_3"
+        },
+        "zone_s_4_1c_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_1c_4"
+        },
+        "zone_s_4_1c_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_1c_5"
+        },
+        "zone_s_4_1c_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_1c_6"
+        },
+        "zone_s_4_1d_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_1d_1"
+        },
+        "zone_s_4_1d_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_1d_2"
+        },
+        "zone_s_4_1d_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_1d_3"
+        },
+        "zone_s_4_1d_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_1d_4"
+        },
+        "zone_s_4_1d_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_1d_5"
+        },
+        "zone_s_4_1d_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_1d_6"
+        },
+        "zone_s_4_1e_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_1e_1"
+        },
+        "zone_s_4_1e_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_1e_2"
+        },
+        "zone_s_4_1e_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_1e_3"
+        },
+        "zone_s_4_1e_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_1e_4"
+        },
+        "zone_s_4_1e_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_1e_5"
+        },
+        "zone_s_4_1e_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_1e_6"
+        },
+        "zone_s_4_2a_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_2a_1"
+        },
+        "zone_s_4_2a_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_2a_2"
+        },
+        "zone_s_4_2a_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_2a_3"
+        },
+        "zone_s_4_2a_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_2a_4"
+        },
+        "zone_s_4_2a_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_2a_5"
+        },
+        "zone_s_4_2a_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_2a_6"
+        },
+        "zone_s_4_2b_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_2b_1"
+        },
+        "zone_s_4_2b_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_2b_2"
+        },
+        "zone_s_4_2b_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_2b_3"
+        },
+        "zone_s_4_2b_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_2b_4"
+        },
+        "zone_s_4_2b_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_2b_5"
+        },
+        "zone_s_4_2b_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_2b_6"
+        },
+        "zone_s_4_2c_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_2c_1"
+        },
+        "zone_s_4_2c_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_2c_2"
+        },
+        "zone_s_4_2c_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_2c_3"
+        },
+        "zone_s_4_2c_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_2c_4"
+        },
+        "zone_s_4_2c_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_2c_5"
+        },
+        "zone_s_4_2c_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_2c_6"
+        },
+        "zone_s_4_3a_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_3a_1"
+        },
+        "zone_s_4_3a_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_3a_2"
+        },
+        "zone_s_4_3a_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_3a_3"
+        },
+        "zone_s_4_3a_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_3a_4"
+        },
+        "zone_s_4_3a_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_3a_5"
+        },
+        "zone_s_4_3a_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_3a_6"
+        },
+        "zone_s_4_3b_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_3b_1"
+        },
+        "zone_s_4_3b_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_3b_2"
+        },
+        "zone_s_4_3b_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_3b_3"
+        },
+        "zone_s_4_3b_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_3b_4"
+        },
+        "zone_s_4_3b_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_3b_5"
+        },
+        "zone_s_4_3b_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_3b_6"
+        },
+        "zone_s_4_3c_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_3c_1"
+        },
+        "zone_s_4_3c_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_3c_2"
+        },
+        "zone_s_4_3c_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_3c_3"
+        },
+        "zone_s_4_3c_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_3c_4"
+        },
+        "zone_s_4_3c_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_3c_5"
+        },
+        "zone_s_4_3c_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_4_3c_6"
+        },
+        "zone_s_5_1a_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_1a_1"
+        },
+        "zone_s_5_1a_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_1a_2"
+        },
+        "zone_s_5_1a_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_1a_3"
+        },
+        "zone_s_5_1a_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_1a_4"
+        },
+        "zone_s_5_1a_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_1a_5"
+        },
+        "zone_s_5_1a_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_1a_6"
+        },
+        "zone_s_5_1b_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_1b_1"
+        },
+        "zone_s_5_1b_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_1b_2"
+        },
+        "zone_s_5_1b_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_1b_3"
+        },
+        "zone_s_5_1b_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_1b_4"
+        },
+        "zone_s_5_1b_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_1b_5"
+        },
+        "zone_s_5_1b_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_1b_6"
+        },
+        "zone_s_5_1c_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_1c_1"
+        },
+        "zone_s_5_1c_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_1c_2"
+        },
+        "zone_s_5_1c_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_1c_3"
+        },
+        "zone_s_5_1c_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_1c_4"
+        },
+        "zone_s_5_1c_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_1c_5"
+        },
+        "zone_s_5_1c_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_1c_6"
+        },
+        "zone_s_5_1d_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_1d_1"
+        },
+        "zone_s_5_1d_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_1d_2"
+        },
+        "zone_s_5_1d_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_1d_3"
+        },
+        "zone_s_5_1d_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_1d_4"
+        },
+        "zone_s_5_1d_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_1d_5"
+        },
+        "zone_s_5_1d_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_1d_6"
+        },
+        "zone_s_5_1e_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_1e_1"
+        },
+        "zone_s_5_1e_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_1e_2"
+        },
+        "zone_s_5_1e_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_1e_3"
+        },
+        "zone_s_5_1e_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_1e_4"
+        },
+        "zone_s_5_1e_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_1e_5"
+        },
+        "zone_s_5_1e_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_1e_6"
+        },
+        "zone_s_5_2a_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_2a_1"
+        },
+        "zone_s_5_2a_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_2a_2"
+        },
+        "zone_s_5_2a_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_2a_3"
+        },
+        "zone_s_5_2a_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_2a_4"
+        },
+        "zone_s_5_2a_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_2a_5"
+        },
+        "zone_s_5_2a_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_2a_6"
+        },
+        "zone_s_5_2b_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_2b_1"
+        },
+        "zone_s_5_2b_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_2b_2"
+        },
+        "zone_s_5_2b_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_2b_3"
+        },
+        "zone_s_5_2b_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_2b_4"
+        },
+        "zone_s_5_2b_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_2b_5"
+        },
+        "zone_s_5_2b_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_2b_6"
+        },
+        "zone_s_5_2c_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_2c_1"
+        },
+        "zone_s_5_2c_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_2c_2"
+        },
+        "zone_s_5_2c_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_2c_3"
+        },
+        "zone_s_5_2c_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_2c_4"
+        },
+        "zone_s_5_2c_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_2c_5"
+        },
+        "zone_s_5_2c_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_2c_6"
+        },
+        "zone_s_5_3a_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_3a_1"
+        },
+        "zone_s_5_3a_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_3a_2"
+        },
+        "zone_s_5_3a_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_3a_3"
+        },
+        "zone_s_5_3a_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_3a_4"
+        },
+        "zone_s_5_3a_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_3a_5"
+        },
+        "zone_s_5_3a_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_3a_6"
+        },
+        "zone_s_5_3b_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_3b_1"
+        },
+        "zone_s_5_3b_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_3b_2"
+        },
+        "zone_s_5_3b_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_3b_3"
+        },
+        "zone_s_5_3b_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_3b_4"
+        },
+        "zone_s_5_3b_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_3b_5"
+        },
+        "zone_s_5_3b_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_3b_6"
+        },
+        "zone_s_5_3c_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_3c_1"
+        },
+        "zone_s_5_3c_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_3c_2"
+        },
+        "zone_s_5_3c_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_3c_3"
+        },
+        "zone_s_5_3c_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_3c_4"
+        },
+        "zone_s_5_3c_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_3c_5"
+        },
+        "zone_s_5_3c_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_5_3c_6"
+        },
+        "zone_s_6_1a_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_1a_1"
+        },
+        "zone_s_6_1a_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_1a_2"
+        },
+        "zone_s_6_1a_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_1a_3"
+        },
+        "zone_s_6_1a_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_1a_4"
+        },
+        "zone_s_6_1a_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_1a_5"
+        },
+        "zone_s_6_1a_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_1a_6"
+        },
+        "zone_s_6_1b_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_1b_1"
+        },
+        "zone_s_6_1b_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_1b_2"
+        },
+        "zone_s_6_1b_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_1b_3"
+        },
+        "zone_s_6_1b_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_1b_4"
+        },
+        "zone_s_6_1b_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_1b_5"
+        },
+        "zone_s_6_1b_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_1b_6"
+        },
+        "zone_s_6_1c_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_1c_1"
+        },
+        "zone_s_6_1c_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_1c_2"
+        },
+        "zone_s_6_1c_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_1c_3"
+        },
+        "zone_s_6_1c_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_1c_4"
+        },
+        "zone_s_6_1c_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_1c_5"
+        },
+        "zone_s_6_1c_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_1c_6"
+        },
+        "zone_s_6_1d_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_1d_1"
+        },
+        "zone_s_6_1d_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_1d_2"
+        },
+        "zone_s_6_1d_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_1d_3"
+        },
+        "zone_s_6_1d_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_1d_4"
+        },
+        "zone_s_6_1d_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_1d_5"
+        },
+        "zone_s_6_1d_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_1d_6"
+        },
+        "zone_s_6_1e_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_1e_1"
+        },
+        "zone_s_6_1e_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_1e_2"
+        },
+        "zone_s_6_1e_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_1e_3"
+        },
+        "zone_s_6_1e_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_1e_4"
+        },
+        "zone_s_6_1e_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_1e_5"
+        },
+        "zone_s_6_1e_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_1e_6"
+        },
+        "zone_s_6_2a_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_2a_1"
+        },
+        "zone_s_6_2a_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_2a_2"
+        },
+        "zone_s_6_2a_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_2a_3"
+        },
+        "zone_s_6_2a_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_2a_4"
+        },
+        "zone_s_6_2a_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_2a_5"
+        },
+        "zone_s_6_2a_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_2a_6"
+        },
+        "zone_s_6_2b_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_2b_1"
+        },
+        "zone_s_6_2b_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_2b_2"
+        },
+        "zone_s_6_2b_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_2b_3"
+        },
+        "zone_s_6_2b_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_2b_4"
+        },
+        "zone_s_6_2b_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_2b_5"
+        },
+        "zone_s_6_2b_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_2b_6"
+        },
+        "zone_s_6_2c_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_2c_1"
+        },
+        "zone_s_6_2c_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_2c_2"
+        },
+        "zone_s_6_2c_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_2c_3"
+        },
+        "zone_s_6_2c_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_2c_4"
+        },
+        "zone_s_6_2c_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_2c_5"
+        },
+        "zone_s_6_2c_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_2c_6"
+        },
+        "zone_s_6_3a_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_3a_1"
+        },
+        "zone_s_6_3a_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_3a_2"
+        },
+        "zone_s_6_3a_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_3a_3"
+        },
+        "zone_s_6_3a_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_3a_4"
+        },
+        "zone_s_6_3a_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_3a_5"
+        },
+        "zone_s_6_3a_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_3a_6"
+        },
+        "zone_s_6_3b_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_3b_1"
+        },
+        "zone_s_6_3b_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_3b_2"
+        },
+        "zone_s_6_3b_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_3b_3"
+        },
+        "zone_s_6_3b_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_3b_4"
+        },
+        "zone_s_6_3b_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_3b_5"
+        },
+        "zone_s_6_3b_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_3b_6"
+        },
+        "zone_s_6_3c_1": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_3c_1"
+        },
+        "zone_s_6_3c_2": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_3c_2"
+        },
+        "zone_s_6_3c_3": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_3c_3"
+        },
+        "zone_s_6_3c_4": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_3c_4"
+        },
+        "zone_s_6_3c_5": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_3c_5"
+        },
+        "zone_s_6_3c_6": {
+          "backgroundId": "rogue_3_map_7",
+          "isHiddenZone": true,
+          "name": "深埋迷境",
+          "zoneIconId": "zone_secret",
+          "zoneId": "zone_s_6_3c_6"
+        }
+      }
+    },
+    "rogue_4": {
+      "zones": {
+        "zone_1": {
+          "backgroundId": "rogue_4_map_1",
+          "isHiddenZone": false,
+          "name": "熔魂之始",
+          "zoneIconId": "icon_zone_1",
+          "zoneId": "zone_1"
+        },
+        "zone_2": {
+          "backgroundId": "rogue_4_map_2",
+          "isHiddenZone": false,
+          "name": "锻铁根须",
+          "zoneIconId": "icon_zone_2",
+          "zoneId": "zone_2"
+        },
+        "zone_3": {
+          "backgroundId": "rogue_4_map_3",
+          "isHiddenZone": false,
+          "name": "灰铸迷城",
+          "zoneIconId": "icon_zone_3",
+          "zoneId": "zone_3"
+        },
+        "zone_4": {
+          "backgroundId": "rogue_4_map_4",
+          "isHiddenZone": false,
+          "name": "或然歧域",
+          "zoneIconId": "icon_zone_4",
+          "zoneId": "zone_4"
+        },
+        "zone_5": {
+          "backgroundId": "rogue_4_map_5",
+          "isHiddenZone": false,
+          "name": "虚实疆界",
+          "zoneIconId": "icon_zone_5",
+          "zoneId": "zone_5"
+        },
+        "zone_6": {
+          "backgroundId": "rogue_4_map_6",
+          "isHiddenZone": false,
+          "name": "辉光天顶",
+          "zoneIconId": "icon_zone_6",
+          "zoneId": "zone_6"
+        },
+        "zone_7": {
+          "backgroundId": "rogue_4_map_9",
+          "isHiddenZone": false,
+          "name": "逍遥兰若",
+          "zoneIconId": "icon_zone_7",
+          "zoneId": "zone_7"
+        },
+        "zone_8": {
+          "backgroundId": "rogue_4_map_10",
+          "isHiddenZone": false,
+          "name": "无终安息",
+          "zoneIconId": "icon_zone_7",
+          "zoneId": "zone_8"
+        },
+        "zone_portal_end_1": {
+          "backgroundId": "rogue_4_map_8",
+          "isHiddenZone": true,
+          "name": "诡谲断章",
+          "zoneIconId": "icon_zone_7",
+          "zoneId": "zone_portal_end_1"
+        },
+        "zone_portal_end_2": {
+          "backgroundId": "rogue_4_map_8",
+          "isHiddenZone": true,
+          "name": "诡谲断章",
+          "zoneIconId": "icon_zone_7",
+          "zoneId": "zone_portal_end_2"
+        },
+        "zone_portal_end_3": {
+          "backgroundId": "rogue_4_map_10",
+          "isHiddenZone": true,
+          "name": "无终安息",
+          "zoneIconId": "icon_zone_7",
+          "zoneId": "zone_portal_end_3"
+        },
+        "zone_portal_normal_1": {
+          "backgroundId": "rogue_4_map_7",
+          "isHiddenZone": true,
+          "name": "诡谲断章",
+          "zoneIconId": "icon_zone_7",
+          "zoneId": "zone_portal_normal_1"
+        },
+        "zone_portal_normal_2": {
+          "backgroundId": "rogue_4_map_7",
+          "isHiddenZone": true,
+          "name": "诡谲断章",
+          "zoneIconId": "icon_zone_7",
+          "zoneId": "zone_portal_normal_2"
+        },
+        "zone_portal_normal_3": {
+          "backgroundId": "rogue_4_map_7",
+          "isHiddenZone": true,
+          "name": "诡谲断章",
+          "zoneIconId": "icon_zone_7",
+          "zoneId": "zone_portal_normal_3"
+        },
+        "zone_portal_normal_4": {
+          "backgroundId": "rogue_4_map_7",
+          "isHiddenZone": true,
+          "name": "诡谲断章",
+          "zoneIconId": "icon_zone_7",
+          "zoneId": "zone_portal_normal_4"
+        },
+        "zone_portal_normal_5": {
+          "backgroundId": "rogue_4_map_7",
+          "isHiddenZone": true,
+          "name": "诡谲断章",
+          "zoneIconId": "icon_zone_7",
+          "zoneId": "zone_portal_normal_5"
+        },
+        "zone_portal_normal_6": {
+          "backgroundId": "rogue_4_map_7",
+          "isHiddenZone": true,
+          "name": "诡谲断章",
+          "zoneIconId": "icon_zone_7",
+          "zoneId": "zone_portal_normal_6"
+        },
+        "zone_portal_revival_3": {
+          "backgroundId": "rogue_4_map_7",
+          "isHiddenZone": true,
+          "name": "诡谲断章",
+          "zoneIconId": "icon_zone_7",
+          "zoneId": "zone_portal_revival_3"
+        },
+        "zone_portal_revival_4": {
+          "backgroundId": "rogue_4_map_7",
+          "isHiddenZone": true,
+          "name": "诡谲断章",
+          "zoneIconId": "icon_zone_7",
+          "zoneId": "zone_portal_revival_4"
+        },
+        "zone_portal_revival_5": {
+          "backgroundId": "rogue_4_map_7",
+          "isHiddenZone": true,
+          "name": "诡谲断章",
+          "zoneIconId": "icon_zone_7",
+          "zoneId": "zone_portal_revival_5"
+        },
+        "zone_portal_travel_1": {
+          "backgroundId": "rogue_4_map_4",
+          "isHiddenZone": true,
+          "name": "诡谲断章",
+          "zoneIconId": "icon_zone_4",
+          "zoneId": "zone_portal_travel_1"
+        }
+      }
+    },
+    "rogue_5": {
+      "zones": {
+        "zone_1": {
+          "backgroundId": "rogue_5_map_1",
+          "isHiddenZone": false,
+          "name": "洪陆楼",
+          "zoneIconId": "icon_zone_1",
+          "zoneId": "zone_1"
+        },
+        "zone_1_b": {
+          "backgroundId": "rogue_5_map_1",
+          "isHiddenZone": false,
+          "name": "洪陆楼",
+          "zoneIconId": "icon_zone_1",
+          "zoneId": "zone_1_b"
+        },
+        "zone_2": {
+          "backgroundId": "rogue_5_map_2",
+          "isHiddenZone": false,
+          "name": "山水阁",
+          "zoneIconId": "icon_zone_2",
+          "zoneId": "zone_2"
+        },
+        "zone_2_b": {
+          "backgroundId": "rogue_5_map_2",
+          "isHiddenZone": false,
+          "name": "山水阁",
+          "zoneIconId": "icon_zone_2",
+          "zoneId": "zone_2_b"
+        },
+        "zone_3": {
+          "backgroundId": "rogue_5_map_3",
+          "isHiddenZone": false,
+          "name": "云瓦亭",
+          "zoneIconId": "icon_zone_3",
+          "zoneId": "zone_3"
+        },
+        "zone_4": {
+          "backgroundId": "rogue_5_map_4",
+          "isHiddenZone": false,
+          "name": "汝吾门",
+          "zoneIconId": "icon_zone_4",
+          "zoneId": "zone_4"
+        },
+        "zone_4_b": {
+          "backgroundId": "rogue_5_map_4",
+          "isHiddenZone": false,
+          "name": "汝吾门",
+          "zoneIconId": "icon_zone_4",
+          "zoneId": "zone_4_b"
+        },
+        "zone_5": {
+          "backgroundId": "rogue_5_map_5",
+          "isHiddenZone": false,
+          "name": "见字祠",
+          "zoneIconId": "icon_zone_5",
+          "zoneId": "zone_5"
+        },
+        "zone_6": {
+          "backgroundId": "rogue_5_map_6",
+          "isHiddenZone": false,
+          "name": "始末陵",
+          "zoneIconId": "icon_zone_6",
+          "zoneId": "zone_6"
+        },
+        "zone_6_b": {
+          "backgroundId": "rogue_5_map_6",
+          "isHiddenZone": false,
+          "name": "始末陵",
+          "zoneIconId": "icon_zone_6",
+          "zoneId": "zone_6_b"
+        },
+        "zone_7": {
+          "backgroundId": "rogue_5_map_7",
+          "isHiddenZone": false,
+          "name": "明灭顶",
+          "zoneIconId": "icon_zone_7",
+          "zoneId": "zone_7"
+        },
+        "zone_8": {
+          "backgroundId": "rogue_5_map_8",
+          "isHiddenZone": false,
+          "name": "来去处",
+          "zoneIconId": "icon_zone_8",
+          "zoneId": "zone_8"
+        },
+        "zone_sky_1": {
+          "backgroundId": "rogue_5_map_0",
+          "isHiddenZone": false,
+          "name": "是非境",
+          "zoneIconId": "icon_zone_sky_1",
+          "zoneId": "zone_sky_1"
+        },
+        "zone_sky_2": {
+          "backgroundId": "rogue_5_map_sky_2",
+          "isHiddenZone": false,
+          "name": "今昔境",
+          "zoneIconId": "icon_zone_sky_1",
+          "zoneId": "zone_sky_2"
+        },
+        "zone_sky_3": {
+          "backgroundId": "rogue_5_map_0",
+          "isHiddenZone": false,
+          "name": "是非境",
+          "zoneIconId": "icon_zone_sky_1",
+          "zoneId": "zone_sky_3"
+        }
+      }
+    }
+  }
+}

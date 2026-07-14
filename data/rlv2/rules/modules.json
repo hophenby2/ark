@@ -1,0 +1,211 @@
+{
+  "$schema": "./rules.schema.json",
+  "kind": "rlv2_modules",
+  "schemaVersion": 1,
+  "runtimeEnabled": false,
+  "modules": [
+    {
+      "id": "rogue_1",
+      "theme": "rogue_1",
+      "clientModuleTypes": [],
+      "clientFieldEvidence": {
+        "reviewStatus": "client_verified",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7"
+        ],
+        "notes": "topics[theme].moduleTypes"
+      },
+      "description": "剧目是本层节点关联的一次性候选机制；当前客户端 moduleTypes 不包含对应枚举。",
+      "mechanisms": [
+        {
+          "mechanismId": "ro1_capsule",
+          "triggerEvent": "battle_completed",
+          "triggerBattleKinds": null,
+          "probability": 0.5,
+          "candidateWeighting": "uniform",
+          "eligibleNodeDescription": "仅抽取本层当前节点之后存在的节点所对应的剧目。",
+          "eligibleNodeScopeAst": null,
+          "activationEvent": "target_node_started",
+          "missConsumes": false,
+          "hitConsumes": null,
+          "resetEvent": "zone_changed",
+          "duplicatePolicy": null,
+          "concurrentLimit": null,
+          "rngStream": null,
+          "evidence": {
+            "reviewStatus": "user_confirmed",
+            "sourceRefs": [
+              "user-review:2026-07-14"
+            ],
+            "notes": "Q18a; reachability and consumption details remain unresolved."
+          }
+        }
+      ],
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "user-review:2026-07-14",
+          "client:roguelike-topic-table:634e7e7"
+        ],
+        "notes": "Client module types are verified; behavior description still needs a dedicated fixed PRTS revision."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_2",
+      "theme": "rogue_2",
+      "clientModuleTypes": [
+        "SANCHECK",
+        "DICE"
+      ],
+      "clientFieldEvidence": {
+        "reviewStatus": "client_verified",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7"
+        ],
+        "notes": "topics[theme].moduleTypes"
+      },
+      "description": "灯火区间、骰子与排异反应共同组成检定链；后续需把骰点生成、重掷、灯火阈值和战斗效果写成可回放状态机。",
+      "mechanisms": [],
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+        "repository:roguelike-analysis:e0e7bbf",
+          "client:roguelike-topic-table:634e7e7"
+        ],
+        "notes": "Client module types are verified; behavior description still needs a dedicated fixed PRTS revision."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_3",
+      "theme": "rogue_3",
+      "clientModuleTypes": [
+        "CHAOS",
+        "TOTEMBUFF",
+        "VISION"
+      ],
+      "clientFieldEvidence": {
+        "reviewStatus": "client_verified",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7"
+        ],
+        "notes": "topics[theme].moduleTypes"
+      },
+      "description": "坍缩、密文板与抗干扰指数分别影响范式状态、组合效果和地图视野；精确增减、阈值、升级与净化仍待 PRTS 固定 revision。",
+      "mechanisms": [],
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+        "repository:roguelike-analysis:e0e7bbf",
+          "client:roguelike-topic-table:634e7e7"
+        ],
+        "notes": "Client module types are verified; behavior description still needs a dedicated fixed PRTS revision."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_4",
+      "theme": "rogue_4",
+      "clientModuleTypes": [
+        "FRAGMENT",
+        "DISASTER",
+        "NODE_UPGRADE"
+      ],
+      "clientFieldEvidence": {
+        "reviewStatus": "client_verified",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7"
+        ],
+        "notes": "topics[theme].moduleTypes"
+      },
+      "description": "构想/负荷、灵感、时代与节点升级需要独立账本和事件驱动规则；旗帜与“印象重建”的对应关系未确认。",
+      "mechanisms": [],
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+        "repository:roguelike-analysis:e0e7bbf",
+          "client:roguelike-topic-table:634e7e7"
+        ],
+        "notes": "Client module types are verified; behavior description still needs a dedicated fixed PRTS revision."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_5",
+      "theme": "rogue_5",
+      "clientModuleTypes": [
+        "COPPER",
+        "WRATH",
+        "CANDLE",
+        "SKY"
+      ],
+      "clientFieldEvidence": {
+        "reviewStatus": "client_verified",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7"
+        ],
+        "notes": "topics[theme].moduleTypes"
+      },
+      "description": "通宝、戌绘、烛火、天域与留券需要有向交换图、计时/权重和特殊区域状态；当前只保留客户端模块边界。",
+      "mechanisms": [],
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+        "repository:roguelike-analysis:e0e7bbf",
+          "client:roguelike-topic-table:634e7e7"
+        ],
+        "notes": "Client module types are verified; behavior description still needs a dedicated fixed PRTS revision."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    }
+  ],
+  "unresolved": [
+    {
+      "id": "ro1-capsule-scope-and-consumption",
+      "fields": [
+        "triggerBattleKinds",
+        "reachableNodeDefinition",
+        "hitConsumes",
+        "duplicatePolicy",
+        "concurrentLimit",
+        "rngStream"
+      ],
+      "description": "Q18a confirms the main flow but leaves these state semantics open.",
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "user-review:2026-07-14"
+        ],
+        "notes": null
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "ro2-ro5-fixed-source-descriptions",
+      "fields": [
+        "prtsUrl",
+        "revision",
+        "accessedOn",
+        "exactRules"
+      ],
+      "description": "Q18b-e requests PRTS descriptions first; dedicated permanent revisions have not yet been recorded.",
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "user-review:2026-07-14",
+        "repository:roguelike-analysis:e0e7bbf"
+        ],
+        "notes": "All executable parameters remain null or absent."
+      },
+      "implementationStatus": "pending",
+      "runtimeEnabled": false
+    }
+  ]
+}
