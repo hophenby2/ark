@@ -826,7 +826,8 @@
             "choice_ro2_blood2_1": {
                 "choices": ["choice_leave"],
                 "lose": "rogue_2_relic_grace_76",
-                "get": {"san": {"sanity": 40}}
+                "get": null,
+                "m_get": {"san": {"sanity": 40}}
             },
             "choice_ro2_blood2_2": {
                 "choices": ["choice_leave"],
@@ -894,7 +895,8 @@
             "choice_ro2_exchange_7": {
                 "choices": ["choice_ro2_exchange_17", "choice_ro2_exchange_20"],
                 "lose": {"hp": {"current": 3}},
-                "get": {"dice": {"count": 1}}
+                "get": null,
+                "m_get": {"dice": {"count": 1}}
             },
             "choice_ro2_exchange_8": {
                 "choices": ["choice_ro2_exchange_18", "choice_ro2_exchange_20"],
@@ -1077,7 +1079,7 @@
             },
             "choice_ro2_8_1": {
                 "choices": ["choice_ro2_8_4", "choice_ro2_8_5", "choice_ro2_8_6", "choice_ro2_8_7"],
-                "lose": {"hp": 2},
+                "lose": {"hp": {"current": 2}},
                 "get": null
             },
             "choice_ro2_8_2": {
@@ -1087,14 +1089,14 @@
             },
             "choice_ro2_8_3": {
                 "choices": ["choice_ro2_8_4", "choice_ro2_8_5", "choice_ro2_8_6", "choice_ro2_8_7"],
-                "lose": {"hp": 2},
+                "lose": {"hp": {"current": 2}},
                 "get": null
             },
             "choice_ro2_8_4": {
                 "choices": ["choice_ro2_8_3", "choice_ro2_8_2"],
                 "lose": null,
                 "get": null,
-                "m_get": {"san": 10}
+                "m_get": {"san": {"sanity": 10}}
             },
             "choice_ro2_8_5": {
                 "choices": ["choice_ro2_8_3", "choice_ro2_8_2"],
@@ -1511,23 +1513,27 @@
             },
             "choice_ro2_bossb2_3": {
                 "choices": ["choice_leave"],
-                "lose": {"san": {"sanity": 20}},
+                "lose": null,
+                "m_lose": {"san": {"sanity": 20}},
                 "get": {"gold": 13}
             },
             "choice_ro2_bossb2_4": {
                 "choices": ["choice_leave"],
-                "lose": {"san": {"sanity": 20}},
+                "lose": null,
+                "m_lose": {"san": {"sanity": 20}},
                 "get": null,
                 "m_get": {"dice": {"count": 5}}
             },
             "choice_ro2_bossb2_5": {
                 "choices": ["choice_leave"],
-                "lose": {"san": {"sanity": 20}},
+                "lose": null,
+                "m_lose": {"san": {"sanity": 20}},
                 "get": {"hp": {"current": 6, "max": 6}}
             },
             "choice_ro2_bossb2_6": {
                 "choices": ["choice_leave"],
-                "lose": {"san": {"sanity": 20}},
+                "lose": null,
+                "m_lose": {"san": {"sanity": 20}},
                 "get": "rogue_2_relic_curse_8",
                 "curse": true
             },

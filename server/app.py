@@ -475,6 +475,7 @@ app.add_url_rule("/rlv2/buyGoods", methods=["POST"], view_func=rlv2.rlv2BuyGoods
 app.add_url_rule("/rlv2/leaveShop", methods=["POST"], view_func=rlv2.rlv2LeaveShop)
 app.add_url_rule("/rlv2/chooseBattleReward", methods=["POST"], view_func=rlv2.rlv2ChooseBattleReward)
 app.add_url_rule("/rlv2/shopAction", methods=["POST"], view_func=rlv2.rlv2shopAction)
+app.add_url_rule("/rlv2/copper/confirmDraw", methods=["POST"], view_func=rlv2.rlv2CopperConfirmDraw)
 app.add_url_rule("/rlv2/copper/redraw", methods=["POST"], view_func=rlv2.rlv2CopperRedraw)
 app.add_url_rule("/rlv2/bankPut", methods=["POST"], view_func=rlv2.rlv2BankPut)
 app.add_url_rule("/rlv2/bankWithdraw", methods=["POST"], view_func=rlv2.rlv2BankWithdraw)

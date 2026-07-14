@@ -14,11 +14,25 @@ from constants import (
     CRISIS_V2_JSON_BASE_PATH,
     MAILLIST_PATH,
     SQUADS_PATH,
-    CONFIG_PATH
+    CONFIG_PATH,
+    RLV2_JSON_PATH,
 )
 from user import checkin
 from utils import read_json, write_json, get_memory, run_after_response, memory_cache, writeLog
 from virtualtime import time
+
+
+def _merge_rlv2_current(player_data):
+    """Keep SyncData aligned with the separately persisted active run."""
+    try:
+        current_run = read_json(RLV2_JSON_PATH)
+    except Exception as exc:
+        writeLog(f"Failed to load active roguelike run: {exc}")
+        return
+
+    user_rlv2 = player_data.get("user", {}).get("rlv2")
+    if isinstance(user_rlv2, dict) and isinstance(current_run, dict):
+        user_rlv2["current"] = current_run
 
 
 def accountLogin():
@@ -44,6 +58,7 @@ def SyncData():
     saved_data = read_json(USER_JSON_PATH)
     mail_data = read_json(MAILLIST_PATH)
     player_data = read_json(SYNC_DATA_TEMPLATE_PATH)
+    _merge_rlv2_current(player_data)
     config = memory_cache["config"]
     # 如果配置为使用已有数据，则直接返回用户存档数据
     if config.get("userConfig").get("useUserData", False) and "user" in player_data:

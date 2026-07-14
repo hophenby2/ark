@@ -1,6 +1,8 @@
 from flask import request
 from copy import deepcopy
 from collections import deque
+from functools import wraps
+from threading import RLock
 from virtualtime import time
 import random
 import os
@@ -16,19 +18,76 @@ from constants import (
     SERVER_DATA_PATH
 )
 
-from utils import read_json, write_json, decrypt_battle_data, writeLog, get_memory, run_after_response
+from utils import read_json, write_json, decrypt_battle_data, writeLog, get_memory
+from rlv2_logic import (
+    apply_numeric_delta,
+    battle_experience,
+    build_initial_property,
+    clamp_player_property,
+    collect_difficulty_buffs,
+    enforce_emergency_node_limits,
+    has_numeric_cost,
+    prepare_recruit_candidates,
+    prepare_predefined_characters,
+    recruit_group_ticket_ids,
+    resolve_player_levels,
+    select_equivalent_grade,
+    select_init_config,
+    select_player_level_table,
+    settle_battle_life,
+)
 import data.rlv2_data
 
 
+_RUN_LOCK = RLock()
+
+
+def _serialized_run(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        with _RUN_LOCK:
+            return func(*args, **kwargs)
+
+    return wrapper
+
+
+def _atomic_write_json(data: dict, path: str) -> None:
+    temp_path = f"{path}.{os.getpid()}.tmp"
+    try:
+        write_json(data, temp_path)
+        os.replace(temp_path, path)
+    finally:
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
+
+
+def _persist_run(rlv2: dict, server_data: dict | None = None) -> None:
+    _atomic_write_json(rlv2, RLV2_JSON_PATH)
+    if server_data is not None:
+        _atomic_write_json(server_data, SERVER_DATA_PATH)
+
+
+@_serialized_run
 def rlv2GiveUpGame():
     server_data = read_json(SERVER_DATA_PATH)
     seed = server_data["rlv2_seed"]
     deque_seed = deque(server_data["seed_list"])
-    deque_seed.appendleft(seed)
+    if seed is not None:
+        deque_seed.appendleft(seed)
     server_data["seed_list"] = list(deque_seed)
     server_data["rlv2_seed"] = None
 
-    run_after_response(write_json, server_data, SERVER_DATA_PATH)
+    empty_run = {
+        "player": None,
+        "record": None,
+        "map": None,
+        "troop": None,
+        "inventory": None,
+        "game": None,
+        "buff": None,
+        "module": None,
+    }
+    _persist_run(empty_run, server_data)
     return {
         "result": "ok",
         "playerDataDelta": {
@@ -51,61 +110,83 @@ def rlv2GiveUpGame():
     }
 
 
+@_serialized_run
 def rlv2CreateGame():
     request_data = request.get_json()
 
     theme = request_data["theme"]
     mode = request_data["mode"]
-    if mode == "MONTH_TEAM" or mode == "CHALLENGE":
-        mode = "NORMAL"
     mode_grade = request_data["modeGrade"]
+    predefined = request_data.get("predefined", request_data.get("predefinedId"))
+    if isinstance(predefined, dict):
+        predefined = predefined.get("id")
 
-    ro_int = int(theme.split("_")[1])
-    band_length = [None, 11, 23, 14, 23, 21]
-    bands = []
-    ending = ""
+    rlv2_table = get_memory("roguelike_topic_table")
+    try:
+        init_config = select_init_config(
+            rlv2_table, theme, mode, mode_grade, predefined
+        )
+    except ValueError as exc:
+        return {"error": str(exc)}, 400
 
-    if ro_int < len(band_length):
-        for band in range(1, band_length[ro_int]):
-            bands.append(f"rogue_{ro_int}_band_{band}")
-        # ending = random.choice([f"ro{ro_int}_ending_{i}" for i in range(1, 4)])
-        ending = f"ro{ro_int}_ending_1"
+    theme_data = rlv2_table["details"][theme]
+    bands = init_config["initialBandRelic"] or []
+    recruit_groups = init_config["initialRecruitGroup"] or []
+    if mode == "CHALLENGE" and not recruit_groups:
+        return {
+            "error": (
+                "this challenge requires a server-defined initial roster "
+                f"that is unavailable: {predefined}"
+            )
+        }, 400
 
-    rlv2 = {
-        "player": {
-            "state": "INIT",
-            "property": {
-                "exp": 0,
-                "level": 10,
-                "maxLevel": 10,
-                "hp": {"current": 10000, "max": 10000},
-                "gold": 450,
-                "shield": 10000,
-                "capacity": 10000,
-                "population": {"cost": 0, "max": 6},
-                "conPerfectBattle": 0,
-            },
-            "cursor": {"zone": 0, "position": None},
-            "trace": [],
-            "pending": [
-                {
-                    "type": "GAME_INIT_RELIC",
-                    "content": {
-                        "initRelic": {
-                            "step": [1, 3],
-                            "items": {
-                                str(i): {"id": band, "count": 1}
-                                for i, band in enumerate(bands)
-                            },
-                        }
+    ending = min(
+        theme_data["endings"].values(),
+        key=lambda item: item.get("priority", 999),
+    )["id"]
+    player_level_table, max_player_level = select_player_level_table(
+        theme_data, mode, mode_grade, init_config["predefinedId"]
+    )
+    initial_property = build_initial_property(
+        init_config, player_level_table, max_player_level
+    )
+
+    predefined_chars = []
+    if mode == "MONTH_TEAM":
+        month_squad = theme_data["monthSquad"].get(init_config["predefinedId"])
+        if month_squad is None:
+            return {"error": f"unknown monthly squad: {predefined}"}, 400
+        try:
+            predefined_chars = prepare_predefined_characters(
+                _rlv2.getChars(), month_squad["teamChars"]
+            )
+        except ValueError as exc:
+            return {"error": str(exc)}, 400
+
+    total_steps = 1 + int(bool(recruit_groups)) + int(bool(recruit_groups))
+    pending = [
+        {
+            "type": "GAME_INIT_RELIC",
+            "content": {
+                "initRelic": {
+                    "step": [1, total_steps],
+                    "items": {
+                        str(i): {"id": band, "count": 1}
+                        for i, band in enumerate(bands)
                     },
-                },
+                }
+            },
+        }
+    ]
+    if recruit_groups:
+        pending.extend(
+            [
                 {
                     "type": "GAME_INIT_RECRUIT_SET",
                     "content": {
                         "initRecruitSet": {
-                            "step": [2, 3],
-                            "option": ["recruit_group_1"],
+                            "step": [2, total_steps],
+                            "option": recruit_groups,
                         }
                     },
                 },
@@ -113,14 +194,24 @@ def rlv2CreateGame():
                     "type": "GAME_INIT_RECRUIT",
                     "content": {
                         "initRecruit": {
-                            "step": [3, 3],
+                            "step": [3, total_steps],
                             "tickets": [],
                             "showChar": [],
-                            "team": None,
+                            "team": [char["instId"] for char in predefined_chars]
+                            or None,
                         }
                     },
                 },
-            ],
+            ]
+        )
+
+    rlv2 = {
+        "player": {
+            "state": "INIT",
+            "property": initial_property,
+            "cursor": {"zone": 0, "position": None},
+            "trace": [],
+            "pending": pending,
             "status": {"bankPut": 0},
             "toEnding": ending,
             "chgEnding": False,
@@ -142,12 +233,14 @@ def rlv2CreateGame():
         },
         "game": {
             "mode": mode,
-            "predefined": None,
+            "predefined": init_config["predefinedId"],
             "theme": theme,
             "outer": {"support": False},
             "start": time(),
             "eGrade": mode_grade,
-            "equivalentGrade": mode_grade,
+            "equivalentGrade": select_equivalent_grade(
+                rlv2_table, theme, mode, mode_grade
+            ),
         },
         "buff": {"tmpHP": 0, "capsule": None, "squadBuff": []},
         "module": {
@@ -161,9 +254,13 @@ def rlv2CreateGame():
             "nodeUpgrade": None,
             "copper": None,
             "wrath": None,
+            "candle": None,
             "sky": None
         }
     }
+
+    for char in predefined_chars:
+        rlv2["troop"]["chars"][char["instId"]] = char
 
     match theme:
         case "rogue_1":
@@ -229,40 +326,31 @@ def rlv2CreateGame():
         case _:
             pass
 
-    run_after_response(write_json ,rlv2, RLV2_JSON_PATH)
+    initial_key = init_config.get("initialKey", 0)
+    key_item_id = theme_data["gameConst"].get("keyItemId")
+    if initial_key and key_item_id:
+        rlv2["inventory"]["consumable"][key_item_id] = initial_key
 
     config = read_json(CONFIG_PATH)
     if config["rlv2Config"]["allChars"]:
-        match theme:
-            case "rogue_1":
-                ticket = "rogue_1_recruit_ticket_all"
-            case "rogue_2":
-                ticket = "rogue_2_recruit_ticket_all"
-            case "rogue_3":
-                ticket = "rogue_3_recruit_ticket_all"
-            case "rogue_4":
-                ticket = "rogue_4_recruit_ticket_all"
-            case "rogue_5":
-                ticket = "rogue_5_recruit_ticket_all"
-            case _:
-                ticket = ""
         chars = _rlv2.getChars(use_user_defaults=True)
-        for i, char in enumerate(chars):
-            ticket_id = f"t_{i}"
-            char_id = str(i + 1)
+        unique_chars = {}
+        for char in chars:
+            key = (char["charId"], char.get("currentTmpl"))
+            if (
+                key not in unique_chars
+                or char["evolvePhase"] > unique_chars[key]["evolvePhase"]
+            ):
+                unique_chars[key] = char
+        for i, char in enumerate(unique_chars.values()):
+            char_id = getNextCharId(rlv2)
             char["instId"] = char_id
-            # rlv2["inventory"]["recruit"][ticket_id] = {
-            #     "index": f"t_{i}",
-            #     "id": ticket,
-            #     "state": 2,
-            #     "list": [],
-            #     "result": char,
-            #     "ts": time() - 300,
-            #     "from": "initial",
-            #     "mustExtra": 0,
-            #     "needAssist": True,
-            # }
             rlv2["troop"]["chars"][char_id] = char
+
+    server_data = read_json(SERVER_DATA_PATH)
+    if not server_data.get("rlv2_seed"):
+        server_data["rlv2_seed"] = os.urandom(16).hex()
+    _persist_run(rlv2, server_data)
 
     data = {
         "playerDataDelta": {
@@ -278,20 +366,22 @@ def rlv2CreateGame():
     return data
 
 
+@_serialized_run
 def rlv2ChooseInitialRelic():
     request_data = request.get_json()
     select = request_data["select"]
 
     rlv2 = read_json(RLV2_JSON_PATH)
-    band = rlv2["player"]["pending"][0]["content"]["initRelic"]["items"][select]["id"]
+    pending = rlv2["player"]["pending"]
+    if not pending or pending[0].get("type") != "GAME_INIT_RELIC":
+        return {"error": "initial relic selection is not pending"}, 409
+    items = pending[0]["content"]["initRelic"]["items"]
+    if str(select) not in items:
+        return {"error": f"invalid initial relic: {select}"}, 400
+    band = items[str(select)]["id"]
     rlv2["player"]["pending"].pop(0)
-    rlv2["inventory"]["relic"]["r_0"] = {
-        "index": "r_0",
-        "id": band,
-        "count": 1,
-        "ts": time(),
-    }
-    run_after_response(write_json ,rlv2, RLV2_JSON_PATH)
+    _rlv2.add_item(rlv2, band)
+    _persist_run(rlv2)
 
     data = {
         "playerDataDelta": {
@@ -307,68 +397,46 @@ def rlv2ChooseInitialRelic():
     return data
 
 
+@_serialized_run
 def rlv2SelectChoice():
     json_body = request.get_json()
-    # 数据
-    choice:str = json_body["choice"]
-    is_bat = False
+    choice: str = json_body["choice"]
     rlv2 = read_json(RLV2_JSON_PATH)
     server_data = read_json(SERVER_DATA_PATH)
     rlv2_table = get_memory("roguelike_topic_table")
     event_choices = get_memory("event_choices")
+    theme = rlv2["game"]["theme"]
+    pending = rlv2["player"]["pending"]
+    if (
+        rlv2["player"]["state"] != "PENDING"
+        or not pending
+        or pending[0].get("type") != "SCENE"
+    ):
+        return {"error": "scene choice is not pending"}, 409
+    current_choices = pending[0]["content"]["scene"].get("choices", {})
+    if not current_choices.get(choice):
+        return {"error": f"choice is not available in the current scene: {choice}"}, 400
 
-    # 响应
-    reslut = {
-            "playerDataDelta": {
-                "modified": {
-                    "rlv2": {
-                        "current": {}
-                    }
-                },
-                "deleted": {},
-            }
-        }
+    choice_data = event_choices.get(theme, {}).get("choices", {}).get(choice)
+    if choice == "choice_leave" and choice_data is None:
+        choice_data = {"choices": [], "lose": None, "get": None}
+    table_choice = rlv2_table["details"][theme]["choices"].get(choice)
+    if choice_data is None or table_choice is None:
+        return {"error": f"invalid roguelike choice: {choice}"}, 400
 
-    def add_data(data:dict):
-        """
-        为result添加传入的内容
-        """
-        reslut["playerDataDelta"]["modified"]["rlv2"]["current"].update(data)
+    cursor = rlv2["player"]["cursor"]
+    rng = random.Random(
+        f"{server_data.get('rlv2_seed')}_{theme}_{cursor['zone']}_"
+        f"{cursor.get('position')}_{choice}"
+    )
 
     def leave():
-        """
-        调用此函数可以离开事件
-        """
         rlv2["player"]["state"] = "WAIT_MOVE"
-        add_data({
-            "player": {
-                "state": rlv2["player"]["state"],
-                "pending": rlv2["player"]["pending"]
-            }
-        })
+        _rlv2.finishNode(rlv2, server_data)
 
-    def dict_calc_inplace(a:dict, b:dict, sign:int=1):
-        """
-        用a字典 加/减 b字典中相同的相对路径的值, 不要传错层级! 这里没有纠错!
-
-        :param a: 用于加减的dict, 一般为rlv2["player"]["property"] rlv2["module"] rlv2["inventory"]["consumable"]
-        :param b: 要加减的dict, 一般为event_choices[theme]["choices"][choice]的lose或get
-        :param sign: 控制加减, lose传入-1 get传入1, 也可控制倍率
-        """
-        for key, value in a.items():
-            if isinstance(value, dict):
-                dict_calc_inplace(value, b[key], sign)
-            else:
-                r = a.get(key, 0) + sign * b[key]
-                a[key] = r
-
-    def add_scene_event(scene_id:str, choices:list):
-        """
-        为 scene 事件添加选项
-
-        :param scene_id: 下一个场景的id
-        :param choices: 可选项列表
-        """
+    def add_scene_event(scene_id: str, choices: list):
+        if not choices:
+            choices = ["choice_leave"]
         pending_event = {
             "type": "SCENE",
             "content": {
@@ -381,218 +449,199 @@ def rlv2SelectChoice():
                 "popReport": False
             }
         }
-        # 把全部可选项加到事件里
-        for coi in choices:
-            pending_event["content"]["scene"]["choices"][coi] = True
-            pending_event["content"]["scene"]["choiceAdditional"][coi] = {"rewards": []}
+        for choice_id in choices:
+            available = choice_id == "choice_leave" or _rlv2.canPayChoice(
+                rlv2,
+                event_choices.get(theme, {}).get("choices", {}).get(choice_id, {}),
+            )
+            pending_event["content"]["scene"]["choices"][choice_id] = available
+            pending_event["content"]["scene"]["choiceAdditional"][choice_id] = {
+                "rewards": []
+            }
+        if not any(pending_event["content"]["scene"]["choices"].values()):
+            pending_event["content"]["scene"]["choices"]["choice_leave"] = True
+            pending_event["content"]["scene"]["choiceAdditional"][
+                "choice_leave"
+            ] = {"rewards": []}
         rlv2["player"]["pending"].insert(0, pending_event)
 
-    rlv2["player"]["pending"].pop(0)
-    theme = rlv2["game"]["theme"]
-    random_seed = server_data["rlv2_seed"]
-    random.seed(random_seed)
+    def resolve_item(item_pattern: str, curse: bool = False) -> str:
+        item_ids = rlv2_table["details"][theme]["items"]
+        candidates = [item_id for item_id in item_ids if item_pattern in item_id]
+        if theme == "rogue_2" and "_relic_" in item_pattern:
+            if curse:
+                candidates = [item_id for item_id in candidates if "curse_" in item_id]
+            else:
+                candidates = [item_id for item_id in candidates if "curse_" not in item_id]
+        if not candidates:
+            raise ValueError(f"no item matches event reward: {item_pattern}")
+        return rng.choice(candidates)
 
-    # 战斗事件检测
-    if choice != "choice_leave":
-        if "bat" in choice:
-            is_bat = True
-        elif isinstance(event_choices[theme]["choices"][choice]["choices"], str):
-            is_bat = True
-        
-    # 如果 choice 是离开类事件则直接离开
+    created_tickets = []
+
+    def add_event_item(item_id: str):
+        result = _rlv2.add_item(rlv2, item_id)
+        if isinstance(result, list):
+            created_tickets.extend(result)
+
+    def grant_event_items(item_spec):
+        if isinstance(item_spec, str):
+            item_id = resolve_item(item_spec, choice_data.get("curse", False))
+            add_event_item(item_id)
+        elif isinstance(item_spec, list):
+            if item_spec:
+                add_event_item(rng.choice(item_spec))
+        elif isinstance(item_spec, int) and not isinstance(item_spec, bool):
+            item_specs = choice_data.get("get_id", [])
+            for item_info in item_specs[:item_spec]:
+                item_id = resolve_item(
+                    item_info["get"], item_info.get("curse", False)
+                )
+                add_event_item(item_id)
+
+    if not _rlv2.canPayChoice(rlv2, choice_data):
+        return {"error": f"choice cost cannot be paid: {choice}"}, 400
+
+    rlv2["player"]["pending"].pop(0)
+
     if choice == "choice_leave":
         leave()
-    # 否则进行match case判断
+    elif isinstance(choice_data.get("choices"), str):
+        stage_id = choice_data["choices"]
+        if stage_id.endswith("_"):
+            stage_candidates = [
+                candidate
+                for candidate in rlv2_table["details"][theme]["stages"]
+                if stage_id in candidate
+            ]
+            if not stage_candidates:
+                return {"error": f"no stage matches event choice: {choice}"}, 400
+            stage_id = rng.choice(stage_candidates)
+
+        position = rlv2["player"]["cursor"]["position"]
+        node_id = str(position["x"] * 100 + position["y"])
+        zone = str(rlv2["player"]["cursor"]["zone"])
+        rlv2["map"]["zones"][zone]["nodes"][node_id]["stage"] = stage_id
+        rlv2["player"]["pending"].insert(
+            0,
+            {
+                "type": "BATTLE",
+                "content": {
+                    "battle": {
+                        "boxInfo": [],
+                        "chestCnt": 100,
+                        "diceRoll": [],
+                        "goldTrapCnt": 100,
+                        "sanity": 0,
+                        "state": 1,
+                        "tmpChar": [],
+                        "unKeepBuff": _rlv2.getBuffs(rlv2, stage_id),
+                    },
+                    "done": False,
+                    "popReport": False,
+                },
+            },
+        )
     else:
-        match choice:
-            # 如果是战斗事件
-            case bat if is_bat is True:
-                scene_id = rlv2_table["details"][theme]["choices"][choice]["nextSceneId"]
-                # 如果 nextSceneId 不为空, 则继续 SCENE 事件
-                if scene_id is not None:
-                    add_scene_event(scene_id, event_choices[theme]["choices"][choice]["choices"])
-                    add_data({
-                        "player": {
-                            "pending": rlv2["player"]["pending"]
-                        }
-                    })
-                # 否则进入 BATTLE 事件
-                else:
-                    stage_id:str = event_choices[theme]["choices"][choice]["choices"]
-                    # 以下划线结尾的字符串作为关键词匹配
-                    if stage_id[-1] == "_":
-                        id_random_list = []
-                        # 把有关键词的关卡id加到list中并随机选一个
-                        for id in list(rlv2_table["details"][theme]["stages"].keys()):
-                            if stage_id in id:
-                                id_random_list.append(id)
-                        stage_id = random.choice(id_random_list)
-                    
-                    x = rlv2["player"]["cursor"]["position"]["x"]
-                    y = rlv2["player"]["cursor"]["position"]["y"]
-                    node_id = str(x*100 + y)
-                    zone = str(rlv2["player"]["cursor"]["zone"])
-                    rlv2["map"]["zones"][zone]["nodes"][node_id]["stage"] = stage_id
-                    buffs = _rlv2.getBuffs(rlv2, stage_id)
-                    pending_event = {
-                        "type": "BATTLE",
-                        "content": {
-                                "battle": {
-                                "boxInfo": [],
-                                "chestCnt": 100,
-                                "diceRoll": [],
-                                "goldTrapCnt": 100,
-                                "sanity": 0,
-                                "state": 1,
-                                "tmpChar": [],
-                                "unKeepBuff": buffs
-                            },
-                            "done": False,
-                            "popReport": False
-                        }
-                    }
-                    rlv2["player"]["pending"].insert(0, pending_event)
-                    add_data({
-                        "map": {
-                            "zones": {
-                                zone: {
-                                    "nodes": {
-                                        node_id: rlv2["map"]["zones"][zone]["nodes"][node_id]
-                                    }
-                                }
-                            }
-                        },
-                        "player": {
-                            "pending": rlv2["player"]["pending"]
-                        }
-                    })
-            case _:
-                scene_id = rlv2_table["details"][theme]["choices"][choice]["nextSceneId"]
-                # 如果 next scene 不为 None
-                if scene_id is not None:
-                    # --------------------
-                    lose:dict = event_choices[theme]["choices"][choice]["lose"]
-                    get:str|dict|list|int = event_choices[theme]["choices"][choice]["get"]
-                    m_lose:dict = event_choices[theme]["choices"][choice].get("m_lose")
-                    m_get:dict = event_choices[theme]["choices"][choice].get("m_get")
-                    i_get:dict = event_choices[theme]["choices"][choice].get("i_get")
-                    i_lose:dict = event_choices[theme]["choices"][choice].get("i_lose")
-                    # 肉鸽特色机制处理
-                    if m_lose is not None:
-                        dict_calc_inplace(rlv2["module"], m_lose, -1)
-                    if m_get is not None:
-                        dict_calc_inplace(rlv2["module"], m_get, 1)
-                    if i_get is not None:
-                        dict_calc_inplace(rlv2["inventory"], i_get, 1)
-                    if i_lose is not None:
-                        dict_calc_inplace(rlv2["inventory"], i_lose, -1)
-                    # 正常lose get处理
-                    # 减东西
-                    if lose is not None:
-                        if isinstance(lose, dict):
-                            dict_calc_inplace(rlv2["player"]["property"], lose, -1)
-                            # 如果源石锭为负数, 调回0, 预防需要扣除全部源石锭的事件导致负数
-                            if rlv2["player"]["property"]["gold"] < 0:
-                                rlv2["player"]["property"]["gold"] = 0
-                        if isinstance(lose, str):
-                            pass
-                    # 给东西
-                    if get is not None:
-                        if isinstance(get, dict): 
-                            dict_calc_inplace(rlv2["player"]["property"], get, 1)
-                            add_data({
-                                "player": {
-                                    "property": rlv2["player"]["property"]
-                                }
-                            })
-                        else:
-                            item_list = []
-                            if isinstance(get, str):
-                                match theme:
-                                    case "rouge_1":
-                                        for item_id in rlv2_table["details"][theme]["items"].keys():
-                                            if get in item_id:
-                                                item_list.append(item_id)
-                                        item_id = random.choice(item_list)
-                                        # _new_data = _rlv2.add_item(rlv2, item_id)
-                                    case "rogue_2":
-                                        curse:bool = event_choices[theme]["choices"][choice].get("curse", False)
-                                        if curse:
-                                            for item_id in rlv2_table["details"][theme]["items"].keys():
-                                                if get in item_id:
-                                                    item_list.append(item_id)
-                                        else:
-                                            for item_id in rlv2_table["details"][theme]["items"].keys():
-                                                if "curse_" not in item_id:
-                                                    if get in item_id:
-                                                        item_list.append(item_id)
-                                        item_id = random.choice(item_list)
-                                        # _new_data = _rlv2.add_item(rlv2, item_id)
-                            # int类型，给多少个藏品，和 get_id（list类型） 一起出现
-                            elif isinstance(get, int):
-                                match theme:
-                                    case "rouge_1":
-                                        pass
-                                    case "rogue_2":
-                                        for cnt in range(get):
-                                            item_choicce_info:dict = event_choices[theme]["choices"][choice]["get_id"][cnt]
-                                            item_key:str = item_choicce_info["get"]
-                                            curse:bool = item_choicce_info["curse"]
-                                            if curse:
-                                                for item_id in rlv2_table["details"][theme]["items"].keys():
-                                                    if item_key in item_id:
-                                                        if "curse_" in item_id:
-                                                            continue
-                                                        else:
-                                                            item_list.append(item_id)
-                                            else:
-                                                for item_id in rlv2_table["details"][theme]["items"].keys():
-                                                    if "curse_" not in item_id:
-                                                        if item_key in item_id:
-                                                            item_list.append(item_id)
-                                            item_id = random.choice(item_list)
-                                            # _new_data = _rlv2.add_item(rlv2, item_id)
-                            else:
-                                item_list = get
-                                item_id = random.choice(item_list)
-                                # _new_data = _rlv2.add_item(rlv2, item_id)
-                    # 数值越界检查
-                    if rlv2["player"]["property"]["hp"]["current"] > rlv2["player"]["property"]["hp"]["max"]:
-                        rlv2["player"]["property"]["hp"]["current"] = rlv2["player"]["property"]["hp"]["max"]
-                    if rlv2["player"]["property"]["level"] > rlv2["player"]["property"]["maxLevel"]:
-                        rlv2["player"]["property"]["level"] = rlv2["player"]["property"]["maxLevel"]
-                    if rlv2["player"]["property"]["gold"] < 0:
-                        rlv2["player"]["property"]["gold"] = 0
-                    # --------------------
-                    add_scene_event(scene_id, event_choices[theme]["choices"][choice]["choices"])
-                    add_data({
-                        "player": {
-                            "pending": rlv2["player"]["pending"]
-                        }
-                    })
-                # 为 None 则离开事件
-                else:
-                    leave()
+        for key, target, sign in (
+            ("m_lose", rlv2["module"], -1),
+            ("m_get", rlv2["module"], 1),
+            ("i_lose", rlv2["inventory"]["consumable"], -1),
+            ("i_get", rlv2["inventory"]["consumable"], 1),
+        ):
+            if choice_data.get(key):
+                apply_numeric_delta(target, choice_data[key], sign)
 
-    run_after_response(write_json ,rlv2, RLV2_JSON_PATH)
+        lose = choice_data.get("lose")
+        if isinstance(lose, dict):
+            apply_numeric_delta(rlv2["player"]["property"], lose, -1)
+        elif isinstance(lose, str):
+            _rlv2.remove_item(rlv2, lose)
 
-    return reslut
+        reward = choice_data.get("get")
+        if isinstance(reward, dict):
+            apply_numeric_delta(rlv2["player"]["property"], reward)
+        elif reward is not None:
+            grant_event_items(reward)
+
+        player_level_table, _ = select_player_level_table(
+            rlv2_table["details"][theme],
+            rlv2["game"]["mode"],
+            rlv2["game"]["eGrade"],
+            rlv2["game"].get("predefined"),
+        )
+        resolve_player_levels(rlv2["player"]["property"], player_level_table)
+        clamp_player_property(rlv2["player"]["property"])
+        if rlv2["player"]["property"]["hp"]["current"] <= 0:
+            _rlv2.endRun(rlv2, False, "LIFE_POINT_ZERO")
+        else:
+            scene_id = table_choice["nextSceneId"]
+            if scene_id is None:
+                leave()
+            else:
+                add_scene_event(scene_id, choice_data.get("choices", []))
+
+    if created_tickets and rlv2["player"]["state"] != "GAME_OVER":
+        for ticket_id in reversed(created_tickets):
+            _rlv2.activateTicket(rlv2, ticket_id)
+        rlv2["player"]["state"] = "PENDING"
+
+    _persist_run(rlv2, server_data)
+
+    return {
+        "playerDataDelta": {
+            "modified": {"rlv2": {"current": rlv2}},
+            "deleted": {},
+        }
+    }
 
 
+@_serialized_run
 def rlv2ChooseInitialRecruitSet():
+    request_data = request.get_json() or {}
     rlv2 = read_json(RLV2_JSON_PATH)
+    player_pending = rlv2["player"]["pending"]
+    if not player_pending or player_pending[0].get("type") != "GAME_INIT_RECRUIT_SET":
+        return {"error": "initial recruit set selection is not pending"}, 409
+    pending = player_pending[0]["content"]["initRecruitSet"]
+    if not pending["option"]:
+        return {"error": "this run has no initial recruit group"}, 409
+    selected_group = request_data.get("select")
+    if isinstance(selected_group, int):
+        if selected_group < 0 or selected_group >= len(pending["option"]):
+            return {"error": f"invalid initial recruit group: {selected_group}"}, 400
+        selected_group = pending["option"][selected_group]
+    if selected_group is None:
+        selected_group = pending["option"][0]
+    if selected_group not in pending["option"]:
+        return {"error": f"invalid initial recruit group: {selected_group}"}, 400
     rlv2["player"]["pending"].pop(0)
 
     config = read_json(CONFIG_PATH)
     if not config["rlv2Config"]["allChars"]:
-        for i in range(3):
+        theme = rlv2["game"]["theme"]
+        server_data = read_json(SERVER_DATA_PATH)
+        rng = random.Random(
+            f"{server_data.get('rlv2_seed')}_{theme}_{selected_group}"
+        )
+        try:
+            ticket_item_ids = recruit_group_ticket_ids(theme, selected_group, rng)
+        except ValueError as exc:
+            return {"error": str(exc)}, 400
+        ticket_table = get_memory("roguelike_topic_table")["details"][theme][
+            "recruitTickets"
+        ]
+
+        for ticket_item_id in ticket_item_ids:
+            if ticket_item_id not in ticket_table:
+                return {"error": f"unknown initial recruit ticket: {ticket_item_id}"}, 500
             ticket_id = _rlv2.getNextTicketIndex(rlv2)
-            _rlv2.addTicket(rlv2, ticket_id)
+            _rlv2.addTicket(rlv2, ticket_id, ticket_item_id)
             rlv2["player"]["pending"][0]["content"]["initRecruit"]["tickets"].append(
                 ticket_id
             )
 
-    run_after_response(write_json ,rlv2, RLV2_JSON_PATH)
+    _persist_run(rlv2)
 
     data = {
         "playerDataDelta": {
@@ -609,13 +658,24 @@ def rlv2ChooseInitialRecruitSet():
 
 
 
+@_serialized_run
 def rlv2ActiveRecruitTicket():
     request_data = request.get_json()
     ticket_id = request_data["id"]
 
     rlv2 = read_json(RLV2_JSON_PATH)
+    ticket = rlv2["inventory"]["recruit"].get(ticket_id)
+    if ticket is None or ticket["state"] != 0:
+        return {"error": f"recruit ticket is unavailable: {ticket_id}"}, 400
+    pending = rlv2["player"]["pending"]
+    if (
+        not pending
+        or pending[0].get("type") != "GAME_INIT_RECRUIT"
+        or ticket_id not in pending[0]["content"]["initRecruit"]["tickets"]
+    ):
+        return {"error": "recruit ticket cannot be activated in this context"}, 409
     _rlv2.activateTicket(rlv2, ticket_id)
-    run_after_response(write_json ,rlv2, RLV2_JSON_PATH)
+    _persist_run(rlv2)
 
     data = {
         "playerDataDelta": {
@@ -642,21 +702,60 @@ def getNextCharId(rlv2):
     return str(i)
 
 
+@_serialized_run
 def rlv2RecruitChar():
     request_data = request.get_json()
     ticket_id = request_data["ticketIndex"]
     option_id = int(request_data["optionId"])
 
     rlv2 = read_json(RLV2_JSON_PATH)
-    rlv2["player"]["pending"].pop(0)
-    char_id = getNextCharId(rlv2)
-    char = rlv2["inventory"]["recruit"][ticket_id]["list"][option_id]
+    ticket = rlv2["inventory"]["recruit"].get(ticket_id)
+    if ticket is None or ticket["state"] != 1:
+        return {"error": f"recruit ticket is not active: {ticket_id}"}, 400
+    if option_id < 0:
+        return {"error": f"invalid recruit option: {option_id}"}, 400
+    try:
+        char = deepcopy(ticket["list"][option_id])
+    except IndexError:
+        return {"error": f"invalid recruit option: {option_id}"}, 400
+
+    population = rlv2["player"]["property"]["population"]
+    recruit_cost = int(char.get("population", 0))
+    if recruit_cost > population["max"] - population["cost"]:
+        return {"error": "not enough hope for recruit"}, 400
+
+    if char.get("isUpgrade"):
+        char_id = next(
+            (
+                inst_id
+                for inst_id, recruited in rlv2["troop"]["chars"].items()
+                if recruited["charId"] == char["charId"]
+                and recruited["evolvePhase"] < char["evolvePhase"]
+            ),
+            None,
+        )
+        if char_id is None:
+            return {"error": "recruit upgrade target is missing"}, 400
+    else:
+        char_id = getNextCharId(rlv2)
+
+    pending = rlv2["player"]["pending"]
+    if (
+        not pending
+        or pending[0].get("type") != "RECRUIT"
+        or pending[0]["content"]["recruit"]["ticket"] != ticket_id
+    ):
+        return {"error": "recruit selection is not pending"}, 409
+    population["cost"] += recruit_cost
+    pending.pop(0)
+    if not pending:
+        rlv2["player"]["state"] = "WAIT_MOVE"
     char["instId"] = char_id
     rlv2["inventory"]["recruit"][ticket_id]["state"] = 2
     rlv2["inventory"]["recruit"][ticket_id]["list"] = []
     rlv2["inventory"]["recruit"][ticket_id]["result"] = char
     rlv2["troop"]["chars"][char_id] = char
-    run_after_response(write_json ,rlv2, RLV2_JSON_PATH)
+    _persist_run(rlv2)
 
     data = {
         "chars": [char],
@@ -673,16 +772,29 @@ def rlv2RecruitChar():
     return data
 
 
+@_serialized_run
 def rlv2CloseRecruitTicket():
     request_data = request.get_json()
     ticket_id = request_data["id"]
 
     rlv2 = read_json(RLV2_JSON_PATH)
-    rlv2["player"]["pending"].pop(0)
+    ticket = rlv2["inventory"]["recruit"].get(ticket_id)
+    pending = rlv2["player"]["pending"]
+    if (
+        ticket is None
+        or ticket["state"] != 1
+        or not pending
+        or pending[0].get("type") != "RECRUIT"
+        or pending[0]["content"]["recruit"]["ticket"] != ticket_id
+    ):
+        return {"error": f"recruit ticket is not active: {ticket_id}"}, 400
+    pending.pop(0)
+    if not pending:
+        rlv2["player"]["state"] = "WAIT_MOVE"
     rlv2["inventory"]["recruit"][ticket_id]["state"] = 2
     rlv2["inventory"]["recruit"][ticket_id]["list"] = []
     rlv2["inventory"]["recruit"][ticket_id]["result"] = None
-    run_after_response(write_json ,rlv2, RLV2_JSON_PATH)
+    _persist_run(rlv2)
 
     data = {
         "playerDataDelta": {
@@ -698,9 +810,22 @@ def rlv2CloseRecruitTicket():
     return data
 
 
+@_serialized_run
 def rlv2FinishEvent():
     server_data = read_json(SERVER_DATA_PATH)
     rlv2 = read_json(RLV2_JSON_PATH)
+    pending = rlv2["player"]["pending"]
+    if rlv2["player"]["state"] != "INIT":
+        return {"error": "initialization is not active"}, 409
+    if pending:
+        if len(pending) != 1 or pending[0].get("type") != "GAME_INIT_RECRUIT":
+            return {"error": "initial selections are not complete"}, 409
+        ticket_ids = pending[0]["content"]["initRecruit"]["tickets"]
+        if any(
+            rlv2["inventory"]["recruit"].get(ticket_id, {}).get("state") != 2
+            for ticket_id in ticket_ids
+        ):
+            return {"error": "initial recruit tickets are not complete"}, 409
     rlv2["player"]["state"] = "WAIT_MOVE"
     rlv2["player"]["cursor"]["zone"] = 1
     rlv2["player"]["pending"] = []
@@ -744,8 +869,7 @@ def rlv2FinishEvent():
             case _:
                 pass
 
-    run_after_response(write_json, server_data, SERVER_DATA_PATH)
-    run_after_response(write_json, rlv2, RLV2_JSON_PATH)
+    _persist_run(rlv2, server_data)
 
     result = {
         "playerDataDelta": {
@@ -761,14 +885,66 @@ def rlv2FinishEvent():
     return result
 
 
+@_serialized_run
 def rlv2MoveAndBattleStart():
     request_data = request.get_json()
     stage_id = request_data["stageId"]
 
     rlv2 = read_json(RLV2_JSON_PATH)
+    previous_cursor = deepcopy(rlv2["player"]["cursor"])
+    if request_data["to"] is not None:
+        if rlv2["player"]["state"] != "WAIT_MOVE" or rlv2["player"]["pending"]:
+            return {"error": "the run is not waiting for a map move"}, 409
+        zone_nodes = rlv2["map"]["zones"][str(previous_cursor["zone"])]["nodes"]
+        target = request_data["to"]
+        target_id = str(target["x"] * 100 + target["y"])
+        target_node = zone_nodes.get(target_id)
+        route_edge = None
+        if target_node is None or target_node.get("stage") != stage_id:
+            return {"error": "battle target does not match the generated map"}, 400
+        if target_node.get("type") not in {1, 2, 4}:
+            return {"error": "target node is not a battle node"}, 400
+        if previous_cursor["position"] is not None:
+            current_id = str(
+                previous_cursor["position"]["x"] * 100
+                + previous_cursor["position"]["y"]
+            )
+            route_edge = next(
+                (
+                    edge
+                    for edge in zone_nodes[current_id].get("next", [])
+                    if edge["x"] == target["x"] and edge["y"] == target["y"]
+                ),
+                None,
+            )
+            if route_edge is None:
+                return {"error": "battle target is not reachable"}, 400
+        elif target["x"] != 0:
+            return {"error": "the first battle node must be in the first column"}, 400
+        if target_node.get("visited"):
+            return {"error": "battle node was already visited"}, 409
+        if route_edge is not None and not _rlv2.unlockRoute(rlv2, route_edge):
+            return {"error": "not enough resources to unlock this route"}, 400
+        target_node["visited"] = True
+    else:
+        pending = rlv2["player"]["pending"]
+        if (
+            rlv2["player"]["state"] != "PENDING"
+            or not pending
+            or pending[0].get("type") != "BATTLE"
+        ):
+            return {"error": "event battle is not pending"}, 409
+        cursor = previous_cursor.get("position")
+        if cursor is None:
+            return {"error": "event battle has no current map node"}, 409
+        current_node = rlv2["map"]["zones"][str(previous_cursor["zone"])][
+            "nodes"
+        ].get(str(cursor["x"] * 100 + cursor["y"]))
+        if current_node is None or current_node.get("stage") != stage_id:
+            return {"error": "event battle stage does not match the current node"}, 400
     rlv2["player"]["state"] = "PENDING"
     can_box = False
-    box_info = []
+    box_info = {}
     if request_data["to"] is not None:
         x = request_data["to"]["x"]
         y = request_data["to"]["y"]
@@ -776,43 +952,31 @@ def rlv2MoveAndBattleStart():
         can_box = True
     else:
         rlv2["player"]["pending"].pop(0)
-    rlv2["player"]["trace"].append(rlv2["player"]["cursor"])
+    rlv2["player"]["trace"].append(previous_cursor)
     buffs = _rlv2.getBuffs(rlv2, stage_id)
     theme = rlv2["game"]["theme"]
-    if can_box == True:
-        match theme:
-            case "rogue_1":
-                box_info = {}
-            case "rogue_2":
-                box_info = {
-                    random.choice(
-                        ["trap_065_normbox", "trap_066_rarebox", "trap_068_badbox"]
-                    ): 100
-                }
-            case "rogue_3":
-                box_info = {
-                    random.choice(
-                        ["trap_108_smbox", "trap_109_smrbox", "trap_110_smbbox"]
-                    ): 100
-                }
-            case "rogue_4":
-                box_info = {
-                    random.choice(
-                        ["trap_757_skzbox", "trap_758_skzmbx", "trap_759_skzwyx"]
-                    ): 100
-                },
-            case "rogue_5":
-                box_info = {
-                    random.choice(
-                        ["rogue_5_stash_recruit", "pool_recruit_1"]
-                    ): 100
-                }
-            case _:
-                box_info = {}
+    server_data = read_json(SERVER_DATA_PATH)
+    rng = random.Random(
+        f"{server_data.get('rlv2_seed')}_{theme}_{stage_id}_"
+        f"{rlv2['player']['cursor']}"
+    )
+    if can_box:
+        game_const = get_memory("roguelike_topic_table")["details"][theme][
+            "gameConst"
+        ]
+        box_ids = [
+            game_const.get("normBoxTrapId"),
+            game_const.get("rareBoxTrapId"),
+            game_const.get("badBoxTrapId"),
+        ]
+        box_ids = [box_id for box_id in box_ids if box_id]
+        if box_ids:
+            box_info = {rng.choice(box_ids): 100}
     dice_roll = []
     if theme == "rogue_2":
         dice_upgrade_count = 0
-        band = rlv2["inventory"]["relic"]["r_0"]["id"]
+        first_relic = rlv2["inventory"]["relic"].get("r_0")
+        band = first_relic["id"] if first_relic else ""
         if (
             band == "rogue_2_band_16"
             or band == "rogue_2_band_17"
@@ -831,7 +995,7 @@ def rlv2MoveAndBattleStart():
         else:
             dice_face_count = 12
             dice_id = "trap_089_dice3"
-        dice_roll = [random.randint(1, dice_face_count) for i in range(100)]
+        dice_roll = [rng.randint(1, dice_face_count) for i in range(100)]
         buffs.append(
             {
                 "key": "misc_insert_token_card",
@@ -863,7 +1027,7 @@ def rlv2MoveAndBattleStart():
             }
         }
     )
-    run_after_response(write_json ,rlv2, RLV2_JSON_PATH)
+    _persist_run(rlv2)
 
     data = {
         "playerDataDelta": {
@@ -881,14 +1045,54 @@ def rlv2MoveAndBattleStart():
     return data
 
 
+@_serialized_run
 def rlv2BattleFinish():
     request_data = request.get_json()
     battle_data = decrypt_battle_data(request_data["data"])
 
+    if "completeState" not in battle_data:
+        return {"error": "invalid encrypted battle result"}, 400
+
     rlv2 = read_json(RLV2_JSON_PATH)
-    if battle_data["completeState"] != 1:
+    pending = rlv2["player"]["pending"]
+    if not pending or pending[0].get("type") != "BATTLE":
+        return {"error": "battle result is not pending"}, 409
+
+    theme = rlv2["game"]["theme"]
+    if battle_data.get("completeState") == 3:
+        stats = battle_data.get("battleData", {}).get("stats", {})
+        if not isinstance(stats.get("leftHp"), (int, float)):
+            return {"error": "successful battle result is missing leftHp"}, 400
+        life_earn = settle_battle_life(
+            rlv2["player"]["property"],
+            rlv2["buff"],
+            theme,
+            stats.get("leftHp"),
+        )
         rlv2["player"]["pending"].pop(0)
-        theme = rlv2["game"]["theme"]
+        rlv2_table = get_memory("roguelike_topic_table")
+        theme_data = rlv2_table["details"][theme]
+        cursor = rlv2["player"]["cursor"]
+        node_id = str(cursor["position"]["x"] * 100 + cursor["position"]["y"])
+        node = rlv2["map"]["zones"][str(cursor["zone"])]["nodes"][node_id]
+        stage_data = theme_data["stages"].get(node.get("stage"), {})
+        if stage_data.get("isBoss"):
+            battle_node_type = 4
+        elif stage_data.get("isElite"):
+            battle_node_type = 2
+        else:
+            battle_node_type = 1
+        exp_gain = battle_experience(theme_data, battle_node_type)
+        rlv2["player"]["property"]["exp"] += exp_gain
+        player_level_table, _ = select_player_level_table(
+            theme_data,
+            rlv2["game"]["mode"],
+            rlv2["game"]["eGrade"],
+            rlv2["game"].get("predefined"),
+        )
+        level_earn = resolve_player_levels(
+            rlv2["player"]["property"], player_level_table
+        )
         ticket = f"{theme}_recruit_ticket_all"
         rlv2["player"]["pending"].insert(
             0,
@@ -897,13 +1101,11 @@ def rlv2BattleFinish():
                 "content": {
                     "battleReward": {
                         "earn": {
-                            "damage": 0,
-                            "hp": 0,
-                            "shield": 0,
-                            "exp": 0,
-                            "populationMax": 0,
-                            "squadCapacity": 0,
-                            "maxHpUp": 0,
+                            **life_earn,
+                            "exp": exp_gain,
+                            "populationMax": level_earn["populationMax"],
+                            "squadCapacity": level_earn["squadCapacity"],
+                            "maxHpUp": level_earn["maxHpUp"],
                         },
                         "rewards": [
                             {
@@ -918,12 +1120,8 @@ def rlv2BattleFinish():
             },
         )
     else:
-        rlv2["player"]["state"] = "WAIT_MOVE"
-        rlv2["player"]["pending"] = []
-        # rlv2["player"]["cursor"]["position"]["x"] = 0
-        # rlv2["player"]["cursor"]["position"]["y"] = 0
-        rlv2["player"]["trace"].pop()
-    run_after_response(write_json ,rlv2, RLV2_JSON_PATH)
+        _rlv2.endRun(rlv2, False, "BATTLE_ABORTED")
+    _persist_run(rlv2)
 
     data = {
         "playerDataDelta": {
@@ -939,14 +1137,19 @@ def rlv2BattleFinish():
     return data
 
 
+@_serialized_run
 def rlv2FinishBattleReward():
+    server_data = read_json(SERVER_DATA_PATH)
     rlv2 = read_json(RLV2_JSON_PATH)
+    pending = rlv2["player"]["pending"]
+    if not pending or pending[0].get("type") != "BATTLE_REWARD":
+        return {"error": "battle reward settlement is not pending"}, 409
     rlv2["player"]["state"] = "WAIT_MOVE"
     rlv2["player"]["pending"] = []
-    rlv2["player"]["cursor"]["position"]["x"] = 0
-    rlv2["player"]["cursor"]["position"]["y"] = 0
-    rlv2["player"]["trace"].pop()
-    run_after_response(write_json ,rlv2, RLV2_JSON_PATH)
+    if rlv2["player"]["trace"]:
+        rlv2["player"]["trace"].pop()
+    _rlv2.finishNode(rlv2, server_data)
+    _persist_run(rlv2, server_data)
 
     data = {
         "playerDataDelta": {
@@ -962,6 +1165,7 @@ def rlv2FinishBattleReward():
     return data
 
 
+@_serialized_run
 def rlv2MoveTo():
     request_data = request.get_json()
     x = request_data["to"]["x"]
@@ -971,97 +1175,102 @@ def rlv2MoveTo():
     rlv2 = read_json(RLV2_JSON_PATH)
     rlv2_table = get_memory("roguelike_topic_table")
     event_choices = get_memory("event_choices")
+    cursor = rlv2["player"]["cursor"]
+    if rlv2["player"]["state"] != "WAIT_MOVE" or rlv2["player"]["pending"]:
+        return {"error": "the run is not waiting for a map move"}, 409
+    zone_nodes = rlv2["map"]["zones"][str(cursor["zone"])]["nodes"]
+    node_id = str(x * 100 + y)
+    target_node = zone_nodes.get(node_id)
+    if target_node is None:
+        return {"error": "target node does not exist"}, 400
+    if target_node.get("type") in {1, 2, 4} or target_node.get("stage"):
+        return {"error": "battle nodes must use moveAndBattleStart"}, 400
+    if target_node.get("visited"):
+        return {"error": "target node was already visited"}, 409
+    if cursor["position"] is None:
+        route_edge = None
+        if x != 0:
+            return {"error": "the first node must be in the first column"}, 400
+    else:
+        current_id = str(cursor["position"]["x"] * 100 + cursor["position"]["y"])
+        route_edge = next(
+            (
+                edge
+                for edge in zone_nodes[current_id].get("next", [])
+                if edge["x"] == x and edge["y"] == y
+            ),
+            None,
+        )
+        if route_edge is None:
+            return {"error": "target node is not reachable"}, 400
+
+    if route_edge is not None and not _rlv2.unlockRoute(rlv2, route_edge):
+        return {"error": "not enough resources to unlock this route"}, 400
+
     rlv2["player"]["state"] = "PENDING"
-    rlv2["player"]["cursor"]["position"] = {"x": x, "y": y}
+    cursor["position"] = {"x": x, "y": y}
+    target_node["visited"] = True
     theme = rlv2["game"]["theme"]
     randomseed = server_data["rlv2_seed"]
     zone = rlv2["player"]["cursor"]["zone"]
-    # 设定种子
-    random.seed(f"{randomseed}_{zone}_{theme}_{str(x)}{str(y)}")
+    rng = random.Random(f"{randomseed}_{zone}_{theme}_{x}{y}")
 
     def getGoods():
         ticket = f"{theme}_recruit_ticket_all"
         price_id = f"{theme}_gold"
-        goods = [
-            {
-                "index": "0",
-                "itemId": ticket,
-                "count": 1,
-                "priceId": price_id,
-                "priceCount": 0,
-                "origCost": 0,
-                "displayPriceChg": False,
-                "_retainDiscount": 1,
-            }
-        ]
-        i = 1
-        for j in rlv2_table["details"][theme]["archiveComp"]["relic"]["relic"]:
+        theme_data = rlv2_table["details"][theme]
+        item_pool = list(theme_data["archiveComp"]["relic"]["relic"])
+        item_pool += list(theme_data["archiveComp"]["trap"]["trap"])
+        item_pool = list(dict.fromkeys(item_pool))
+        sampled_items = rng.sample(item_pool, min(5, len(item_pool)))
+        shop_items = [ticket, *sampled_items]
+        rarity_price = {"NORMAL": 8, "RARE": 12, "SUPER_RARE": 16}
+        goods = []
+        for index, item_id in enumerate(shop_items):
+            item_data = theme_data["items"][item_id]
+            price = 4 if item_data["type"] == "RECRUIT_TICKET" else rarity_price.get(
+                item_data["rarity"], 8
+            )
             goods.append(
                 {
-                    "index": str(i),
-                    "itemId": j,
+                    "index": str(index),
+                    "itemId": item_id,
                     "count": 1,
                     "priceId": price_id,
-                    "priceCount": 0,
-                    "origCost": 0,
+                    "priceCount": price,
+                    "origCost": price,
                     "displayPriceChg": False,
                     "_retainDiscount": 1,
                 }
             )
-            i += 1
-        for j in rlv2_table["details"][theme]["difficultyUpgradeRelicGroups"]:
-            for k in rlv2_table["details"][theme]["difficultyUpgradeRelicGroups"][j][
-                "relicData"
-            ]:
-                goods.append(
-                    {
-                        "index": str(i),
-                        "itemId": k["relicId"],
-                        "count": 1,
-                        "priceId": price_id,
-                        "priceCount": 0,
-                        "origCost": 0,
-                        "displayPriceChg": False,
-                        "_retainDiscount": 1,
-                    }
-                )
-                i += 1
-        for j in rlv2_table["details"][theme]["archiveComp"]["trap"]["trap"]:
-            goods.append(
-                {
-                    "index": str(i),
-                    "itemId": j,
-                    "count": 1,
-                    "priceId": price_id,
-                    "priceCount": 0,
-                    "origCost": 0,
-                    "displayPriceChg": False,
-                    "_retainDiscount": 1,
-                }
-            )
-            i += 1
         return goods
         
-    node_id = str(x * 100 + y)
     zone = str(rlv2["player"]["cursor"]["zone"])
     node_type:int = rlv2["map"]["zones"][zone]["nodes"][node_id]["type"]
     match node_type:
-        case 16:
-            pass
-        case 32:
+        case 16 | 32 | 64 | 128 | 256 | 512 | 1024 | 2048 | 8192 | 16384 | 32768 | 65536 | 131072 | 262144 | 524288 | 1048576:
             choices = {}
             choiceAdditional = {}
             scene_id_list = []
             # 获取当前theme全部不期而遇事件
             scene_id_list = list(event_choices[theme]["enter"].keys())
             # 抽一个不期而遇事件
-            scene_id:str = random.choice(scene_id_list)
+            scene_id:str = rng.choice(scene_id_list)
             # 获取当前不期而遇事件所有选项
             choices_list:list = event_choices[theme]["enter"][scene_id]
+            if not choices_list:
+                choices_list = ["choice_leave"]
             # 添加全部可选项
             for choices_id in choices_list:
-                choices.update({choices_id: True})
+                available = choices_id == "choice_leave" or _rlv2.canPayChoice(
+                    rlv2,
+                    event_choices[theme]["choices"].get(choices_id, {}),
+                )
+                choices.update({choices_id: available})
                 choiceAdditional.update({choices_id: {"rewards": []}})
+            if not any(choices.values()):
+                choices["choice_leave"] = True
+                choiceAdditional["choice_leave"] = {"rewards": []}
             pending_event = {
                 "type": "SCENE",
                 "content": {
@@ -1075,11 +1284,8 @@ def rlv2MoveTo():
                 }
             }
             rlv2["player"]["pending"].insert(0, pending_event)
-        case 512:
-            pass
         case 8 | 4096:
             goods = getGoods()
-            rlv2["player"]["trace"].append(rlv2["player"]["cursor"])
             pending_event = {
                 "type": "SHOP",
                 "content": {
@@ -1099,16 +1305,10 @@ def rlv2MoveTo():
                 },
             }
             rlv2["player"]["pending"].insert(0, pending_event)
-        case 131072:
-            pass
-        case 262144:
-            pass
-        case 524288:
-            pass
         case _:
-            pass
+            rlv2["player"]["state"] = "WAIT_MOVE"
 
-    run_after_response(write_json ,rlv2, RLV2_JSON_PATH)
+    _persist_run(rlv2)
 
     data = {
         "playerDataDelta": {
@@ -1124,22 +1324,18 @@ def rlv2MoveTo():
     return data
 
 
+@_serialized_run
 def rlv2LeaveShop():
     server_data = read_json(SERVER_DATA_PATH)
     rlv2 = read_json(RLV2_JSON_PATH)
+    pending = rlv2["player"]["pending"]
+    if not pending or pending[0].get("type") != "SHOP":
+        return {"error": "shop is not pending"}, 409
     rlv2["player"]["state"] = "WAIT_MOVE"
     rlv2["player"]["pending"] = []
-    if rlv2["player"]["cursor"]["position"]["x"] > 1:
-        rlv2["player"]["cursor"]["zone"] += 1
-        rlv2["player"]["cursor"]["position"] = None
-        theme = rlv2["game"]["theme"]
-        rlv2["map"]["zones"], seed = _rlv2.getMap_new(theme, server_data["rlv2_seed"], rlv2["player"]["cursor"]["zone"])
-    elif rlv2["player"]["cursor"]["position"]["x"] == 1:
-        rlv2["player"]["cursor"]["position"]["x"] = 0
-        rlv2["player"]["cursor"]["position"]["y"] = 0
-        rlv2["player"]["trace"].pop()
+    _rlv2.finishNode(rlv2, server_data)
     
-    run_after_response(write_json, rlv2, RLV2_JSON_PATH)
+    _persist_run(rlv2, server_data)
 
     data = {
         "playerDataDelta": {
@@ -1154,41 +1350,35 @@ def rlv2LeaveShop():
 
     return data
 
+@_serialized_run
 def rlv2BuyGoods(select: int=None):
     if select is None:
         request_data = request.get_json()
         select = int(request_data["select"][0])
 
     rlv2 = read_json(RLV2_JSON_PATH)
-    item_id = rlv2["player"]["pending"][0]["content"]["shop"]["goods"][select]["itemId"]
-    if item_id.find("_recruit_ticket_") != -1:
-        ticket_id = _rlv2.getNextTicketIndex(rlv2)
-        _rlv2.addTicket(rlv2, ticket_id)
-        _rlv2.activateTicket(rlv2, ticket_id)
-    elif item_id.find("_relic_") != -1:
-        relic_id = _rlv2.getNextRelicIndex(rlv2)
-        rlv2["inventory"]["relic"][relic_id] = {
-            "index": relic_id,
-            "id": item_id,
-            "count": 1,
-            "ts": 1695000000,
-        }
-    elif item_id.find("_active_tool_") != -1:
-        rlv2["inventory"]["trap"] = {
-            "index": item_id,
-            "id": item_id,
-            "count": 1,
-            "ts": 1695000000,
-        }
-    elif item_id.find("_explore_tool_") != -1:
-        explore_tool_id = _rlv2.getNextExploreToolIndex(rlv2)
-        rlv2["inventory"]["exploreTool"][explore_tool_id] = {
-            "index": explore_tool_id,
-            "id": item_id,
-            "count": 1,
-            "ts": 1695000000,
-        }
-    run_after_response(write_json ,rlv2, RLV2_JSON_PATH)
+    pending = rlv2["player"]["pending"]
+    if not pending or pending[0].get("type") != "SHOP":
+        return {"error": "shop purchase is not pending"}, 409
+    if select < 0:
+        return {"error": f"shop item is unavailable: {select}"}, 400
+    shop = pending[0]["content"]["shop"]
+    goods = shop["goods"]
+    good = next((item for item in goods if int(item["index"]) == select), None)
+    if good is None:
+        return {"error": f"shop item is unavailable: {select}"}, 400
+
+    price = int(good.get("priceCount", 0))
+    if rlv2["player"]["property"]["gold"] < price:
+        return {"error": "not enough ingots for shop purchase"}, 400
+
+    rlv2["player"]["property"]["gold"] -= price
+    created = _rlv2.add_item(rlv2, good["itemId"], int(good.get("count", 1)))
+    goods.remove(good)
+    if isinstance(created, list) and created:
+        for ticket_id in reversed(created):
+            _rlv2.activateTicket(rlv2, ticket_id)
+    _persist_run(rlv2)
 
     data = {
         "playerDataDelta": {
@@ -1204,6 +1394,7 @@ def rlv2BuyGoods(select: int=None):
     return data
 
 
+@_serialized_run
 def rlv2shopAction():
 
     json_body = request.get_json()
@@ -1214,42 +1405,30 @@ def rlv2shopAction():
     except (KeyError, IndexError):
         return rlv2LeaveShop()
 
-    rlv2 = read_json(RLV2_JSON_PATH)
-    rlv2["player"]["state"] = "WAIT_MOVE"
-    rlv2["player"]["pending"] = []
-    if rlv2["player"]["cursor"]["position"]["x"] > 1:
-        rlv2["player"]["cursor"]["zone"] += 1
-        rlv2["player"]["cursor"]["position"] = None
-    elif rlv2["player"]["cursor"]["position"]["x"] == 1:
-        rlv2["player"]["cursor"]["position"]["x"] = 0
-        rlv2["player"]["cursor"]["position"]["y"] = 0
-        rlv2["player"]["trace"].pop()
-    run_after_response(write_json ,rlv2, RLV2_JSON_PATH)
 
-    data = {
-        "playerDataDelta": {
-            "modified": {
-                "rlv2": {
-                    "current": rlv2,
-                }
-            },
-            "deleted": {},
-        }
-    }
-
-    return data
-
-
+@_serialized_run
 def rlv2ChooseBattleReward():
     request_data = request.get_json()
-    index = request_data["index"]
+    index = int(request_data["index"])
 
     rlv2 = read_json(RLV2_JSON_PATH)
-    if index == 0:
-        ticket_id = _rlv2.getNextTicketIndex(rlv2)
-        _rlv2.addTicket(rlv2, ticket_id)
-        _rlv2.activateTicket(rlv2, ticket_id)
-    run_after_response(write_json ,rlv2, RLV2_JSON_PATH)
+    pending = rlv2["player"]["pending"]
+    if not pending or pending[0].get("type") != "BATTLE_REWARD":
+        return {"error": "battle reward selection is not pending"}, 409
+    rewards = pending[0]["content"]["battleReward"]["rewards"]
+    reward = next((item for item in rewards if item["index"] == index), None)
+    if reward is None or reward.get("done"):
+        return {"error": f"battle reward is unavailable: {index}"}, 400
+    reward["done"] = 1
+    created = []
+    for item in reward["items"]:
+        result = _rlv2.add_item(rlv2, item["id"], int(item.get("count", 1)))
+        if isinstance(result, list):
+            created.extend(result)
+    if created:
+        for ticket_id in reversed(created):
+            _rlv2.activateTicket(rlv2, ticket_id)
+    _persist_run(rlv2)
 
     data = {
         "playerDataDelta": {
@@ -1265,13 +1444,16 @@ def rlv2ChooseBattleReward():
     return data
 
 
+@_serialized_run
 def rlv2CopperConfirmDraw():
     rlv2 = read_json(RLV2_JSON_PATH)
-    
+    pending = rlv2["player"]["pending"]
+    if not pending or pending[0].get("type") != "DRAW_COPPER":
+        return {"error": "copper draw is not pending"}, 409
     rlv2["player"]["pending"].pop(0)
     rlv2["player"]["state"] = "WAIT_MOVE"
 
-    run_after_response(write_json, rlv2, RLV2_JSON_PATH)
+    _persist_run(rlv2)
 
     result = {
         "playerDataDelta": {
@@ -1289,23 +1471,31 @@ def rlv2CopperConfirmDraw():
     return result 
 
 
+@_serialized_run
 def rlv2CopperRedraw():
 
     rlv2_data = read_json(RLV2_JSON_PATH)
-
-    bag = rlv2_data["module"]["copper"]["bag"]
+    pending = rlv2_data["player"]["pending"]
+    if not pending or pending[0].get("type") != "DRAW_COPPER":
+        return {"error": "copper draw is not pending"}, 409
+    copper_module = rlv2_data["module"].get("copper")
+    if not copper_module or len(copper_module.get("bag", {})) < 3:
+        return {"error": "copper bag is unavailable"}, 409
+    bag = copper_module["bag"]
     for key, value in bag.items():
         value["isDrawn"] = False
 
-    # a1 = random.sample(0, len(bag.keys()))
-    copper = []
-    L1 = random.sample(range(0, len(bag.keys())), 3)
-    for key in L1:
-        key = "c_" + str(key)
-        copper.append(key)
+    server_data = read_json(SERVER_DATA_PATH)
+    redraw_count = int(copper_module.get("redrawCount", 0))
+    rng = random.Random(
+        f"{server_data.get('rlv2_seed')}_copper_redraw_{redraw_count}"
+    )
+    copper = rng.sample(list(bag), 3)
+    for key in copper:
         bag[key]["isDrawn"] = True
+    copper_module["redrawCount"] = redraw_count + 1
 
-    run_after_response(write_json ,rlv2_data, RLV2_JSON_PATH)
+    _persist_run(rlv2_data)
 
     data = {
         "copper": copper,
@@ -1416,6 +1606,108 @@ def rlv2getRewardgetReward():
 
 
 class _rlv2:
+    def endRun(rlv2: dict, success: bool, reason: str) -> None:
+        rlv2["player"]["state"] = "GAME_OVER"
+        rlv2["player"]["pending"] = []
+        rlv2["player"]["trace"] = []
+        rlv2["player"]["status"]["gameResult"] = {
+            "success": success,
+            "reason": reason,
+            "ending": rlv2["player"].get("toEnding") if success else None,
+        }
+
+    def unlockRoute(rlv2: dict, edge: dict) -> bool:
+        if not edge.get("key"):
+            return True
+
+        theme = rlv2["game"]["theme"]
+        theme_data = get_memory("roguelike_topic_table")["details"][theme]
+        item_id = theme_data["gameConst"].get("unlockRouteItemId")
+        required = int(theme_data["gameConst"].get("unlockRouteItemCount", 1))
+        if not item_id or required <= 0:
+            edge.pop("key", None)
+            return True
+
+        consumable = rlv2["inventory"]["consumable"]
+        ledger_count = int(consumable.get(item_id, 0))
+        module_count = 0
+        item_type = theme_data["items"].get(item_id, {}).get("type")
+        if item_type == "VISION" and rlv2["module"].get("vision") is not None:
+            module_count = int(rlv2["module"]["vision"].get("value", 0))
+        if ledger_count + module_count < required:
+            return False
+
+        ledger_cost = min(ledger_count, required)
+        if ledger_cost:
+            remaining = ledger_count - ledger_cost
+            if remaining:
+                consumable[item_id] = remaining
+            else:
+                consumable.pop(item_id, None)
+        module_cost = required - ledger_cost
+        if module_cost:
+            rlv2["module"]["vision"]["value"] -= module_cost
+        edge.pop("key", None)
+        return True
+
+    def hasItem(rlv2: dict, item: str, count: int = 1) -> bool:
+        if rlv2["inventory"]["consumable"].get(item, 0) >= count:
+            return True
+        relic_count = sum(
+            relic.get("count", 1)
+            for relic in rlv2["inventory"]["relic"].values()
+            if relic["id"] == item
+        )
+        if relic_count >= count:
+            return True
+        trap = rlv2["inventory"].get("trap")
+        if trap and trap.get("id") == item and trap.get("count", 1) >= count:
+            return True
+        return any(
+            tool["id"] == item and tool.get("count", 1) >= count
+            for tool in rlv2["inventory"].get("exploreTool", {}).values()
+        )
+
+    def canPayChoice(rlv2: dict, choice_data: dict) -> bool:
+        lose = choice_data.get("lose")
+        if isinstance(lose, dict) and not has_numeric_cost(
+            rlv2["player"]["property"], lose
+        ):
+            return False
+        if isinstance(lose, str) and not _rlv2.hasItem(rlv2, lose):
+            return False
+        for key, target in (
+            ("m_lose", rlv2["module"]),
+            ("i_lose", rlv2["inventory"]["consumable"]),
+        ):
+            cost = choice_data.get(key)
+            if isinstance(cost, dict) and not has_numeric_cost(target, cost):
+                return False
+        return True
+
+    def finishNode(rlv2: dict, server_data: dict) -> bool:
+        cursor = rlv2["player"]["cursor"]
+        position = cursor.get("position")
+        if position is None:
+            return False
+        zone_id = str(cursor["zone"])
+        node_id = str(position["x"] * 100 + position["y"])
+        node = rlv2["map"]["zones"].get(zone_id, {}).get("nodes", {}).get(node_id)
+        if not node or not node.get("zone_end"):
+            return False
+        if cursor["zone"] >= 5:
+            _rlv2.endRun(rlv2, True, "ENDING_REACHED")
+            return True
+
+        cursor["zone"] += 1
+        cursor["position"] = None
+        zones, seed = _rlv2.getMap_new(
+            rlv2["game"]["theme"], server_data.get("rlv2_seed"), cursor["zone"]
+        )
+        rlv2["map"]["zones"] = zones
+        server_data["rlv2_seed"] = seed
+        return True
+
     def getNextRelicIndex(rlv2):
         d = set()
         for e in rlv2["inventory"]["relic"]:
@@ -1434,7 +1726,9 @@ class _rlv2:
             i += 1
         return f"e_{i}"
     
-    def getChars(use_user_defaults=False):
+    def getChars(
+        use_user_defaults=False, rlv2_data: dict = None, ticket_item_id: str = None
+    ):
         user_data = read_json(SYNC_DATA_TEMPLATE_PATH)
         chars = [
             user_data["user"]["troop"]["chars"][i]
@@ -1494,11 +1788,28 @@ class _rlv2:
             if char["evolvePhase"] < 2:
                 char["upgradeLimited"] = True
                 char["upgradePhase"] = 0
+        if rlv2_data is not None and ticket_item_id is not None:
+            rlv2_table = get_memory("roguelike_topic_table")
+            theme_data = rlv2_table["details"][rlv2_data["game"]["theme"]]
+            ticket_data = theme_data["recruitTickets"].get(ticket_item_id)
+            if ticket_data is None:
+                ticket_data = theme_data["upgradeTickets"].get(ticket_item_id)
+            if ticket_data is None:
+                return []
+            chars = prepare_recruit_candidates(
+                chars,
+                {
+                    **get_memory("character_table"),
+                    **get_memory("char_patch_table").get("patchChars", {}),
+                },
+                ticket_data,
+                rlv2_data["troop"]["chars"],
+            )
         return chars
 
-    def addTicket(rlv2_data, ticket_id):
+    def addTicket(rlv2_data, ticket_id, item_id=None):
         theme = rlv2_data["game"]["theme"]
-        ticket = f"{theme}_recruit_ticket_all"
+        ticket = item_id or f"{theme}_recruit_ticket_all"
         rlv2_data["inventory"]["recruit"][ticket_id] = {
             "index": ticket_id,
             "id": ticket,
@@ -1583,7 +1894,8 @@ class _rlv2:
         
     def getMap_new(theme: str, seed: str = None, zone: int = 1):
         rlv2_table = get_memory("roguelike_topic_table")
-        stages_list: list[str] = rlv2_table["details"][theme]["stages"].keys()
+        theme_data = rlv2_table["details"][theme]
+        stages_list: list[str] = theme_data["stages"].keys()
 
         # 随机种子
         if seed is None:
@@ -1592,7 +1904,7 @@ class _rlv2:
         else:
             randomseed = seed
 
-        random.seed(f"{randomseed}_{zone}_{theme}")
+        rng = random.Random(f"{randomseed}_{zone}_{theme}")
 
         # 商店类型
         shop = 4096 if theme != "rogue_1" else 8
@@ -1606,11 +1918,12 @@ class _rlv2:
             }
         }
 
+        refresh_count = 1 if theme == "rogue_4" else 0
         nodetemp = {
             "pos": {"x": 0, "y": 0},
             "next": [],
             "type": 0,
-            "refresh": {"usedCount": 0, "count": 99, "cost": 1}
+            "refresh": {"usedCount": 0, "count": refresh_count, "cost": 1}
         }
 
         # 节点类型权重
@@ -1680,10 +1993,13 @@ class _rlv2:
             if is_end_col:
                 match zone:
                     case 2:
-                        end_type = 512
+                        end_type = wish
                         end_count = 2
-                    case 3:
+                    case 3 | 5:
                         end_type = 4
+                        end_count = 1
+                    case 4:
+                        end_type = wish
                         end_count = 1
                     case _:
                         end_type = 0
@@ -1700,7 +2016,7 @@ class _rlv2:
                     node["zone_end"] = True
 
                     if end_type == 4:
-                        node["stage"] = random.choice(boss_list)
+                        node["stage"] = rng.choice(boss_list)
 
                     zone_map[str(zone)]["nodes"][node["index"]] = node
                     nodes_by_x[x].append(y)
@@ -1719,7 +2035,7 @@ class _rlv2:
                 node = deepcopy(nodetemp)
                 node_index = x * 100 + y
 
-                node_type = random.choices(type_list, weights=type_weight, k=1)[0]
+                node_type = rng.choices(type_list, weights=type_weight, k=1)[0]
 
                 node["pos"]["x"] = x
                 node["pos"]["y"] = y
@@ -1728,31 +2044,31 @@ class _rlv2:
 
                 match node_type:
                     case 1:
-                        node["stage"] = random.choice(normal_list)
+                        node["stage"] = rng.choice(normal_list)
                     case 2:
-                        node["stage"] = random.choice(elite_list)
+                        node["stage"] = rng.choice(elite_list)
 
                 zone_map[str(zone)]["nodes"][node["index"]] = node
                 nodes_by_x[x].append(y)
 
         # 第一层固定节点
         if zone_1:
-            end_type = 1048576 if ro_num == 5 else shop
-            z1_node = shop if ro_num == 5 else 32
+            end_type = 1048576 if ro_num == "5" else shop
+            z1_node = shop if ro_num == "5" else 32
             zone1_nodes = {
                 "200": {
                     "index": "200",
                     "pos": {"x": 2, "y": 0},
                     "next": [{"x": 3, "y": 0}],
                     "type": z1_node,
-                    "refresh": {"usedCount": 0, "count": 99, "cost": 1}
+                    "refresh": {"usedCount": 0, "count": refresh_count, "cost": 1}
                 },
                 "201": {
                     "index": "201",
                     "pos": {"x": 2, "y": 1},
                     "next": [{"x": 3, "y": 0}],
                     "type": z1_node,
-                    "refresh": {"usedCount": 0, "count": 99, "cost": 1}
+                    "refresh": {"usedCount": 0, "count": refresh_count, "cost": 1}
                 },
                 "300": {
                     "index": "300",
@@ -1766,6 +2082,15 @@ class _rlv2:
             zone_map[str(zone)]["nodes"].update(zone1_nodes)
             nodes_by_x[2] = [0, 1]
             nodes_by_x[3] = [0]
+
+        enforce_emergency_node_limits(
+            theme,
+            zone,
+            zone_map[str(zone)]["nodes"],
+            normal_list,
+            elite_list,
+            rng,
+        )
 
         # 路径分配
         for idx, node in zone_map[str(zone)]["nodes"].items():
@@ -1786,16 +2111,19 @@ class _rlv2:
                         candidates.append({"x": x + 1, "y": ny})
 
                 if candidates:
-                    k = random.randint(1, min(2, len(candidates)))
-                    node["next"].extend(random.sample(candidates, k))
+                    k = rng.randint(1, min(2, len(candidates)))
+                    node["next"].extend(rng.sample(candidates, k))
 
             # 纵向
             if x != 0:
                 for ny in (y - 1, y + 1):
                     if ny in nodes_by_x.get(x, []):
-                        if random.random() < 0.3:
+                        if rng.random() < 0.3:
                             edge = {"x": x, "y": ny}
-                            if random.random() < 0.5:
+                            if (
+                                theme_data["gameConst"].get("unlockRouteItemId")
+                                and rng.random() < 0.5
+                            ):
                                 edge["key"] = True
                             node["next"].append(edge)
 
@@ -1873,7 +2201,10 @@ class _rlv2:
                 "content": {"recruit": {"ticket": ticket_id}},
             },
         )
-        chars = _rlv2.getChars()
+        ticket_item_id = rlv2["inventory"]["recruit"][ticket_id]["id"]
+        chars = _rlv2.getChars(
+            rlv2_data=rlv2, ticket_item_id=ticket_item_id
+        )
         rlv2["inventory"]["recruit"][ticket_id]["state"] = 1
         rlv2["inventory"]["recruit"][ticket_id]["list"] = chars
 
@@ -1895,6 +2226,10 @@ class _rlv2:
         theme:str = rlv2["game"]["theme"]
         buffs = []
 
+        for relic in rlv2["inventory"]["relic"].values():
+            item_id = relic["id"]
+            if item_id in rlv2_table["details"][theme]["relics"]:
+                buffs += rlv2_table["details"][theme]["relics"][item_id]["buffs"]
         if rlv2["inventory"]["trap"] is not None:
             item_id = rlv2["inventory"]["trap"]["id"]
             if item_id in rlv2_table["details"][theme]["relics"]:
@@ -1911,18 +2246,7 @@ class _rlv2:
         mode_grade:int = rlv2["game"]["eGrade"]
         theme_buffs = data.rlv2_data.rogue_buffs.get(theme, [])
         
-        if theme_buffs is None:
-            pass
-        else:
-            for i in range(len(theme_buffs)):
-                if mode_grade < i:
-                    break
-                for j in theme_buffs[i][1]:
-                    theme_buffs[j] = ([], [])
-            for i in range(len(theme_buffs)):
-                if mode_grade < i:
-                    break
-                buffs += theme_buffs[i][0]
+        buffs += collect_difficulty_buffs(theme_buffs, mode_grade)
 
         def getZone():
             rlv2_settings = read_json(RLV2_SETTINGS_PATH)
@@ -2081,20 +2405,194 @@ class _rlv2:
 
         return buffs
     
-    def add_item(rlv2:dict, item:str):
-        #TODO: 写添加藏品逻辑
-        return {}
+    def grant_resource(rlv2: dict, item: str, count: int, cover: bool = False):
+        theme = rlv2["game"]["theme"]
+        item_data = get_memory("roguelike_topic_table")["details"][theme][
+            "items"
+        ].get(item)
+        if item_data is None:
+            return False
+
+        item_type = item_data["type"]
+        prop = rlv2["player"]["property"]
+        if item_type == "HP":
+            prop["hp"]["current"] = count if cover else prop["hp"]["current"] + count
+        elif item_type == "HPMAX":
+            if cover:
+                prop["hp"] = {"current": count, "max": count}
+            else:
+                prop["hp"]["max"] += count
+                prop["hp"]["current"] += count
+        elif item_type == "GOLD":
+            prop["gold"] = count if cover else prop["gold"] + count
+        elif item_type == "POPULATION":
+            prop["population"]["max"] = (
+                count if cover else prop["population"]["max"] + count
+            )
+        elif item_type == "SQUAD_CAPACITY":
+            prop["capacity"] = count if cover else prop["capacity"] + count
+        elif item_type == "EXP":
+            prop["exp"] = count if cover else prop["exp"] + count
+        elif item_type == "SHIELD":
+            prop["shield"] = count if cover else prop["shield"] + count
+        elif item_type == "SAN_POINT" and rlv2["module"].get("san") is not None:
+            sanity = rlv2["module"]["san"]
+            sanity["sanity"] = count if cover else sanity["sanity"] + count
+        elif item_type == "DICE_POINT" and rlv2["module"].get("dice") is not None:
+            dice = rlv2["module"]["dice"]
+            dice["count"] = count if cover else dice["count"] + count
+        elif item_type == "VISION" and rlv2["module"].get("vision") is not None:
+            vision = rlv2["module"]["vision"]
+            vision["value"] = count if cover else vision["value"] + count
+        else:
+            return False
+
+        clamp_player_property(prop)
+        return True
+
+    def add_item(rlv2: dict, item: str, count: int = 1):
+        theme = rlv2["game"]["theme"]
+        item_data = get_memory("roguelike_topic_table")["details"][theme][
+            "items"
+        ].get(item)
+        if item_data is None:
+            raise ValueError(f"unknown roguelike item: {item}")
+
+        item_type = item_data["type"]
+        if item_type in {"RECRUIT_TICKET", "UPGRADE_TICKET", "CUSTOM_TICKET"}:
+            created = []
+            for _ in range(count):
+                ticket_id = _rlv2.getNextTicketIndex(rlv2)
+                _rlv2.addTicket(rlv2, ticket_id, item)
+                created.append(ticket_id)
+            return created
+
+        if item_type in {"RELIC", "BAND"}:
+            created_tickets = []
+            relic_id = _rlv2.getNextRelicIndex(rlv2)
+            rlv2["inventory"]["relic"][relic_id] = {
+                "index": relic_id,
+                "id": item,
+                "count": count,
+                "ts": time(),
+            }
+            relic_data = get_memory("roguelike_topic_table")["details"][theme][
+                "relics"
+            ].get(item, {})
+            for buff in relic_data.get("buffs", []):
+                if buff["key"] == "level_life_point_add":
+                    blackboard = {
+                        entry["key"]: entry for entry in buff["blackboard"]
+                    }
+                    trigger = blackboard.get("trig_type", {}).get("valueStr")
+                    if trigger is None:
+                        rlv2["buff"]["tmpHP"] += int(
+                            blackboard.get("value", {}).get("value", 0)
+                        )
+                    continue
+                if buff["key"] not in {"immediate_reward", "item_cover_set"}:
+                    continue
+                blackboard = {entry["key"]: entry for entry in buff["blackboard"]}
+                reward_id = blackboard.get("id", {}).get("valueStr")
+                reward_count = int(blackboard.get("count", {}).get("value", 0))
+                if reward_id is not None:
+                    granted = _rlv2.grant_resource(
+                        rlv2,
+                        reward_id,
+                        reward_count,
+                        cover=buff["key"] == "item_cover_set",
+                    )
+                    if not granted:
+                        items = get_memory("roguelike_topic_table")["details"][theme][
+                            "items"
+                        ]
+                        if reward_id in items:
+                            result = _rlv2.add_item(
+                                rlv2, reward_id, reward_count
+                            )
+                            if isinstance(result, list):
+                                created_tickets.extend(result)
+                        else:
+                            unresolved = rlv2["inventory"]["consumable"]
+                            unresolved[reward_id] = (
+                                reward_count
+                                if buff["key"] == "item_cover_set"
+                                else unresolved.get(reward_id, 0) + reward_count
+                            )
+            return created_tickets or relic_id
+
+        if item_type == "ACTIVE_TOOL":
+            rlv2["inventory"]["trap"] = {
+                "index": item,
+                "id": item,
+                "count": count,
+                "ts": time(),
+            }
+            return item
+
+        if item_type == "EXPLORE_TOOL":
+            tool_id = _rlv2.getNextExploreToolIndex(rlv2)
+            rlv2["inventory"]["exploreTool"][tool_id] = {
+                "index": tool_id,
+                "id": item,
+                "count": count,
+                "ts": time(),
+            }
+            return tool_id
+
+        if _rlv2.grant_resource(rlv2, item, count):
+            return item
+
+        consumable = rlv2["inventory"]["consumable"]
+        consumable[item] = consumable.get(item, 0) + count
+        return item
+
+    def remove_item(rlv2: dict, item: str, count: int = 1):
+        for index, relic in list(rlv2["inventory"]["relic"].items()):
+            if relic["id"] != item:
+                continue
+            if relic["count"] > count:
+                relic["count"] -= count
+            else:
+                del rlv2["inventory"]["relic"][index]
+            return True
+
+        for index, ticket in list(rlv2["inventory"]["recruit"].items()):
+            if ticket["id"] == item:
+                del rlv2["inventory"]["recruit"][index]
+                return True
+
+        consumable = rlv2["inventory"]["consumable"]
+        if item in consumable:
+            consumable[item] = max(0, consumable[item] - count)
+            if consumable[item] == 0:
+                del consumable[item]
+            return True
+
+        if rlv2["inventory"]["trap"] is not None:
+            if rlv2["inventory"]["trap"]["id"] == item:
+                rlv2["inventory"]["trap"] = None
+                return True
+
+        for index, tool in list(rlv2["inventory"]["exploreTool"].items()):
+            if tool["id"] == item:
+                del rlv2["inventory"]["exploreTool"][index]
+                return True
+        return False
 
     def ro5_drawCopper(randomseed:str):
         coppper_bag = {}
 
-        random.seed(randomseed)
-        rlv2_table = get_memory("roguelike_topic_table")
-        all_copper = [i for i in rlv2_table["details"]["rogue_5"]["items"].keys() 
-                      if rlv2_table["details"]["rogue_5"]["items"][i]["type"] == "COPPER"]
-
-        # 随机选择7个copperid
-        copper_list = random.sample(all_copper, 7)
+        rng = random.Random(f"{randomseed}_initial_copper")
+        copper_list = [
+            "rogue_5_copper_B_01_a",
+            "rogue_5_copper_B_01_a",
+            "rogue_5_copper_B_01_a",
+            "rogue_5_copper_B_02_a",
+            "rogue_5_copper_B_03_a",
+            "rogue_5_copper_B_04_a",
+            "rogue_5_copper_B_05_a",
+        ]
 
         for i in range(7):
             copper_data = {
@@ -2107,7 +2605,7 @@ class _rlv2:
                 
             coppper_bag[f"c_{i}"] = copper_data
         
-        drawn_list = random.sample(list(coppper_bag.keys()), 3)
+        drawn_list = rng.sample(list(coppper_bag.keys()), 3)
 
         for copper in drawn_list:#wz
             coppper_bag[copper]["isDrawn"] = True
@@ -2129,5 +2627,3 @@ class _rlv2:
                 troopWeights[key] = cahr_load
 
         return troopWeights
-
-
