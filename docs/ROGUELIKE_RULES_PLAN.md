@@ -32,12 +32,16 @@
 | 5. 区域与地图 | 实现特殊区域池、EndingRoute、约束式地图生成并修复无 stage Boss 节点 | 有 | 每个支持的 `theme × zone` 以 2500 固定种子通过硬性质测试 |
 | 6. 主题模块 | 先接 RO1 剧目，再按 PRTS 描述逐项实现 RO2-RO5 | 有 | 每个模块有状态转移表、fixture 和边界测试 |
 
+第二阶段当前已完成事件页的首轮同步：五个固定 revision 共 254 条来源记录，形成 250 条 canonical scene 注解、4 条 quarantine 和 171 条显式楼层映射。该结果只覆盖页面可证明的标题、事件分组与楼层；模式、路线条件、权重、一次性约束和效果仍未确认，因此所有记录继续保持 `runtimeEnabled=false`。
+
+区域页也已完成首轮同步：五个固定主题页形成 36 条核心线性布局、22 条结局路线、20 条“进入方式”原文和 6 条 quarantine。布局原文尚未转成图约束，入口条件 AST、特殊/平面区域身份和结算语义仍未确认，因此同样保持 `runtimeEnabled=false`。
+
 ## 4. 第一阶段文件
 
 `data/rlv2/rules/` 分为两类文件：
 
 - `themes.json`、`collectibles.json`、`stages.json`、`zones.json`、`scenes.json`：当前客户端表的机械快照。
-- `relic_tags.json`、`event_tags.json`、`battle_reward_rules.json`、`zone_routes.json`、`modules.json`：人工核验规则及本次用户结论。
+- `relic_tags.json`、`event_tags.json`、`battle_reward_rules.json`、`zone_routes.json`、`modules.json`：人工核验规则及本次用户结论；`event_tags.json` 和 `zone_routes.json` 另保存固定 PRTS revision 的 canonical 映射、来源原文与 quarantine。
 - `manifest.json`、`rules.schema.json`、`README.md`：版本、来源、契约和维护边界。
 
 人类可读的区域核对矩阵单独保存在 [ROGUELIKE_REGION_RULES.md](./ROGUELIKE_REGION_RULES.md)。
@@ -75,7 +79,7 @@
 - 第 3/5 层券二选一的 battle kind、职业去重、权重和协议外形。
 - Boss stage 清单、EXP/gold、减半项目和舍入。
 - `售价 8/16` 对应的规范经济字段，以及藏品池的实际成员。
-- RO2-RO5 特殊区域的具体 stage/event ID、节点排布和完整路线。
+- RO2-RO5 特殊区域的具体 stage/event ID、变体/平面布局和完整路线；核心线性布局摘要不等于生成器约束。
 - RO4“旗帜”是否等同 PRTS“印象重建”。
 - 完整乘区目录、顺序、舍入和“其他增益”的准确范围。
 - RO1 剧目的可达范围、命中后消费、重复与累计上限。

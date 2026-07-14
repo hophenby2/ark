@@ -3,6 +3,13 @@
   "kind": "rlv2_zone_routes",
   "schemaVersion": 1,
   "runtimeEnabled": false,
+  "sourceRefs": [
+    "prts:rogue-1:408420",
+    "prts:rogue-2:408421",
+    "prts:rogue-3:408422",
+    "prts:rogue-4:408423",
+    "prts:rogue-5:408424"
+  ],
   "stageRewardPolicy": {
     "id": "special-region-reward-by-stage",
     "basis": [
@@ -23,6 +30,2584 @@
     "implementationStatus": "pending",
     "runtimeEnabled": false
   },
+  "areaLayouts": [
+    {
+      "id": "rogue_1:zone_1",
+      "theme": "rogue_1",
+      "zoneId": "zone_1",
+      "name": "迷雾歧途",
+      "nodeLengthText": "4",
+      "baseNodeLength": 4,
+      "maximumBranches": 3,
+      "sourceLayoutText": "【1个战斗节点】→【2~3个不期而遇/幕间余兴】→【？个？？？？】→【诡意行商】",
+      "identityResolution": {
+        "method": "explicit_core_zone_id_and_title",
+        "excludedCandidateZoneIds": [
+          "portal_zone_1"
+        ]
+      },
+      "fieldEvidence": {
+        "clientIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId and name come from the fixed client topic table."
+        },
+        "layoutSummary": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-1:408420"
+          ],
+          "notes": "Node length, maximum branches, and layout text come from the fixed PRTS region section."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-1:408420"
+        ],
+        "notes": "The client identity and fixed PRTS layout summary are cross-checked; detailed graph edges are not encoded."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_1:zone_2",
+      "theme": "rogue_1",
+      "zoneId": "zone_2",
+      "name": "落阳庭院",
+      "nodeLengthText": "4",
+      "baseNodeLength": 4,
+      "maximumBranches": 3,
+      "sourceLayoutText": "【？个？？？？】→【？个？？？？】→【？个？？？？】→【？个？？？？】→【？个古堡馈赠】",
+      "identityResolution": {
+        "method": "explicit_core_zone_id_and_title",
+        "excludedCandidateZoneIds": [
+          "portal_zone_2"
+        ]
+      },
+      "fieldEvidence": {
+        "clientIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId and name come from the fixed client topic table."
+        },
+        "layoutSummary": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-1:408420"
+          ],
+          "notes": "Node length, maximum branches, and layout text come from the fixed PRTS region section."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-1:408420"
+        ],
+        "notes": "The client identity and fixed PRTS layout summary are cross-checked; detailed graph edges are not encoded."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_1:zone_3",
+      "theme": "rogue_1",
+      "zoneId": "zone_3",
+      "name": "故土残躯",
+      "nodeLengthText": "6",
+      "baseNodeLength": 6,
+      "maximumBranches": 3,
+      "sourceLayoutText": "【？个？？？？】→【？个？？？？】→【？个？？？？】→【？个？？？？】→【？个？？？？】→【险路恶敌】",
+      "identityResolution": {
+        "method": "explicit_core_zone_id_and_title",
+        "excludedCandidateZoneIds": [
+          "portal_zone_3"
+        ]
+      },
+      "fieldEvidence": {
+        "clientIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId and name come from the fixed client topic table."
+        },
+        "layoutSummary": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-1:408420"
+          ],
+          "notes": "Node length, maximum branches, and layout text come from the fixed PRTS region section."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-1:408420"
+        ],
+        "notes": "The client identity and fixed PRTS layout summary are cross-checked; detailed graph edges are not encoded."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_1:zone_4",
+      "theme": "rogue_1",
+      "zoneId": "zone_4",
+      "name": "噩梦之始",
+      "nodeLengthText": "6",
+      "baseNodeLength": 6,
+      "maximumBranches": 3,
+      "sourceLayoutText": "【？个？？？？】→【？个？？？？】→【？个？？？？】→【？个？？？？】→【？个？？？？】→【？个古堡馈赠】",
+      "identityResolution": {
+        "method": "explicit_core_zone_id_and_title",
+        "excludedCandidateZoneIds": [
+          "portal_zone_4"
+        ]
+      },
+      "fieldEvidence": {
+        "clientIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId and name come from the fixed client topic table."
+        },
+        "layoutSummary": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-1:408420"
+          ],
+          "notes": "Node length, maximum branches, and layout text come from the fixed PRTS region section."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-1:408420"
+        ],
+        "notes": "The client identity and fixed PRTS layout summary are cross-checked; detailed graph edges are not encoded."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_1:zone_5",
+      "theme": "rogue_1",
+      "zoneId": "zone_5",
+      "name": "血月长廊",
+      "nodeLengthText": "7",
+      "baseNodeLength": 7,
+      "maximumBranches": 3,
+      "sourceLayoutText": "【？个？？？？】→【？个？？？？】→【？个？？？？】→【？个？？？？】→【？个？？？？】→【？个？？？？】→【险路恶敌】",
+      "identityResolution": {
+        "method": "explicit_core_zone_id_and_title",
+        "excludedCandidateZoneIds": []
+      },
+      "fieldEvidence": {
+        "clientIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId and name come from the fixed client topic table."
+        },
+        "layoutSummary": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-1:408420"
+          ],
+          "notes": "Node length, maximum branches, and layout text come from the fixed PRTS region section."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-1:408420"
+        ],
+        "notes": "The client identity and fixed PRTS layout summary are cross-checked; detailed graph edges are not encoded."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_1:zone_6",
+      "theme": "rogue_1",
+      "zoneId": "zone_6",
+      "name": "渴欲大厅",
+      "nodeLengthText": "4",
+      "baseNodeLength": 4,
+      "maximumBranches": 1,
+      "sourceLayoutText": "【诡意行商】→【安全的角落】→【1个战斗节点】→【险路恶敌】",
+      "identityResolution": {
+        "method": "explicit_core_zone_id_and_title",
+        "excludedCandidateZoneIds": []
+      },
+      "fieldEvidence": {
+        "clientIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId and name come from the fixed client topic table."
+        },
+        "layoutSummary": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-1:408420"
+          ],
+          "notes": "Node length, maximum branches, and layout text come from the fixed PRTS region section."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-1:408420"
+        ],
+        "notes": "The client identity and fixed PRTS layout summary are cross-checked; detailed graph edges are not encoded."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_2:zone_1",
+      "theme": "rogue_2",
+      "zoneId": "zone_1",
+      "name": "天光海岸",
+      "nodeLengthText": "5",
+      "baseNodeLength": 5,
+      "maximumBranches": 3,
+      "sourceLayoutText": "【1个战斗节点】→【？个？？？？】→【？个？？？？】→【？个？？？？】→【1个诡意行商】",
+      "identityResolution": {
+        "method": "explicit_core_zone_id_and_title",
+        "excludedCandidateZoneIds": []
+      },
+      "fieldEvidence": {
+        "clientIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId and name come from the fixed client topic table."
+        },
+        "layoutSummary": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-2:408421"
+          ],
+          "notes": "Node length, maximum branches, and layout text come from the fixed PRTS region section."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-2:408421"
+        ],
+        "notes": "The client identity and fixed PRTS layout summary are cross-checked; detailed graph edges are not encoded."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_2:zone_2",
+      "theme": "rogue_2",
+      "zoneId": "zone_2",
+      "name": "离岸孤岛",
+      "nodeLengthText": "5",
+      "baseNodeLength": 5,
+      "maximumBranches": 3,
+      "sourceLayoutText": "【2个战斗节点/不期而遇】→【？个？？？？】→【？个？？？？】→【？个？？？？】→【？个得偿所愿】",
+      "identityResolution": {
+        "method": "explicit_core_zone_id_and_title",
+        "excludedCandidateZoneIds": []
+      },
+      "fieldEvidence": {
+        "clientIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId and name come from the fixed client topic table."
+        },
+        "layoutSummary": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-2:408421"
+          ],
+          "notes": "Node length, maximum branches, and layout text come from the fixed PRTS region section."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-2:408421"
+        ],
+        "notes": "The client identity and fixed PRTS layout summary are cross-checked; detailed graph edges are not encoded."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_2:zone_3",
+      "theme": "rogue_2",
+      "zoneId": "zone_3",
+      "name": "波涛略地",
+      "nodeLengthText": "6",
+      "baseNodeLength": 6,
+      "maximumBranches": 4,
+      "sourceLayoutText": "【3个战斗节点/不期而遇】→【？个？？？？】→【？个？？？？】→【？个？？？？】→【？个？？？？】→【险路恶敌】",
+      "identityResolution": {
+        "method": "explicit_core_zone_id_and_title",
+        "excludedCandidateZoneIds": []
+      },
+      "fieldEvidence": {
+        "clientIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId and name come from the fixed client topic table."
+        },
+        "layoutSummary": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-2:408421"
+          ],
+          "notes": "Node length, maximum branches, and layout text come from the fixed PRTS region section."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-2:408421"
+        ],
+        "notes": "The client identity and fixed PRTS layout summary are cross-checked; detailed graph edges are not encoded."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_2:zone_4",
+      "theme": "rogue_2",
+      "zoneId": "zone_4",
+      "name": "隐秘温床",
+      "nodeLengthText": "6",
+      "baseNodeLength": 6,
+      "maximumBranches": 4,
+      "sourceLayoutText": "【3个战斗节点/不期而遇】→【？个？？？？】→【？个？？？？】→【？个？？？？】→【？个？？？？】→【？个得偿所愿】",
+      "identityResolution": {
+        "method": "explicit_core_zone_id_and_title",
+        "excludedCandidateZoneIds": []
+      },
+      "fieldEvidence": {
+        "clientIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId and name come from the fixed client topic table."
+        },
+        "layoutSummary": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-2:408421"
+          ],
+          "notes": "Node length, maximum branches, and layout text come from the fixed PRTS region section."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-2:408421"
+        ],
+        "notes": "The client identity and fixed PRTS layout summary are cross-checked; detailed graph edges are not encoded."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_2:zone_5",
+      "theme": "rogue_2",
+      "zoneId": "zone_5",
+      "name": "失尘岩洞",
+      "nodeLengthText": "7",
+      "baseNodeLength": 7,
+      "maximumBranches": 4,
+      "sourceLayoutText": "【3个战斗节点/不期而遇】→【？个？？？？】→【？个？？？？】→【？个？？？？】→【？个？？？？】→【？个？？？？】→【险路恶敌】",
+      "identityResolution": {
+        "method": "explicit_core_zone_id_and_title",
+        "excludedCandidateZoneIds": []
+      },
+      "fieldEvidence": {
+        "clientIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId and name come from the fixed client topic table."
+        },
+        "layoutSummary": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-2:408421"
+          ],
+          "notes": "Node length, maximum branches, and layout text come from the fixed PRTS region section."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-2:408421"
+        ],
+        "notes": "The client identity and fixed PRTS layout summary are cross-checked; detailed graph edges are not encoded."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_2:zone_6",
+      "theme": "rogue_2",
+      "zoneId": "zone_6",
+      "name": "幽海丛林",
+      "nodeLengthText": "4",
+      "baseNodeLength": 4,
+      "maximumBranches": 1,
+      "sourceLayoutText": "【诡意行商】→【安全的角落】→【战斗节点】→【险路恶敌】",
+      "identityResolution": {
+        "method": "explicit_core_zone_id_and_title",
+        "excludedCandidateZoneIds": []
+      },
+      "fieldEvidence": {
+        "clientIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId and name come from the fixed client topic table."
+        },
+        "layoutSummary": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-2:408421"
+          ],
+          "notes": "Node length, maximum branches, and layout text come from the fixed PRTS region section."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-2:408421"
+        ],
+        "notes": "The client identity and fixed PRTS layout summary are cross-checked; detailed graph edges are not encoded."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_2:zone_7",
+      "theme": "rogue_2",
+      "zoneId": "zone_7",
+      "name": "绀碧摇篮",
+      "nodeLengthText": "4",
+      "baseNodeLength": 4,
+      "maximumBranches": 2,
+      "sourceLayoutText": "【2个得偿所愿】→【2个战斗节点】→【2个战斗节点】→【险路恶敌】",
+      "identityResolution": {
+        "method": "explicit_core_zone_id_and_title",
+        "excludedCandidateZoneIds": []
+      },
+      "fieldEvidence": {
+        "clientIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId and name come from the fixed client topic table."
+        },
+        "layoutSummary": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-2:408421"
+          ],
+          "notes": "Node length, maximum branches, and layout text come from the fixed PRTS region section."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-2:408421"
+        ],
+        "notes": "The client identity and fixed PRTS layout summary are cross-checked; detailed graph edges are not encoded."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_3:zone_1",
+      "theme": "rogue_3",
+      "zoneId": "zone_1",
+      "name": "初霜湖泽",
+      "nodeLengthText": "4",
+      "baseNodeLength": 4,
+      "maximumBranches": 3,
+      "sourceLayoutText": "【2个战斗节点】→【？个？？？？】→【？个？？？？】→【2个诡意行商】",
+      "identityResolution": {
+        "method": "explicit_core_zone_id_and_title",
+        "excludedCandidateZoneIds": []
+      },
+      "fieldEvidence": {
+        "clientIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId and name come from the fixed client topic table."
+        },
+        "layoutSummary": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-3:408422"
+          ],
+          "notes": "Node length, maximum branches, and layout text come from the fixed PRTS region section."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-3:408422"
+        ],
+        "notes": "The client identity and fixed PRTS layout summary are cross-checked; detailed graph edges are not encoded."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_3:zone_2",
+      "theme": "rogue_3",
+      "zoneId": "zone_2",
+      "name": "密静林地",
+      "nodeLengthText": "4",
+      "baseNodeLength": 4,
+      "maximumBranches": 3,
+      "sourceLayoutText": "【2个战斗节点/不期而遇】→【？个？？？？】→【？个？？？？】→【2个得偿所愿】",
+      "identityResolution": {
+        "method": "explicit_core_zone_id_and_title",
+        "excludedCandidateZoneIds": []
+      },
+      "fieldEvidence": {
+        "clientIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId and name come from the fixed client topic table."
+        },
+        "layoutSummary": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-3:408422"
+          ],
+          "notes": "Node length, maximum branches, and layout text come from the fixed PRTS region section."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-3:408422"
+        ],
+        "notes": "The client identity and fixed PRTS layout summary are cross-checked; detailed graph edges are not encoded."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_3:zone_3",
+      "theme": "rogue_3",
+      "zoneId": "zone_3",
+      "name": "昧明冻土",
+      "nodeLengthText": "5",
+      "baseNodeLength": 5,
+      "maximumBranches": 4,
+      "sourceLayoutText": "【3个战斗节点/不期而遇】→【？个？？？？】→【？个？？？？】→【？个？？？？】→【险路恶敌】",
+      "identityResolution": {
+        "method": "explicit_core_zone_id_and_title",
+        "excludedCandidateZoneIds": []
+      },
+      "fieldEvidence": {
+        "clientIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId and name come from the fixed client topic table."
+        },
+        "layoutSummary": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-3:408422"
+          ],
+          "notes": "Node length, maximum branches, and layout text come from the fixed PRTS region section."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-3:408422"
+        ],
+        "notes": "The client identity and fixed PRTS layout summary are cross-checked; detailed graph edges are not encoded."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_3:zone_4",
+      "theme": "rogue_3",
+      "zoneId": "zone_4",
+      "name": "积冰岩骸",
+      "nodeLengthText": "5",
+      "baseNodeLength": 5,
+      "maximumBranches": 4,
+      "sourceLayoutText": "【3个战斗节点/不期而遇】→【？个？？？？】→【？个？？？？】→【？个？？？？】→【3个得偿所愿】",
+      "identityResolution": {
+        "method": "explicit_core_zone_id_and_title",
+        "excludedCandidateZoneIds": []
+      },
+      "fieldEvidence": {
+        "clientIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId and name come from the fixed client topic table."
+        },
+        "layoutSummary": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-3:408422"
+          ],
+          "notes": "Node length, maximum branches, and layout text come from the fixed PRTS region section."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-3:408422"
+        ],
+        "notes": "The client identity and fixed PRTS layout summary are cross-checked; detailed graph edges are not encoded."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_3:zone_5",
+      "theme": "rogue_3",
+      "zoneId": "zone_5",
+      "name": "无瑕花园",
+      "nodeLengthText": "6",
+      "baseNodeLength": 6,
+      "maximumBranches": 4,
+      "sourceLayoutText": "【3个战斗节点/不期而遇】→【？个？？？？】→【？个？？？？】→【？个？？？？】→【？个命运所指】→【险路恶敌】",
+      "identityResolution": {
+        "method": "explicit_core_zone_id_and_title",
+        "excludedCandidateZoneIds": []
+      },
+      "fieldEvidence": {
+        "clientIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId and name come from the fixed client topic table."
+        },
+        "layoutSummary": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-3:408422"
+          ],
+          "notes": "Node length, maximum branches, and layout text come from the fixed PRTS region section."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-3:408422"
+        ],
+        "notes": "The client identity and fixed PRTS layout summary are cross-checked; detailed graph edges are not encoded."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_3:zone_6",
+      "theme": "rogue_3",
+      "zoneId": "zone_6",
+      "name": "远见之构",
+      "nodeLengthText": "4",
+      "baseNodeLength": 4,
+      "maximumBranches": 2,
+      "sourceLayoutText": "【诡意行商】→【2个非战斗节点】→【2个战斗节点】→【险路恶敌】",
+      "identityResolution": {
+        "method": "explicit_core_zone_id_and_title",
+        "excludedCandidateZoneIds": []
+      },
+      "fieldEvidence": {
+        "clientIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId and name come from the fixed client topic table."
+        },
+        "layoutSummary": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-3:408422"
+          ],
+          "notes": "Node length, maximum branches, and layout text come from the fixed PRTS region section."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-3:408422"
+        ],
+        "notes": "The client identity and fixed PRTS layout summary are cross-checked; detailed graph edges are not encoded."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_3:zone_7",
+      "theme": "rogue_3",
+      "zoneId": "zone_7",
+      "name": "永恒之尘",
+      "nodeLengthText": "5",
+      "baseNodeLength": 5,
+      "maximumBranches": 1,
+      "sourceLayoutText": "【诡意行商】→【[[探索者的银凇止境/事件一览#重构|命运所指（重构）]]】→【战斗节点（第6层）】→【[[探索者的银凇止境/事件一览#探索者的一小步|命运所指（探索者的一小步）]]】→【险路恶敌】",
+      "identityResolution": {
+        "method": "explicit_core_zone_id_and_title",
+        "excludedCandidateZoneIds": []
+      },
+      "fieldEvidence": {
+        "clientIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId and name come from the fixed client topic table."
+        },
+        "layoutSummary": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-3:408422"
+          ],
+          "notes": "Node length, maximum branches, and layout text come from the fixed PRTS region section."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-3:408422"
+        ],
+        "notes": "The client identity and fixed PRTS layout summary are cross-checked; detailed graph edges are not encoded."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_4:zone_1",
+      "theme": "rogue_4",
+      "zoneId": "zone_1",
+      "name": "熔魂之始",
+      "nodeLengthText": "4",
+      "baseNodeLength": 4,
+      "maximumBranches": 3,
+      "sourceLayoutText": "【2个战斗节点】→【？个战斗节点/不期而遇】→【？个战斗节点/不期而遇】→【1个诡意行商】\n本层中不会出现【失与得】【先行一步】【狭路相逢】【思维边界】",
+      "identityResolution": {
+        "method": "explicit_core_zone_id_and_title",
+        "excludedCandidateZoneIds": []
+      },
+      "fieldEvidence": {
+        "clientIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId and name come from the fixed client topic table."
+        },
+        "layoutSummary": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-4:408423"
+          ],
+          "notes": "Node length, maximum branches, and layout text come from the fixed PRTS region section."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-4:408423"
+        ],
+        "notes": "The client identity and fixed PRTS layout summary are cross-checked; detailed graph edges are not encoded."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_4:zone_2",
+      "theme": "rogue_4",
+      "zoneId": "zone_2",
+      "name": "锻铁根须",
+      "nodeLengthText": "5",
+      "baseNodeLength": 5,
+      "maximumBranches": 3,
+      "sourceLayoutText": "【命运所指（戴冠式）】→【？个 {{mdi|help-box}}】→【？个 {{mdi|help-box}}】→【？个 {{mdi|help-box}}】→【1个去伪存真】\n不会出现【狭路相逢】【思维边界】",
+      "identityResolution": {
+        "method": "explicit_core_zone_id_and_title",
+        "excludedCandidateZoneIds": []
+      },
+      "fieldEvidence": {
+        "clientIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId and name come from the fixed client topic table."
+        },
+        "layoutSummary": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-4:408423"
+          ],
+          "notes": "Node length, maximum branches, and layout text come from the fixed PRTS region section."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-4:408423"
+        ],
+        "notes": "The client identity and fixed PRTS layout summary are cross-checked; detailed graph edges are not encoded."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_4:zone_3",
+      "theme": "rogue_4",
+      "zoneId": "zone_3",
+      "name": "灰铸迷城",
+      "nodeLengthText": "6",
+      "baseNodeLength": 6,
+      "maximumBranches": 4,
+      "sourceLayoutText": "【3个战斗节点/不期而遇】→【？个 {{mdi|help-box}}】→【？个 {{mdi|help-box}}】→【？个 {{mdi|help-box}}】→【？个去伪存真】→【险路恶敌】\n本层中至少出现一个【失与得】",
+      "identityResolution": {
+        "method": "explicit_core_zone_id_and_title",
+        "excludedCandidateZoneIds": []
+      },
+      "fieldEvidence": {
+        "clientIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId and name come from the fixed client topic table."
+        },
+        "layoutSummary": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-4:408423"
+          ],
+          "notes": "Node length, maximum branches, and layout text come from the fixed PRTS region section."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-4:408423"
+        ],
+        "notes": "The client identity and fixed PRTS layout summary are cross-checked; detailed graph edges are not encoded."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_4:zone_4",
+      "theme": "rogue_4",
+      "zoneId": "zone_4",
+      "name": "或然歧域",
+      "nodeLengthText": "6",
+      "baseNodeLength": 6,
+      "maximumBranches": 4,
+      "sourceLayoutText": "【3个战斗节点/不期而遇】→【？个 {{mdi|help-box}}】→【？个 {{mdi|help-box}}】→【？个 {{mdi|help-box}}】→【？个得偿所愿】→【1个去伪存真】\n本层的前四列节点中，【战斗节点】有且仅有两列",
+      "identityResolution": {
+        "method": "explicit_core_zone_id_and_title",
+        "excludedCandidateZoneIds": []
+      },
+      "fieldEvidence": {
+        "clientIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId and name come from the fixed client topic table."
+        },
+        "layoutSummary": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-4:408423"
+          ],
+          "notes": "Node length, maximum branches, and layout text come from the fixed PRTS region section."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-4:408423"
+        ],
+        "notes": "The client identity and fixed PRTS layout summary are cross-checked; detailed graph edges are not encoded."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_4:zone_5",
+      "theme": "rogue_4",
+      "zoneId": "zone_5",
+      "name": "虚实疆界",
+      "nodeLengthText": "8",
+      "baseNodeLength": 8,
+      "maximumBranches": 4,
+      "sourceLayoutText": "【3个战斗节点/不期而遇】→【？个 {{mdi|help-box}}】→【？个 {{mdi|help-box}}】→【？个 {{mdi|help-box}}】→【？个 {{mdi|help-box}}】→【？个去伪存真】→【？个命运所指】→【险路恶敌】\n本层中至少出现一个【狭路相逢】",
+      "identityResolution": {
+        "method": "explicit_core_zone_id_and_title",
+        "excludedCandidateZoneIds": []
+      },
+      "fieldEvidence": {
+        "clientIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId and name come from the fixed client topic table."
+        },
+        "layoutSummary": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-4:408423"
+          ],
+          "notes": "Node length, maximum branches, and layout text come from the fixed PRTS region section."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-4:408423"
+        ],
+        "notes": "The client identity and fixed PRTS layout summary are cross-checked; detailed graph edges are not encoded."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_4:zone_6",
+      "theme": "rogue_4",
+      "zoneId": "zone_6",
+      "name": "辉光天顶",
+      "nodeLengthText": "5",
+      "baseNodeLength": 5,
+      "maximumBranches": 2,
+      "sourceLayoutText": "【诡意行商】→【2个非战斗节点】→【2个战斗节点（[[ISW-NO 谋求共识|谋求共识]]/[[ISW-NO 神圣的渴求|神圣的渴求]]）】→【2个去伪存真】→【险路恶敌（[[ISW-DF 圣城|圣城]]）】\n本层中不会出现【思维边界】",
+      "identityResolution": {
+        "method": "explicit_core_zone_id_and_title",
+        "excludedCandidateZoneIds": []
+      },
+      "fieldEvidence": {
+        "clientIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId and name come from the fixed client topic table."
+        },
+        "layoutSummary": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-4:408423"
+          ],
+          "notes": "Node length, maximum branches, and layout text come from the fixed PRTS region section."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-4:408423"
+        ],
+        "notes": "The client identity and fixed PRTS layout summary are cross-checked; detailed graph edges are not encoded."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_4:zone_7",
+      "theme": "rogue_4",
+      "zoneId": "zone_7",
+      "name": "逍遥兰若",
+      "nodeLengthText": "5",
+      "baseNodeLength": 5,
+      "maximumBranches": 2,
+      "sourceLayoutText": "【诡意行商】→【2个非战斗节点】→【2个战斗节点（[[ISW-NO “外道”|“外道”]]/[[ISW-NO 洞天福地|洞天福地]]）】→【2个去伪存真】→【险路恶敌（[[ISW-DF 授法|授法]]）】\n本层中不会出现【思维边界】",
+      "identityResolution": {
+        "method": "explicit_core_zone_id_and_title",
+        "excludedCandidateZoneIds": []
+      },
+      "fieldEvidence": {
+        "clientIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId and name come from the fixed client topic table."
+        },
+        "layoutSummary": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-4:408423"
+          ],
+          "notes": "Node length, maximum branches, and layout text come from the fixed PRTS region section."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-4:408423"
+        ],
+        "notes": "The client identity and fixed PRTS layout summary are cross-checked; detailed graph edges are not encoded."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_4:zone_8",
+      "theme": "rogue_4",
+      "zoneId": "zone_8",
+      "name": "无终安息",
+      "nodeLengthText": "1",
+      "baseNodeLength": 1,
+      "maximumBranches": 1,
+      "sourceLayoutText": "【险路恶敌（[[ISW-DF 不容拒绝|不容拒绝]]）】",
+      "identityResolution": {
+        "method": "explicit_core_zone_id_and_title",
+        "excludedCandidateZoneIds": [
+          "zone_portal_end_3"
+        ]
+      },
+      "fieldEvidence": {
+        "clientIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId and name come from the fixed client topic table."
+        },
+        "layoutSummary": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-4:408423"
+          ],
+          "notes": "Node length, maximum branches, and layout text come from the fixed PRTS region section."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-4:408423"
+        ],
+        "notes": "The client identity and fixed PRTS layout summary are cross-checked; detailed graph edges are not encoded."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_5:zone_1",
+      "theme": "rogue_5",
+      "zoneId": "zone_1",
+      "name": "洪陆楼",
+      "nodeLengthText": "4（+1）",
+      "baseNodeLength": 4,
+      "maximumBranches": 3,
+      "sourceLayoutText": "【2个战斗节点】→【2~3个战斗节点/不期而遇/得偿所愿】→【1~3个诡意行商】→【1个误入奇境】\n\n若点亮古今学识中的“《扩园篇》”，则节点排布改为\n【2个战斗节点】→【1~3个不期而遇/得偿所愿】→【1~3个战斗节点】→【1~3个诡意行商】→【1个误入奇境】\n或\n【2个战斗节点】→【1~3个战斗节点】→【2~3个不期而遇/得偿所愿】→【1~3个诡意行商】→【1个误入奇境】",
+      "identityResolution": {
+        "method": "explicit_core_zone_id_and_title",
+        "excludedCandidateZoneIds": [
+          "zone_1_b"
+        ]
+      },
+      "fieldEvidence": {
+        "clientIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId and name come from the fixed client topic table."
+        },
+        "layoutSummary": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-5:408424"
+          ],
+          "notes": "Node length, maximum branches, and layout text come from the fixed PRTS region section."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-5:408424"
+        ],
+        "notes": "The client identity and fixed PRTS layout summary are cross-checked; detailed graph edges are not encoded."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_5:zone_2",
+      "theme": "rogue_5",
+      "zoneId": "zone_2",
+      "name": "山水阁",
+      "nodeLengthText": "4（+1）",
+      "baseNodeLength": 4,
+      "maximumBranches": 4,
+      "sourceLayoutText": "【2个指点迷津】→【？个 {{mdi|help-box}}】→【？个 {{mdi|help-box}}】→【？个 {{mdi|help-box}}】→【2个得偿所愿】\n\n若点亮古今学识中的“《扩园篇》”，则节点长度改为5，并在首尾节点间插入一列【？个 {{mdi|help-box}}】节点",
+      "identityResolution": {
+        "method": "explicit_core_zone_id_and_title",
+        "excludedCandidateZoneIds": [
+          "zone_2_b"
+        ]
+      },
+      "fieldEvidence": {
+        "clientIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId and name come from the fixed client topic table."
+        },
+        "layoutSummary": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-5:408424"
+          ],
+          "notes": "Node length, maximum branches, and layout text come from the fixed PRTS region section."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-5:408424"
+        ],
+        "notes": "The client identity and fixed PRTS layout summary are cross-checked; detailed graph edges are not encoded."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_5:zone_3",
+      "theme": "rogue_5",
+      "zoneId": "zone_3",
+      "name": "云瓦亭",
+      "nodeLengthText": "5",
+      "baseNodeLength": 5,
+      "maximumBranches": 4,
+      "sourceLayoutText": "【2~3个战斗节点/不期而遇】→【？个 {{mdi|help-box}}】→【？个 {{mdi|help-box}}】→【？个 {{mdi|help-box}}】→【险路恶敌】",
+      "identityResolution": {
+        "method": "explicit_core_zone_id_and_title",
+        "excludedCandidateZoneIds": []
+      },
+      "fieldEvidence": {
+        "clientIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId and name come from the fixed client topic table."
+        },
+        "layoutSummary": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-5:408424"
+          ],
+          "notes": "Node length, maximum branches, and layout text come from the fixed PRTS region section."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-5:408424"
+        ],
+        "notes": "The client identity and fixed PRTS layout summary are cross-checked; detailed graph edges are not encoded."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_5:zone_4",
+      "theme": "rogue_5",
+      "zoneId": "zone_4",
+      "name": "汝吾门",
+      "nodeLengthText": "5",
+      "baseNodeLength": 5,
+      "maximumBranches": 4,
+      "sourceLayoutText": "【2~3个战斗节点/不期而遇】→【？个 {{mdi|help-box}}】→【？个 {{mdi|help-box}}】→【？个 {{mdi|help-box}}】→【2个误入奇境】",
+      "identityResolution": {
+        "method": "explicit_core_zone_id_and_title",
+        "excludedCandidateZoneIds": [
+          "zone_4_b"
+        ]
+      },
+      "fieldEvidence": {
+        "clientIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId and name come from the fixed client topic table."
+        },
+        "layoutSummary": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-5:408424"
+          ],
+          "notes": "Node length, maximum branches, and layout text come from the fixed PRTS region section."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-5:408424"
+        ],
+        "notes": "The client identity and fixed PRTS layout summary are cross-checked; detailed graph edges are not encoded."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_5:zone_5",
+      "theme": "rogue_5",
+      "zoneId": "zone_5",
+      "name": "见字祠",
+      "nodeLengthText": "6",
+      "baseNodeLength": 6,
+      "maximumBranches": 4,
+      "sourceLayoutText": "【2~3个战斗节点/不期而遇】→【？个 {{mdi|help-box}}】→【？个 {{mdi|help-box}}】→【？个 {{mdi|help-box}}】→【？个命运所指】→【险路恶敌】",
+      "identityResolution": {
+        "method": "explicit_core_zone_id_and_title",
+        "excludedCandidateZoneIds": []
+      },
+      "fieldEvidence": {
+        "clientIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId and name come from the fixed client topic table."
+        },
+        "layoutSummary": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-5:408424"
+          ],
+          "notes": "Node length, maximum branches, and layout text come from the fixed PRTS region section."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-5:408424"
+        ],
+        "notes": "The client identity and fixed PRTS layout summary are cross-checked; detailed graph edges are not encoded."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_5:zone_6",
+      "theme": "rogue_5",
+      "zoneId": "zone_6",
+      "name": "始末陵",
+      "nodeLengthText": "5",
+      "baseNodeLength": 5,
+      "maximumBranches": 2,
+      "sourceLayoutText": "【2个非战斗节点】→【1~2个非战斗节点】→【1~2个战斗节点（[[ISW-NO 人镇|人镇]]/[[ISW-NO 炎灼|炎灼]]/[[ISW-NO 借力打力|借力打力]]/[[ISW-NO 越山海|越山海]]）】→【1~2个命运所指】→【险路恶敌（[[ISW-DF 谋岁者|谋岁者]]）】\n\n若点亮古今学识中的“《扩园篇》”，则节点排布改为\n【1~2个指点迷津】→【1~2个诡意行商】→【1~2个战斗节点（同上）】→【1~2个命运所指】→【险路恶敌】",
+      "identityResolution": {
+        "method": "explicit_core_zone_id_and_title",
+        "excludedCandidateZoneIds": [
+          "zone_6_b"
+        ]
+      },
+      "fieldEvidence": {
+        "clientIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId and name come from the fixed client topic table."
+        },
+        "layoutSummary": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-5:408424"
+          ],
+          "notes": "Node length, maximum branches, and layout text come from the fixed PRTS region section."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-5:408424"
+        ],
+        "notes": "The client identity and fixed PRTS layout summary are cross-checked; detailed graph edges are not encoded."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_5:zone_7",
+      "theme": "rogue_5",
+      "zoneId": "zone_7",
+      "name": "明灭顶",
+      "nodeLengthText": "6",
+      "baseNodeLength": 6,
+      "maximumBranches": 1,
+      "sourceLayoutText": "【指点迷津】→【战斗节点（[[ISW-NO 人镇|人镇]]/[[ISW-NO 炎灼|炎灼]]/[[ISW-NO 借力打力|借力打力]]/[[ISW-NO 越山海|越山海]]）】→【误入奇境{{color|#cc1e59|'''(特)'''}}】→【诡意行商】→【命运所指】→【险路恶敌（[[ISW-DF 末狩|末狩]]）】",
+      "identityResolution": {
+        "method": "explicit_core_zone_id_and_title",
+        "excludedCandidateZoneIds": []
+      },
+      "fieldEvidence": {
+        "clientIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId and name come from the fixed client topic table."
+        },
+        "layoutSummary": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-5:408424"
+          ],
+          "notes": "Node length, maximum branches, and layout text come from the fixed PRTS region section."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-5:408424"
+        ],
+        "notes": "The client identity and fixed PRTS layout summary are cross-checked; detailed graph edges are not encoded."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_5:zone_8",
+      "theme": "rogue_5",
+      "zoneId": "zone_8",
+      "name": "来去处",
+      "nodeLengthText": "2",
+      "baseNodeLength": 2,
+      "maximumBranches": 1,
+      "sourceLayoutText": "【命运所指】→【险路恶敌（{{mdi|dots-circle|spin=1}}）】",
+      "identityResolution": {
+        "method": "explicit_core_zone_id_and_title",
+        "excludedCandidateZoneIds": []
+      },
+      "fieldEvidence": {
+        "clientIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "zoneId and name come from the fixed client topic table."
+        },
+        "layoutSummary": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-5:408424"
+          ],
+          "notes": "Node length, maximum branches, and layout text come from the fixed PRTS region section."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-5:408424"
+        ],
+        "notes": "The client identity and fixed PRTS layout summary are cross-checked; detailed graph edges are not encoded."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    }
+  ],
+  "endingRoutes": [
+    {
+      "id": "rogue_1:ro_ending_1",
+      "theme": "rogue_1",
+      "endingId": "ro_ending_1",
+      "endingName": "舞会终场",
+      "terminalZoneId": "zone_5",
+      "entryConditionText": null,
+      "entryConditionAst": null,
+      "bossIconId": null,
+      "bossStageIds": null,
+      "identityResolution": {
+        "terminalZoneMethod": "prts_ending_card_under_core_area",
+        "bossStageMethod": null
+      },
+      "fieldEvidence": {
+        "endingIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "endingId, endingName, and bossIconId come from the fixed client topic table."
+        },
+        "terminalZoneAndEntryText": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-1:408420"
+          ],
+          "notes": "The fixed PRTS ending card has no explicit entry heading; the value remains null."
+        },
+        "bossStageIds": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "The client ending has no bossIconId, so no stage is inferred."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-1:408420"
+        ],
+        "notes": "Ending placement is public-sourced; ending and stage identities are client-verified."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_1:ro_ending_2",
+      "theme": "rogue_1",
+      "endingId": "ro_ending_2",
+      "endingName": "滑稽喜剧",
+      "terminalZoneId": "zone_5",
+      "entryConditionText": "* 在【正式调查】或以上难度中完成游戏结局【舞会终场】，解锁本结局的相关事件和收藏品；\n* 遭遇特定事件并选择指定选项：\n** [[傀影与猩红孤钻/事件一览#解脱？|解脱？]]：该事件在第Ⅳ层末尾的【古堡馈赠】前可能遭遇。\n遭遇后选择“太可怜了，仔细看看”，消耗1希望，并获得【[[傀影与猩红孤钻/长生者宝盒#残破的玩偶|残破的玩偶]]】。\n如此选择后，第Ⅴ层的险路恶敌关卡将变更为[[ISW-DF_别无所求|ISW-DF 别无所求]]，最终Boss变为[[伤心的大锁]]。\n** （非必须）[[傀影与猩红孤钻/事件一览#疯狂玩偶|疯狂玩偶]]：该事件在获得【残破的玩偶】后可能遭遇。\n遭遇后连续选择3次“护住玩偶”，损失共计3目标生命后选择“收下”，获得【[[傀影与猩红孤钻/长生者宝盒#无用的剪刀|无用的剪刀]]】\n** （非必须）[[傀影与猩红孤钻/事件一览#解脱|解脱]]：该事件在获得【无用的剪刀】后可能遭遇。\n遭遇后选择“询问对方姓名”，获得【[[傀影与猩红孤钻/长生者宝盒#空白遗书|空白遗书]]】，'''持有该收藏品可一定程度降低最终战的难度。'''\n* 完成游戏结局。",
+      "entryConditionAst": null,
+      "bossIconId": "boss_csdoll",
+      "bossStageIds": [
+        "ro1_b_7"
+      ],
+      "identityResolution": {
+        "terminalZoneMethod": "prts_ending_card_under_core_area",
+        "bossStageMethod": "client_boss_icon_equals_stage_special_node"
+      },
+      "fieldEvidence": {
+        "endingIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "endingId, endingName, and bossIconId come from the fixed client topic table."
+        },
+        "terminalZoneAndEntryText": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-1:408420"
+          ],
+          "notes": "Verbatim wikitext below the fixed PRTS entry heading, with comments and structural wrappers removed."
+        },
+        "bossStageIds": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "Derived from client ending.bossIconId == stage.specialNodeId."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-1:408420"
+        ],
+        "notes": "Ending placement is public-sourced; ending and stage identities are client-verified."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_1:ro_ending_3",
+      "theme": "rogue_1",
+      "endingId": "ro_ending_3",
+      "endingName": "盛大揭幕",
+      "terminalZoneId": "zone_6",
+      "entryConditionText": "* 在【正式调查】或以上难度中完成游戏结局【滑稽喜剧】，解锁本结局的相关事件和收藏品；\n* 遭遇特定事件并选择指定选项：\n** [[傀影与猩红孤钻/事件一览#赴宴|赴宴]]：该事件在第Ⅲ层末尾的【险路恶敌】前可能遭遇。\n遭遇后选择“白得一套衣服”，获得【[[傀影与猩红孤钻/长生者宝盒#替罪领巾|替罪领巾]]】；\n** 通过第Ⅲ层【险路恶敌】：持有【替罪领巾】时，选择多出的收藏品【[[傀影与猩红孤钻/长生者宝盒#替补演员|替补演员]]】。\n** [[傀影与猩红孤钻/事件一览#追随者集会|追随者集会]]：该事件在持有【替补演员】时，在第Ⅴ层可能遭遇。\n遭遇后选择“推门而入”，获得【[[傀影与猩红孤钻/长生者宝盒#恍悟|恍悟]]】。\n** 在任意难度中以持有收藏品【[[傀影与猩红孤钻/长生者宝盒#恍悟|恍悟]]】的状态下通过第Ⅴ层，即可进入第Ⅵ层，且面对最后的险路恶敌关卡[[ISW-DF 诸事不顺]]，最终Boss变为[[“剧团喉舌”]]。",
+      "entryConditionAst": null,
+      "bossIconId": "boss_cshost",
+      "bossStageIds": [
+        "ro1_b_8"
+      ],
+      "identityResolution": {
+        "terminalZoneMethod": "prts_ending_card_under_core_area",
+        "bossStageMethod": "client_boss_icon_equals_stage_special_node"
+      },
+      "fieldEvidence": {
+        "endingIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "endingId, endingName, and bossIconId come from the fixed client topic table."
+        },
+        "terminalZoneAndEntryText": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-1:408420"
+          ],
+          "notes": "Verbatim wikitext below the fixed PRTS entry heading, with comments and structural wrappers removed."
+        },
+        "bossStageIds": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "Derived from client ending.bossIconId == stage.specialNodeId."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-1:408420"
+        ],
+        "notes": "Ending placement is public-sourced; ending and stage identities are client-verified."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_1:ro_ending_4",
+      "theme": "rogue_1",
+      "endingId": "ro_ending_4",
+      "endingName": "沉默之章",
+      "terminalZoneId": "zone_6",
+      "entryConditionText": "* 在本主题【内容拓展Ⅱ】上线后于【正式调查】或以上难度完成任一可用的游戏结局，解锁本结局的相关事件和收藏品；\n* 遭遇特定事件并选择指定选项：\n** [[傀影与猩红孤钻/事件一览#别打扰他们|别打扰他们]]：该事件在通过第Ⅰ层后，在第Ⅲ层末尾的【险路恶敌】前可能遭遇。\n遭遇后选择“靠近听听他们在说什么”，遭遇战斗[[ISW-SP 自缚]]，战斗胜利后选择获得【[[傀影与猩红孤钻/长生者宝盒#死囚之舞|死囚之舞]]】。\n** [[傀影与猩红孤钻/事件一览#复仇剧|复仇剧]]：该事件在获得【死囚之舞】后可能遭遇。\n遭遇后选择“看看对方在写什么”，遭遇战斗[[ISW-SP 观察]]，战斗胜利后选择获得【[[傀影与猩红孤钻/长生者宝盒#初幕|初幕]]】\n** 在任意难度中以持有收藏品【[[傀影与猩红孤钻/长生者宝盒#初幕|初幕]]】的状态下通过第Ⅴ层，即可进入第Ⅵ层，且面对最后的险路恶敌关卡[[ISW-DF 再启新篇]]，最终Boss变为[[“剧作家”]]。",
+      "entryConditionAst": null,
+      "bossIconId": "boss_cswrtr",
+      "bossStageIds": [
+        "ro1_b_9"
+      ],
+      "identityResolution": {
+        "terminalZoneMethod": "prts_ending_card_under_core_area",
+        "bossStageMethod": "client_boss_icon_equals_stage_special_node"
+      },
+      "fieldEvidence": {
+        "endingIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "endingId, endingName, and bossIconId come from the fixed client topic table."
+        },
+        "terminalZoneAndEntryText": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-1:408420"
+          ],
+          "notes": "Verbatim wikitext below the fixed PRTS entry heading, with comments and structural wrappers removed."
+        },
+        "bossStageIds": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "Derived from client ending.bossIconId == stage.specialNodeId."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-1:408420"
+        ],
+        "notes": "Ending placement is public-sourced; ending and stage identities are client-verified."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_2:ro2_ending_1",
+      "theme": "rogue_2",
+      "endingId": "ro2_ending_1",
+      "endingName": "平凡即是喜乐",
+      "terminalZoneId": "zone_5",
+      "entryConditionText": null,
+      "entryConditionAst": null,
+      "bossIconId": "boss_syrysn",
+      "bossStageIds": [
+        "ro2_b_4"
+      ],
+      "identityResolution": {
+        "terminalZoneMethod": "prts_ending_card_under_core_area",
+        "bossStageMethod": "client_boss_icon_equals_stage_special_node"
+      },
+      "fieldEvidence": {
+        "endingIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "endingId, endingName, and bossIconId come from the fixed client topic table."
+        },
+        "terminalZoneAndEntryText": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-2:408421"
+          ],
+          "notes": "The fixed PRTS ending card has no explicit entry heading; the value remains null."
+        },
+        "bossStageIds": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "Derived from client ending.bossIconId == stage.specialNodeId."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-2:408421"
+        ],
+        "notes": "Ending placement is public-sourced; ending and stage identities are client-verified."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_2:ro2_ending_2",
+      "theme": "rogue_2",
+      "endingId": "ro2_ending_2",
+      "endingName": "静谧时代",
+      "terminalZoneId": "zone_5",
+      "entryConditionText": "* 在【波涛迭起】或以上难度中完成游戏结局【平凡即是喜乐】，解锁本结局的相关事件和收藏品；\n* 遭遇特定事件并选择指定选项：\n** [[水月与深蓝之树/事件一览#狂徒妄念|狂徒妄念]]：该事件在第3层末尾的【险路恶敌】前可能遭遇。\n遭遇后以任意方式获得骑士的帮助，获得收藏品【海潮的气息】。\n获得骑士的帮助后，【[[猎潮的骑士]]】将会在接下来非隐藏层的战斗中出现在战场上，直至其被击败。由于【[[猎潮的骑士]]】的存在，在部分地图中越过他进行的主动进行压低目标生命值从而降低灯火值的行为会变得难以实现。\n**（非必须）[[水月与深蓝之树/事件一览#骑士仍在|骑士仍在]]：该事件在持有【海潮的气息】时，在抵达第5层前可能遭遇。\n遭遇后可选择“反抗”，消耗2目标生命获得【荒诞命运】以补充部分基础资源。\n或者可选择“挣脱”以获得【骑士骨血】。持有【骑士骨血】会同时降低【猎潮的骑士】与【最后的骑士】80%的防御力。\n或者选择“远离”，不获得任何资源与收藏品。\n*在抵达第5层前保持【猎潮的骑士】一直存活以维持结局。\n**'''进入第5层后【猎潮的骑士】将不再出现在战场上。'''同时第5层险路恶敌变更为【[[“命运的宠儿”]]】，最终BOSS替换为【[[最后的骑士]]】。\n**如果【猎潮的骑士】死亡，则在该次战斗结算时自动获得【退行的罗辛南特】，【猎潮的骑士】此后不再出现。{{color|brown|'''本次探索中永久失去本结局。'''}}\n* 以不持有【深蓝之心】【决心】【观望】【犹疑】藏品的状态通过第5层，完成游戏结局。",
+      "entryConditionAst": null,
+      "bossIconId": "boss_sytjhd",
+      "bossStageIds": [
+        "ro2_b_5"
+      ],
+      "identityResolution": {
+        "terminalZoneMethod": "prts_ending_card_under_core_area",
+        "bossStageMethod": "client_boss_icon_equals_stage_special_node"
+      },
+      "fieldEvidence": {
+        "endingIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "endingId, endingName, and bossIconId come from the fixed client topic table."
+        },
+        "terminalZoneAndEntryText": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-2:408421"
+          ],
+          "notes": "Verbatim wikitext below the fixed PRTS entry heading, with comments and structural wrappers removed."
+        },
+        "bossStageIds": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "Derived from client ending.bossIconId == stage.specialNodeId."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-2:408421"
+        ],
+        "notes": "Ending placement is public-sourced; ending and stage identities are client-verified."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_2:ro2_ending_3",
+      "theme": "rogue_2",
+      "endingId": "ro2_ending_3",
+      "endingName": "息潮的代价",
+      "terminalZoneId": "zone_6",
+      "entryConditionText": "* 在【波涛迭起】或以上难度中完成游戏结局【静谧时代】，解锁本结局的相关事件和收藏品；\n* 遭遇特定事件并选择指定选项：\n** [[水月与深蓝之树/事件一览#开端|开端]]：该事件在第3层末尾的【险路恶敌】前可能遭遇。\n遭遇后选择“决定潜入深海”，获得收藏品【主教的研究】。\n在该收藏品的影响下，每场战斗过后灯火都将自动减少，难以维持高灯火的状态会导致排异反应出现频率大幅增加，且难以通过进入新区域掷骰检定获得启示。\n**[[水月与深蓝之树/事件一览#深蓝之心|深蓝之心]]：该事件在持有【主教的研究】后，在{{color|brown|'''灯火不少于20'''}}的场合抵达第5层末尾的【险路恶敌】前可能遭遇。\n遭遇后选择“搜寻园林”，获得一件诡异的收藏品【深蓝之心】。\n存在灯火消耗增加环境的场合，灯火过低时其他选项将因不满足资源消耗需求而不可选。\n获得【深蓝之心】会导致灯火大幅降低，且1名干员立刻出现排异反应，但也可以基于该藏品进入第6层。\n**（非必须）[[水月与深蓝之树/事件一览#赞歌|赞歌]]：该事件在持有【深蓝之心】时，第5层末尾的【险路恶敌】前可能遭遇。\n遭遇后选择“亲吻猎人们的额头并取走遗物”，获得【绝唱】，通过获得2个启示'''一定程度降低后续战斗的难度'''。\n* 以持有【深蓝之心】藏品的状态下通过第5层，进入第6层。最终BOSS关变为[[大群所向]]，最终BOSS为[[伊莎玛拉，腐化之心]]。通过第6层即完成结局。",
+      "entryConditionAst": null,
+      "bossIconId": "boss_syskd",
+      "bossStageIds": [
+        "ro2_b_6"
+      ],
+      "identityResolution": {
+        "terminalZoneMethod": "prts_ending_card_under_core_area",
+        "bossStageMethod": "client_boss_icon_equals_stage_special_node"
+      },
+      "fieldEvidence": {
+        "endingIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "endingId, endingName, and bossIconId come from the fixed client topic table."
+        },
+        "terminalZoneAndEntryText": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-2:408421"
+          ],
+          "notes": "Verbatim wikitext below the fixed PRTS entry heading, with comments and structural wrappers removed."
+        },
+        "bossStageIds": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "Derived from client ending.bossIconId == stage.specialNodeId."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-2:408421"
+        ],
+        "notes": "Ending placement is public-sourced; ending and stage identities are client-verified."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_2:ro2_ending_4",
+      "theme": "rogue_2",
+      "endingId": "ro2_ending_4",
+      "endingName": "如星空般深蓝",
+      "terminalZoneId": "zone_6",
+      "entryConditionText": "* 在本主题【内容拓展·Ⅱ】上线后于【波涛迭起】或以上难度完成任一可用的游戏结局，解锁本结局的相关事件和收藏品；\n* 在【波涛迭起】或以上难度中完成游戏结局【静谧时代】，解锁事件[[水月与深蓝之树/事件一览#开端|开端]]。\n* 遭遇特定事件并选择指定选项：\n** [[水月与深蓝之树/事件一览#开端|开端]]：该事件在第3层末尾的【险路恶敌】前可能遭遇。\n遭遇后选择【“深蓝”？！】，获得【深蓝回忆】：灯火-100，获得时立即使随机一名干员产生排异反应。\n持有该藏品后，在前期战斗中遭遇排异反应的频率将极大幅增加。\n**（非必须）[[水月与深蓝之树/事件一览#深蓝仪式|深蓝仪式]]：该事件在持有【深蓝回忆】后，在抵达第5层末尾的【险路恶敌】前可能遭遇。\n遭遇后可选择“不作任何改动”，获得收藏品【深蓝之树】：所有敌人攻击速度+15；完美战斗结算后灯火+15，从而可'''通过完美战斗补充大量灯火'''；\n也可选择“关闭危险程序”一次性获得30灯火，以'''立即摆脱灯火为0的困境'''。\n**[[水月与深蓝之树/事件一览#升华|升华]]：该事件在持有【深蓝回忆】时，在第4层开始至第5层末尾的【险路恶敌】前可能遭遇。\n遭遇后选择出现的任意选项，获得【决心】【观望】【犹疑】中的其中一个。其中{{color|brown|'''灯火不少于50'''}}时可选择【观望】，{{color|gold|'''灯火不少于90'''}}时可选择【决心】。\n三个收藏品均可以改变游戏结局，但藏品本身提供的'''阻挡数变化将会影响后续的战斗方式'''。\n* 以持有【决心】【观望】【犹疑】中其中一个藏品的状态下通过第5层，进入第6层。最终BOSS关变为[[人之光辉]]，最终BOSS为[[伊祖米克，生态泉源]]。通过第6层即完成结局。",
+      "entryConditionAst": null,
+      "bossIconId": "boss_symizuki",
+      "bossStageIds": [
+        "ro2_b_7"
+      ],
+      "identityResolution": {
+        "terminalZoneMethod": "prts_ending_card_under_core_area",
+        "bossStageMethod": "client_boss_icon_equals_stage_special_node"
+      },
+      "fieldEvidence": {
+        "endingIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "endingId, endingName, and bossIconId come from the fixed client topic table."
+        },
+        "terminalZoneAndEntryText": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-2:408421"
+          ],
+          "notes": "Verbatim wikitext below the fixed PRTS entry heading, with comments and structural wrappers removed."
+        },
+        "bossStageIds": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "Derived from client ending.bossIconId == stage.specialNodeId."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-2:408421"
+        ],
+        "notes": "Ending placement is public-sourced; ending and stage identities are client-verified."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_3:ro3_ending_1",
+      "theme": "rogue_3",
+      "endingId": "ro3_ending_1",
+      "endingName": "越过群山",
+      "terminalZoneId": "zone_5",
+      "entryConditionText": "* 第5层的倒数第2个节点固定为【命运所指】，事件固定为[[探索者的银凇止境/事件一览#走过萨米的臂膀|'''走过萨米的臂膀''']]。\n* （非必须）[[探索者的银凇止境/事件一览#走过萨米的臂膀|'''走过萨米的臂膀''']]：在该事件中选择【前进】。\n* 以不持有【无垠赠礼】或【维度流质】的状态通过第5层【[[ISW-DF 巍峨银凇|巍峨银凇]]】（挑战自然·12+难度可能为【[[ISW-DF 深寒造像|深寒造像]]】），即可完成游戏结局。",
+      "entryConditionAst": null,
+      "bossIconId": "boss_smsvn",
+      "bossStageIds": [
+        "ro3_b_4",
+        "ro3_b_4_b"
+      ],
+      "identityResolution": {
+        "terminalZoneMethod": "prts_ending_card_under_core_area",
+        "bossStageMethod": "client_boss_icon_equals_stage_special_node"
+      },
+      "fieldEvidence": {
+        "endingIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "endingId, endingName, and bossIconId come from the fixed client topic table."
+        },
+        "terminalZoneAndEntryText": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-3:408422"
+          ],
+          "notes": "Verbatim wikitext below the fixed PRTS entry heading, with comments and structural wrappers removed."
+        },
+        "bossStageIds": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "Derived from client ending.bossIconId == stage.specialNodeId."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-3:408422"
+        ],
+        "notes": "Ending placement is public-sourced; ending and stage identities are client-verified."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_3:ro3_ending_2",
+      "theme": "rogue_3",
+      "endingId": "ro3_ending_2",
+      "endingName": "直至冬夜降临",
+      "terminalZoneId": "zone_5",
+      "entryConditionText": "* 完成游戏结局【越过群山】，解锁本结局的相关选项和密文板。\n* 在【失与得】节点中选择会导致【坍缩值+4】的选项，获取【空无】【伤痕】两块密文板。\n** 任意失与得事件均存在该选项。\n** 【失与得】节点可以通过点亮【文化比较】的相应节点后，从第2层起自然生成，或通过密文板生成。\n* 在抵达第5层倒数第3个节点前进行一次组合【空无】与【伤痕】的密文宣告。这会将其右侧的一个节点变为【命运所指】，事件固定为[[探索者的银凇止境/事件一览#木裂前兆|木裂前兆]]。\n* [[探索者的银凇止境/事件一览#木裂前兆|'''木裂前兆''']]：在该事件中选择【搜寻营地】，获得收藏品【树痕之盔】。\n* [[探索者的银凇止境/事件一览#走过萨米的臂膀|'''走过萨米的臂膀''']]：在该事件中选择【戴上头盔】，第5层险路恶敌变更为【[[ISW-DF 萨米之熵|萨米之熵]]】（挑战自然·12+难度可能为【[[ISW-DF 虚无之偶|虚无之偶]]】），最终BOSS替换为【[[“木裂”埃克提尔尼尔]]】。\n** '''此情况下选择【前进】将失去本结局。'''\n* 以不持有【无垠赠礼】或【维度流质】的状态通过第5层，即可完成游戏结局。",
+      "entryConditionAst": null,
+      "bossIconId": "boss_smetn",
+      "bossStageIds": [
+        "ro3_b_5",
+        "ro3_b_5_b"
+      ],
+      "identityResolution": {
+        "terminalZoneMethod": "prts_ending_card_under_core_area",
+        "bossStageMethod": "client_boss_icon_equals_stage_special_node"
+      },
+      "fieldEvidence": {
+        "endingIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "endingId, endingName, and bossIconId come from the fixed client topic table."
+        },
+        "terminalZoneAndEntryText": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-3:408422"
+          ],
+          "notes": "Verbatim wikitext below the fixed PRTS entry heading, with comments and structural wrappers removed."
+        },
+        "bossStageIds": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "Derived from client ending.bossIconId == stage.specialNodeId."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-3:408422"
+        ],
+        "notes": "Ending placement is public-sourced; ending and stage identities are client-verified."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_3:ro3_ending_3",
+      "theme": "rogue_3",
+      "endingId": "ro3_ending_3",
+      "endingName": "自深处的一瞥",
+      "terminalZoneId": "zone_6",
+      "entryConditionText": "* 完成游戏结局【直至冬夜降临】，解锁本结局的相关选项和收藏品。\n* 在【先行一步】节点中选择【听取凛视的意见】，获得收藏品【路网】。\n** 【先行一步】节点可以通过点亮【文化比较】的相应节点后，从第2层起自然生成，或通过密文板生成。\n** 获得【路网】后，除第6层外的所有普通战斗和紧急战斗将出现额外的敌人。\n可在各个关卡页面查阅受【路网】影响在每个战斗生成的额外敌人。\n* 获得【路网】后，凛视会在下一层的最下方通路的某处画出如下'''无纵向通路'''的序列：【-紧急作战-命运所指-】，该命运所指的事件固定为[[探索者的银凇止境/事件一览#悲观者囚笼|悲观者囚笼]]。前往这条道路继续后续流程。\n** 该【命运所指】可能会覆盖第5层倒数第2个节点处、原为[[探索者的银凇止境/事件一览#走过萨米的臂膀|'''走过萨米的臂膀''']]的【命运所指】。\n** '''若未能前往此道路，则本次探索永久失去本结局。'''\n* [[探索者的银凇止境/事件一览#悲观者囚笼|'''悲观者囚笼''']]：在该事件中选择【捧起祭坛上的花】，获得收藏品【无垠赠礼】。\n* 以持有【无垠赠礼】，但不持有【维度流质】的状态下通过第5层，进入第6层。最终BOSS关为[[ISW-DF 园丁|园丁]]（挑战自然·12+难度可能为【[[ISW-DF 哨兵|哨兵]]】），最终BOSS为[[无垠回荡克雷松]]。\n*以不持有【维度流质】的状态通过第6层即完成结局。",
+      "entryConditionAst": null,
+      "bossIconId": "boss_smczl",
+      "bossStageIds": [
+        "ro3_b_6",
+        "ro3_b_6_b"
+      ],
+      "identityResolution": {
+        "terminalZoneMethod": "prts_ending_card_under_core_area",
+        "bossStageMethod": "client_boss_icon_equals_stage_special_node"
+      },
+      "fieldEvidence": {
+        "endingIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "endingId, endingName, and bossIconId come from the fixed client topic table."
+        },
+        "terminalZoneAndEntryText": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-3:408422"
+          ],
+          "notes": "Verbatim wikitext below the fixed PRTS entry heading, with comments and structural wrappers removed."
+        },
+        "bossStageIds": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "Derived from client ending.bossIconId == stage.specialNodeId."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-3:408422"
+        ],
+        "notes": "Ending placement is public-sourced; ending and stage identities are client-verified."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_3:ro3_ending_4",
+      "theme": "rogue_3",
+      "endingId": "ro3_ending_4",
+      "endingName": "终始",
+      "terminalZoneId": "zone_7",
+      "entryConditionText": "* 在本主题【内容拓展·Ⅱ】上线后完成任一可用的游戏结局，解锁本结局的相关事件和收藏品；\n* 在探索中获取收藏品【视界邀约】（可在所有常规入手方式中获取，在【诡意行商】处会以原价1源石锭的价格大概率出售）。\n获得【视界邀约】后，在不期而遇节点遭遇事件[[探索者的银凇止境/事件一览#变化|'''变化''']]（获得后进入【深埋迷境】外的不期而遇时大概率遭遇，不期而遇节点没有处于全面勘察状态时更有可能遭遇）。\n* [[探索者的银凇止境/事件一览#变化|'''变化''']]：选择【出示视界邀约】，进入战斗【[[ISW-SP 黄沙幻境|黄沙幻境]]】。\n完成战斗后选择获取【维度流质】。\n* 以持有【维度流质】的状态通过第5层后可进入该层（温标¬ΔS）。\n若获取【维度流质】时在第6层【远见之构】（温标-89），则还需要通过【远见之构】才会进入该层。\n 该层具有多种特殊性质：\n** 最终BOSS关为[[ISW-DF 时光之沙|时光之沙]]（挑战自然·12+难度可能为【[[ISW-DF 迈入永恒|迈入永恒]]】），最终BOSS为[[路加萨尔古斯，历法之王]]与[[哈兰杜汗，大地之鞭]]。\n** 视为独立的一层，会叠加挑战自然中的敌人难度（于第5层后进入时叠加至6层，于第6层后进入时叠加至7层）。\n** '''进入该层时坍缩值不会增加。'''使用科学主义分队时亦不会增加抗干扰指数。\n*[[探索者的银凇止境/事件一览#重构|'''重构''']]：选择强行介入（获得负面收藏品）、支付高额资源或消耗特殊收藏品中的一个方式来进行连续三个阶段的修复工作：\n**阶段1：清除坍缩污染\n无视坍缩：获得【坍缩之种】（所有我方单位攻击力与生命值-15%）\n或 消耗3抗干扰指数 / 失去【安玛的爱】\n**阶段2：修复破损设施\n强行修复：获得【空间碎片】（可携带干员-4）\n或 消耗50源石锭 / 失去【树痕之盔】/ 失去【安玛的爱】\n**阶段3：解决供能问题\n粗暴解决：获得【深度灼痕】（目标生命上限-12）\n或 消耗20希望 / 失去【无垠赠礼】/ 失去【安玛的爱】\n*[[探索者的银凇止境/事件一览#探索者的一小步|'''探索者的一小步''']]：随机遭遇 获得5护盾 / 获得1个收藏品 / 进阶2名干员但增加2坍缩值 / 招募任意一个干员但增加2坍缩值 / 遭遇1场[[ISW-SP 亘古仇敌|特殊战斗]] 中的一个结果\n*通过本层即完成结局。",
+      "entryConditionAst": null,
+      "bossIconId": "boss_smdur",
+      "bossStageIds": [
+        "ro3_b_7",
+        "ro3_b_7_b"
+      ],
+      "identityResolution": {
+        "terminalZoneMethod": "prts_ending_card_under_core_area",
+        "bossStageMethod": "client_boss_icon_equals_stage_special_node"
+      },
+      "fieldEvidence": {
+        "endingIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "endingId, endingName, and bossIconId come from the fixed client topic table."
+        },
+        "terminalZoneAndEntryText": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-3:408422"
+          ],
+          "notes": "Verbatim wikitext below the fixed PRTS entry heading, with comments and structural wrappers removed."
+        },
+        "bossStageIds": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "Derived from client ending.bossIconId == stage.specialNodeId."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-3:408422"
+        ],
+        "notes": "Ending placement is public-sourced; ending and stage identities are client-verified."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_4:ro4_ending_1",
+      "theme": "rogue_4",
+      "endingId": "ro4_ending_1",
+      "endingName": "憧憬未来",
+      "terminalZoneId": "zone_5",
+      "entryConditionText": "* 第5层的倒数第2个节点固定为【命运所指】，事件固定为[[萨卡兹的无终奇语/事件一览#尾页|'''尾页''']]。\n* [[萨卡兹的无终奇语/事件一览#尾页|'''尾页''']]：在该事件中'''不报出魔王的名讳'''。\n* 以不持有【时与光】【阿纳萨羯磨】【无终之钥】的状态通过第5层【[[ISW-DF 紧急授课|紧急授课]]】或其滚动先祖升级版【[[ISW-DF 思维矫正|思维矫正]]】，即可完成游戏结局。",
+      "entryConditionAst": null,
+      "bossIconId": "boss_skzlwy",
+      "bossStageIds": [
+        "ro4_b_4",
+        "ro4_b_4_b",
+        "ro4_b_4_c",
+        "ro4_b_4_d"
+      ],
+      "identityResolution": {
+        "terminalZoneMethod": "prts_ending_card_under_core_area",
+        "bossStageMethod": "client_boss_icon_equals_stage_special_node"
+      },
+      "fieldEvidence": {
+        "endingIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "endingId, endingName, and bossIconId come from the fixed client topic table."
+        },
+        "terminalZoneAndEntryText": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-4:408423"
+          ],
+          "notes": "Verbatim wikitext below the fixed PRTS entry heading, with comments and structural wrappers removed."
+        },
+        "bossStageIds": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "Derived from client ending.bossIconId == stage.specialNodeId."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-4:408423"
+        ],
+        "notes": "Ending placement is public-sourced; ending and stage identities are client-verified."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_4:ro4_ending_2",
+      "theme": "rogue_4",
+      "endingId": "ro4_ending_2",
+      "endingName": "双王记",
+      "terminalZoneId": "zone_5",
+      "entryConditionText": "* 完成游戏结局【憧憬未来】，解锁本结局的相关选项和收藏品。\n* [[萨卡兹的无终奇语/事件一览#戴冠式|'''戴冠式''']]：于第2层的【命运所指】中固定出现，在该事件中选择【两人为对方戴上冠冕】，获得遗愿【纯白花瓣】【无字地契】。\n* 在任意一个【去伪存真】节点进行一次【纯白花瓣】与【无字地契】的解读，获得收藏品【巴别塔誓言】。\n** 在您需要获得这个收藏品之前，【纯白花瓣】与【无字地契】将一直占用思维负荷；获得这个收藏品之后，在开启不同探索方向的同时，所有干员的部署费用+3。\n** （非必须）[[萨卡兹的无终奇语/事件一览#离去者的庭院|'''离去者的庭院''']]：在获得【巴别塔誓言】后可能在不期而遇遭遇。\n** 在上述事件中选择查看【阿米娅】的纪念碑，可以获得收藏品【十戒】，其可以将最终战斗中[[尊主的残影]]的生命值减半。\n* [[萨卡兹的无终奇语/事件一览#尾页|'''尾页''']]：在该事件中选择'''报出魔王的名讳'''，第5层险路恶敌变更为【[[ISW-DF 朝谒|朝谒]]】（持有滚动先祖时升级为【[[ISW-DF 魂灵朝谒|魂灵朝谒]]】），最终BOSS替换为【[[特雷西斯，黑冠尊主]]】及其深度相关装置【[[特蕾西娅，黑冠圣贤]]】。\n* 以不持有【时与光】【阿纳萨羯磨】【无终之钥】的状态通过第5层即可完成游戏结局。",
+      "entryConditionAst": null,
+      "bossIconId": "boss_skztxs",
+      "bossStageIds": [
+        "ro4_b_5",
+        "ro4_b_5_b",
+        "ro4_b_5_c",
+        "ro4_b_5_d"
+      ],
+      "identityResolution": {
+        "terminalZoneMethod": "prts_ending_card_under_core_area",
+        "bossStageMethod": "client_boss_icon_equals_stage_special_node"
+      },
+      "fieldEvidence": {
+        "endingIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "endingId, endingName, and bossIconId come from the fixed client topic table."
+        },
+        "terminalZoneAndEntryText": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-4:408423"
+          ],
+          "notes": "Verbatim wikitext below the fixed PRTS entry heading, with comments and structural wrappers removed."
+        },
+        "bossStageIds": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "Derived from client ending.bossIconId == stage.specialNodeId."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-4:408423"
+        ],
+        "notes": "Ending placement is public-sourced; ending and stage identities are client-verified."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_4:ro4_ending_3",
+      "theme": "rogue_4",
+      "endingId": "ro4_ending_3",
+      "endingName": "天使之城",
+      "terminalZoneId": "zone_6",
+      "entryConditionText": "* 完成游戏结局【憧憬未来】，解锁本结局的相关事件和收藏品；并于【历史重构】中解锁【置换现实】，以便在探索中生成【失与得】。\n* 在【失与得】节点选择【一个方盒】，在随后的选项中获得收藏品【先知长角】。\n** 【内容拓展·Ⅰ】上线后，若选择过【一片莲瓣】，后续进入【失与得】时【一个方盒】的选项会消失。\n** 为满足接下来事件的需求，在进行后续步骤前，需要准备至少2缕构想与1次刷新节点的机会（大多数情况下合计为3缕构想）\n** 受【先知长角】的影响，您在非【诡谲断章】区域刷新节点需多加谨慎。\n* 刷新一次节点，受【先知长角】的影响，当次刷新将出现【命运所指】，该命运所指的事件固定为[[萨卡兹的无终奇语/事件一览#待诉说的真相|待诉说的真相]]。\n* [[萨卡兹的无终奇语/事件一览#待诉说的真相|'''待诉说的真相''']]：在该事件中选择消耗2缕构想的【用构想弥补缺陷】，进入【诡谲断章】。\n** 该【诡谲断章】的结构固定为：【2个紧急作战】→【2个命运所指（[[萨卡兹的无终奇语/事件一览#扣响异音|扣响异音]]）】→【险路恶敌（[[ISW-DF 时光凯旋|时光凯旋]]）】，其中的紧急作战为第4层所属的地图（刷新后可能出现第4、5层的作战地图）。\n* [[萨卡兹的无终奇语/事件一览#扣响异音|'''扣响异音''']]：在该事件中选择获得收藏品【时与光】。\n** 获得【时与光】后，年代会更频繁出现，所有思绪的负荷+1。\n** 在该【诡谲断章】末尾，您还将遭遇[[ISW-DF 时光凯旋|时光凯旋]]，与[[霜星，“冬痕”]]和[[爱国者]]对战，需要做好作战准备。\n* 以不持有【无终之钥】的状态通过第6层即完成结局。",
+      "entryConditionAst": null,
+      "bossIconId": "boss_skzagz",
+      "bossStageIds": [
+        "ro4_b_6"
+      ],
+      "identityResolution": {
+        "terminalZoneMethod": "prts_ending_card_under_core_area",
+        "bossStageMethod": "client_boss_icon_equals_stage_special_node"
+      },
+      "fieldEvidence": {
+        "endingIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "endingId, endingName, and bossIconId come from the fixed client topic table."
+        },
+        "terminalZoneAndEntryText": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-4:408423"
+          ],
+          "notes": "Verbatim wikitext below the fixed PRTS entry heading, with comments and structural wrappers removed."
+        },
+        "bossStageIds": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "Derived from client ending.bossIconId == stage.specialNodeId."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-4:408423"
+        ],
+        "notes": "Ending placement is public-sourced; ending and stage identities are client-verified."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_4:ro4_ending_4",
+      "theme": "rogue_4",
+      "endingId": "ro4_ending_4",
+      "endingName": "遁入阇那",
+      "terminalZoneId": "zone_7",
+      "entryConditionText": "* 于【内容拓展·Ⅰ】上线后完成一次结局，解锁本结局的相关事件和收藏品；并于【历史重构】中解锁【置换现实】，以便在探索中生成【失与得】。\n* 在【失与得】节点选择【一片莲瓣】，在随后的选项中获得收藏品【片瓣】。\n** 若选择过【一个方盒】，后续进入【失与得】时【一片莲瓣】的选项会消失。\n** 获得该收藏品时会消耗所有源石锭，且后续战斗中指挥经验与源石锭的获取减半。\n** 为满足接下来事件的需求，在进行后续步骤前，需要在进入【狭路相逢】节点后拥有至少2缕构想。\n* 在【狭路相逢】节点选择消耗2构想，进入特殊的2V2狭路相逢战斗【[[ISW-NO 轻舟共渡|轻舟共渡]]】。该战斗仅有飞行单位。\n击败最难的阵容（固定为[[托生莲座]]×2），并选择获取收藏品【阿纳萨羯磨】。\n** 这会令领袖与精英的最大生命值+50%，且第5层最终Boss关难度增加（表现为额外的属性提升，战斗条件变化，与额外出现[[托生莲座]]）。\n** 如没能击败最难的阵容，可以在后续的【狭路相逢】中消耗2构想重复该步骤。\n* 以不持有【无终之钥】的状态通过第6层即完成结局。",
+      "entryConditionAst": null,
+      "bossIconId": "boss_skzjkl",
+      "bossStageIds": [
+        "ro4_b_7"
+      ],
+      "identityResolution": {
+        "terminalZoneMethod": "prts_ending_card_under_core_area",
+        "bossStageMethod": "client_boss_icon_equals_stage_special_node"
+      },
+      "fieldEvidence": {
+        "endingIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "endingId, endingName, and bossIconId come from the fixed client topic table."
+        },
+        "terminalZoneAndEntryText": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-4:408423"
+          ],
+          "notes": "Verbatim wikitext below the fixed PRTS entry heading, with comments and structural wrappers removed."
+        },
+        "bossStageIds": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "Derived from client ending.bossIconId == stage.specialNodeId."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-4:408423"
+        ],
+        "notes": "Ending placement is public-sourced; ending and stage identities are client-verified."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_4:ro4_ending_5",
+      "theme": "rogue_4",
+      "endingId": "ro4_ending_5",
+      "endingName": "无瑕之日",
+      "terminalZoneId": "zone_8",
+      "entryConditionText": "* 于【内容拓展·Ⅱ】上线后完成一次结局，解锁本结局的相关事件和收藏品。\n* 设法获取【绝望】/【拯救】/【停止】。\n** 通常情况下它需要经过下列流程获得：\n*** [[萨卡兹的无终奇语/事件一览#空无前兆|'''空无前兆''']]：在【不期而遇】中可能遭遇。\n在此事件选择【试着接受它】，获得收藏品【预言显像】。\n*** 持有【预言显像】时，一名[[终曲合声]]将会在后续的各个普通作战和紧急作战中出现，其拥有高额生命值和极大的远程攻击范围，且无法被阻挡。\n通常情况下该敌人将会因无法被击破而进入目标点，此时会给予1个收藏品，且其生命值会在本次探索中继承。\n终曲合声被击败后，当次作战将会掉落遗愿【绝望】，【预言显像】也会从持有栏位中消失。\n*** （非必须）于【去伪存真】中，消耗【构想】解读【绝望】，获得遗愿【拯救】。\n继续消耗【构想】解读【拯救】，获得遗愿【停止】。\n** 也可以尝试通过【无主的回忆】获取上次探索所遗留的【绝望】/【拯救】/【停止】。\n* [[萨卡兹的无终奇语/事件一览#孤注一掷|'''孤注一掷''']]：在【不期而遇】中可能遭遇。投入当前持有的【绝望】/【拯救】/【停止】铸造钥匙，获得收藏品【无终之钥】与一个【终结的】收藏品。\n** 投入【绝望】时，获得【终结的骨架】：所有干员的部署费用+2，所有敌人受到的物理与法术伤害降低20%；\n** 投入【拯救】时，获得【终结的躯壳】：在上述基础上，所有敌人攻击力+20%；\n** 投入【停止】时，获得【终结的实相】：在上述基础上，最终战场上出现额外敌人。\n** '''与此同时，'''{{模糊|{{color|red|'''【终结的实相】还会在大多数情况下封锁战败后的退路：'''}}\n在持有该收藏品的情况下，在非区域最终战斗和领袖战中失败时不结束探索，且若当前不处于诡谲断章时进入一个绝望的<span style{{=}}\"background: red;padding-inline: 0.5em; color:white;\" class{{=}}\"mw-customtoggle-rogueLayerDeath\">诡谲断章 {{mdi|chevron-right}}</span>。\n※同时持有[[萨卡兹的无终奇语/想象实体图鉴#265|【“拱门”与“呼救”】]]时，先获得的先触发；如果已在诡谲断章且处于非最终战斗节点中触发，不会进入新的诡谲断章：+1生命值并前进至下一节点。}}\n** 因上述效果持有多个遗愿时，每个遗愿均可触发一次该事件，使得本次探索可以获得两个及以上的【终结的】收藏品。此时重复获得的收藏品将改为【热水壶】。\n* 以持有【无终之钥】的状态通过最终层（取决于当前持有的结局藏品与当前层级）后进入该层，直面[[“阿米娅”，炉芯终曲]]。击败[[“阿米娅”，炉芯终曲]]并通过所在层即完成结局。\n** 该层仅存在险路恶敌[[ISW-DF 不容拒绝|不容拒绝]]'''1个'''节点，请在此之前做好万全准备以迎接挑战。\n** 您将在三处场地分别迎战以下领袖敌人：\n①[[博卓卡斯替，圣卫铳骑]]（仅第一形态，不持有技能）\n②[[特雷西斯，黑冠尊主]]（仅第一形态，受到的物理/法术伤害-50%，技能仅保留【挥砍】）\n③[[凯尔希(敌方)|凯尔希]]&[[菈玛莲]]&[[歌利亚]]\n这些领袖敌人在到达目标终点后扣除5目标生命，而前两处场地的领袖敌人在离场时会使阿米娅摧毁地板的技能获得足量充能，使其立即开始摧毁场地。\n** 持有【终结的实相】时，额外出现以下敌人并替换部分原本敌人：\n①[[奎隆，摩诃萨埵权化]]（仅第二形态，技能仅保留【惩五戒】）&[[托生莲座]]\n②[[曼弗雷德]]（仅第一形态）&[[帝国前锋百战精锐]]&[[乌萨斯平民]]，并激活[[伦蒂尼姆城防副炮]]（持续至本场地移出）。",
+      "entryConditionAst": null,
+      "bossIconId": "boss_skzamy",
+      "bossStageIds": [
+        "ro4_b_8"
+      ],
+      "identityResolution": {
+        "terminalZoneMethod": "prts_ending_card_under_core_area",
+        "bossStageMethod": "client_boss_icon_equals_stage_special_node"
+      },
+      "fieldEvidence": {
+        "endingIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "endingId, endingName, and bossIconId come from the fixed client topic table."
+        },
+        "terminalZoneAndEntryText": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-4:408423"
+          ],
+          "notes": "Verbatim wikitext below the fixed PRTS entry heading, with comments and structural wrappers removed."
+        },
+        "bossStageIds": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "Derived from client ending.bossIconId == stage.specialNodeId."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-4:408423"
+        ],
+        "notes": "Ending placement is public-sourced; ending and stage identities are client-verified."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_5:ro5_ending_1",
+      "theme": "rogue_5",
+      "endingId": "ro5_ending_1",
+      "endingName": "依律镇抚",
+      "terminalZoneId": "zone_5",
+      "entryConditionText": "* 第5层的倒数第2个节点固定为【命运所指】，事件固定为'''祠堂口'''。\n* '''[[岁的界园志异/事件一览#祠堂口|祠堂口]]'''：在该事件中直接'''行仪'''。\n* 通过与[[易]]对决的【[[ISW-DF 破岁阵祀|破岁阵祀]]】，且以不持有【云与漆】【无墨长卷】【“小磨唧”】的状态通过第5层，即可完成游戏结局。",
+      "entryConditionAst": null,
+      "bossIconId": "boss_dylbhm",
+      "bossStageIds": [
+        "ro5_b_4",
+        "ro5_b_4_b"
+      ],
+      "identityResolution": {
+        "terminalZoneMethod": "prts_ending_card_under_core_area",
+        "bossStageMethod": "client_boss_icon_equals_stage_special_node"
+      },
+      "fieldEvidence": {
+        "endingIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "endingId, endingName, and bossIconId come from the fixed client topic table."
+        },
+        "terminalZoneAndEntryText": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-5:408424"
+          ],
+          "notes": "Verbatim wikitext below the fixed PRTS entry heading, with comments and structural wrappers removed."
+        },
+        "bossStageIds": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "Derived from client ending.bossIconId == stage.specialNodeId."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-5:408424"
+        ],
+        "notes": "Ending placement is public-sourced; ending and stage identities are client-verified."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_5:ro5_ending_2",
+      "theme": "rogue_5",
+      "endingId": "ro5_ending_2",
+      "endingName": "长卷留痕",
+      "terminalZoneId": "zone_5",
+      "entryConditionText": "* 完成游戏结局【依律镇抚】，解锁本结局的相关选项和收藏品。\n* '''[[岁的界园志异/事件一览#榆蝶|榆蝶]]'''：于<岁兽残识>是非境中，{{color|grey|<del>'''距离起点较远的'''【传说】中'''更可能'''<del>}}【抉择】节点中固定遭遇。在该事件中选择【出钱】，支付30源石锭获得收藏品【[[岁的界园志异/珍玩集册#隐蝶墨|隐蝶墨]]】。\n:* 【抉择】会出现在距离中心起点最短距离（非实际路径距离）2格及以上的'''随机'''位置，且高概率位于5×5范围最外层的位置。\n:* 也可选择【先带她回去】概率获取，但此时将支付'''全部'''源石锭。\n:* 持有收藏品【[[岁的界园志异/珍玩集册#寅诗壶|寅诗壶]]】时，有概率以失去最多5源石锭的更低代价获得【隐蝶墨】。\n* 持有【隐蝶墨】时，每场战斗中都会有[[“岁躯”]]干扰作战。\n: 但不是每一场战斗其都会立刻出场——有的战斗中甚至有概率不会出场。\n: 其会锁定场上周围8格内我方单位数量最多的我方单位，在一段时间后拍下巨爪，令该单位及其周围8格的我方单位强制撤退，但也因此暴露自己供我方单位攻击。\n: 将其生命值削减至最大生命值的50%以下后，其将立刻逃跑并不再出现，本次战斗结束时自动获得收藏品【[[岁的界园志异/珍玩集册#墨化残碑|墨化残碑]]】。\n:* 其生命值将在不同战斗中继承，可以多次反复攻击，但每场战斗只会降下一次，并且一段时间后会离开本场作战。\n* '''[[岁的界园志异/事件一览#祠堂口|祠堂口]]'''：在该命运所指中选择'''奉碑行仪'''，第5层险路恶敌变更为【[[ISW-DF 昔字如烟|昔字如烟]]】，最终BOSS替换为[[“岁”]]。\n* 以不持有【云与漆】【无墨长卷】【“小磨唧”】的状态通过第5层，即可完成游戏结局。",
+      "entryConditionAst": null,
+      "bossIconId": "boss_dyshhj",
+      "bossStageIds": [
+        "ro5_b_5",
+        "ro5_b_5_b"
+      ],
+      "identityResolution": {
+        "terminalZoneMethod": "prts_ending_card_under_core_area",
+        "bossStageMethod": "client_boss_icon_equals_stage_special_node"
+      },
+      "fieldEvidence": {
+        "endingIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "endingId, endingName, and bossIconId come from the fixed client topic table."
+        },
+        "terminalZoneAndEntryText": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-5:408424"
+          ],
+          "notes": "Verbatim wikitext below the fixed PRTS entry heading, with comments and structural wrappers removed."
+        },
+        "bossStageIds": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "Derived from client ending.bossIconId == stage.specialNodeId."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-5:408424"
+        ],
+        "notes": "Ending placement is public-sourced; ending and stage identities are client-verified."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_5:ro5_ending_3",
+      "theme": "rogue_5",
+      "endingId": "ro5_ending_3",
+      "endingName": "黑白入玄",
+      "terminalZoneId": "zone_6",
+      "entryConditionText": "* 完成游戏结局【长卷留痕】，解锁本结局的相关选项和收藏品。\n* '''[[岁的界园志异/事件一览#执棋|执棋]]'''：于<岁兽残识>是非境中，'''第一个发现的'''【杂疑】中高概率遭遇。\n: 在已有5名或以上的{{color|#cc1e59|'''伺烛客'''}}的状态下遭遇该事件，选择【掀翻棋盘】，之后【取走棋盘】，获得收藏品【[[岁的界园志异/珍玩集册#忘生珍珑|忘生珍珑]]】。\n:* 持有该收藏品时，干员部署后会流失50%技力。\n* 在【指点迷津】节点中，'''未持有【无墨长卷】'''时，会出现额外选项“棋盘对火，字盘对光”，选择后进入特殊战斗【[[ISW-NO 分明|分明]]】。\n: 完成战斗后选择获取收藏品【[[岁的界园志异/珍玩集册#云与漆|云与漆]]】。\n:* 持有该收藏品时，干员部署后60s内会不断受到真实伤害。\n:* 在这场战斗中，您将体验到望的[[瑕|“黑子”]]所具备的所有能力。\n* 持有【云与漆】而通过第五层战斗后，可进入该层，与【[[ISW-DF 谋岁者|谋岁者]]】[[“望”]]对峙。\n* '''[[岁的界园志异/事件一览#收笔|收笔]]'''：于该层的【命运所指】中遭遇。\n:*通过该节点后，所有的非{{color|#cc1e59|'''伺烛客'''}}干员将被禁用 {{popup|内容=卡片上会显示为“先行一步”禁用，'''实际并非先行一步'''}}。请确保游园期间为足够多的干员燃烛。\n* 以不持有【“小磨唧”】的状态通过第6层，即可完成游戏结局。",
+      "entryConditionAst": null,
+      "bossIconId": "boss_dywqgs",
+      "bossStageIds": [
+        "ro5_b_6"
+      ],
+      "identityResolution": {
+        "terminalZoneMethod": "prts_ending_card_under_core_area",
+        "bossStageMethod": "client_boss_icon_equals_stage_special_node"
+      },
+      "fieldEvidence": {
+        "endingIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "endingId, endingName, and bossIconId come from the fixed client topic table."
+        },
+        "terminalZoneAndEntryText": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-5:408424"
+          ],
+          "notes": "Verbatim wikitext below the fixed PRTS entry heading, with comments and structural wrappers removed."
+        },
+        "bossStageIds": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "Derived from client ending.bossIconId == stage.specialNodeId."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-5:408424"
+        ],
+        "notes": "Ending placement is public-sourced; ending and stage identities are client-verified."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_5:ro5_ending_4",
+      "theme": "rogue_5",
+      "endingId": "ro5_ending_4",
+      "endingName": "无中生有",
+      "terminalZoneId": "zone_7",
+      "entryConditionText": "* 在【内容拓展·Ⅰ】上线后完成任一可用结局，解锁本结局相关联的事件与收藏品。\n* 进入【岁兽残识】，在'''第一个访问的'''【易与】处，以5目标生命的原价购入收藏品【[[岁的界园志异/珍玩集册#无封长盒|无封长盒]]】。\n:* 持有后，领袖与精英敌人的防御力+30%，攻击速度+20，且战斗结束后每个存活的雕伥将扣除1点目标生命值（不会低于1）。\n* 持有【无封长盒】且'''未持有【云与漆】'''时，【先行一步】节点将出现额外选项“提请起盒”：选择一名干员{{color|#366f9f|'''入卷'''}}。\n:* {{color|#366f9f|'''入卷'''}}可视为一种特殊的先行一步：该干员'''将无法参与所有后续战斗，直至回归'''；该干员回归时也可'''且仅可'''获得进阶嘉奖，无法获得通常先行一步的其它奖励及燃烛。\n相应的，未入卷的干员'''将无法参与本结局的最终战斗'''。\n※除此以外，您也有机会在【今昔境】中获得额外的令干员入卷的机会。建议您在进入【今昔境】前存储足够量的烛火，并在游园期间慎重平衡入卷人选。\n:* '''首次'''令干员{{color|#366f9f|'''入卷'''}}后将获得收藏品【[[岁的界园志异/珍玩集册#无墨长卷|无墨长卷]]】。\n这会使第5层最终Boss关产生变化（变化为[[ISW-DF 天数将易]] / (持有墨化残碑时)[[ISW-DF 往昔难忆]]）。\n* 持有【无墨长卷】而通过第五层战斗后，可进入该层，见证诛杀[[后兽]]与[[矩兽]]的【[[ISW-DF 末狩|末狩]]】。\n:* 本层的【误入奇境】为特殊版本：事件为'''[[岁的界园志异/事件一览#古今交汇|古今交汇]]'''。\n可获得7点烛火 或 燃烛1名干员后获得6烛火，进入【今昔境】（参见上述），'''且必须进入'''。\n* '''[[岁的界园志异/事件一览#大狩维天|大狩维天]]'''：于该层的【命运所指】中遭遇。\n:* 通过该节点后，所有的'''非入卷'''干员将被禁用，而先前{{color|#366f9f|'''入卷'''}}的干员将'''全部回归'''可供调遣。\n* 以不持有【“小磨唧”】的状态通过第6层，即可完成游戏结局。",
+      "entryConditionAst": null,
+      "bossIconId": "boss_dyjsww",
+      "bossStageIds": [
+        "ro5_b_7"
+      ],
+      "identityResolution": {
+        "terminalZoneMethod": "prts_ending_card_under_core_area",
+        "bossStageMethod": "client_boss_icon_equals_stage_special_node"
+      },
+      "fieldEvidence": {
+        "endingIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "endingId, endingName, and bossIconId come from the fixed client topic table."
+        },
+        "terminalZoneAndEntryText": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-5:408424"
+          ],
+          "notes": "Verbatim wikitext below the fixed PRTS entry heading, with comments and structural wrappers removed."
+        },
+        "bossStageIds": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "Derived from client ending.bossIconId == stage.specialNodeId."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-5:408424"
+        ],
+        "notes": "Ending placement is public-sourced; ending and stage identities are client-verified."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_5:ro5_ending_5",
+      "theme": "rogue_5",
+      "endingId": "ro5_ending_5",
+      "endingName": "落子无悔",
+      "terminalZoneId": "zone_8",
+      "entryConditionText": "* 在【内容拓展·Ⅱ】上线后完成任一可用结局，解锁本结局相关联的事件与收藏品。\n* 进入【岁兽残识】，在【故肆】节点的【点睛】中，消耗5目标生命上限（不会使目标生命上限低于1）选择【点墨生器】，获得收藏品【[[岁的界园志异/珍玩集册#追忆仪|追忆仪]]】。\n** 获得该收藏品将失去全部源石锭和剩余希望，且此后的战斗中获得的指挥经验和源石锭-50%。\n* 持有【追忆仪】时，【误入奇境】节点将出现额外选项“凝视仪器”，选择后进入特殊战斗【[[ISW-DF 录忆|录忆]]】。\n: 完成战斗后获得收藏品【“小磨唧”】。\n:* 持有该收藏品时，费用自然回复速度-50%。\n:* 在这场战斗中，您将遭遇【朔壳】。\n* （非必须）在【指点迷津】中选择【拆解岁护】，获得收藏品【[[岁的界园志异/珍玩集册#不息|不息]]】与9票券。\n** 持有该收藏品时，所有敌人的攻击力+30%，且【伺烛客】将在界园中随拿取后的层数提升失去攻击力与最大生命值，直至进入最后一层后失去大部分战斗能力。\n* （非必须）再次在【岁兽残识】（需为【是非境】）访问【故肆】，选择【拆解岁护】，获得收藏品【[[岁的界园志异/珍玩集册#不赦|不赦]]】。\n** 持有该收藏品时，所有敌人的生命值和防御力+50%，并使最后一层的作战中出现被召唤的敌人。\n* 通过除【来去处】外最终层战斗后进入本层，面对【[[朔壳]]】和【[[妄躯]]】。本层仅有2个节点，您将在【命运所指】做好最后的准备。\n** 若在此之前'''[[岁的界园志异/事件一览#收笔|收笔]]'''或'''[[岁的界园志异/事件一览#大狩维天|大狩维天]]'''，则先前被禁用的干员将在进入本层时回归。\n* '''[[岁的界园志异/事件一览#谋定|谋定]]'''：于该层的【命运所指】中遭遇。\n在此您将最后规划自己将要面对的敌人。\n:* 选择“朔的身影逐渐清晰”：进入普通战斗【[[ISW-DF 定乾坤|定乾坤]]】。\n:* 选择“望向阴影”：\n根据您持有的其它结局/不利收藏品，您可选择不同的分支。\n'''注意：'''一旦进入本选项，将无法撤回！该战斗难度极高，且您在此将面对'''{{color|red|海量种类}}'''被召唤的敌人。\n可选择的分支有：\n:** [[ISW-DF 止变|化镇抚]]：[[易]]将出现在战场中，“身形”将反弹部分受到的伤害；\n:** [[ISW-DF 止变|溯承形]]：持有【墨化残碑】时可选，[[“岁”]]将出现在战场中，[[妄躯]]在一段时间后才会出现，“身形”将反弹部分受到的伤害；\n:** [[ISW-DF 止变|改对弈]]：持有【云与漆】时可选，[[“望”]]将出现在战场中，“身形”将反弹部分受到的伤害；\n:** [[ISW-DF 止变|塑旧历]]：持有【无墨长卷】时可选，[[雕伥]]将出现在战场中，“身形”将反弹部分受到的伤害；\n:** [[ISW-DF 定乾坤(定本源)|定本源]]：持有【不赦】与【不息】时可选，[[朔壳]]和[[妄躯]]同时出现在战场中，“身形”将反弹更多受到的伤害；\n:** [[ISW-DF 止变(役群兽)|役群兽]]：持有【不赦】与【不息】时可选，[[易]]、[[“岁”]]、[[“望”]]、[[朔壳]]和[[妄躯]]将全部出现在战场中，“身形”将反弹更多受到的伤害。\n* 通过本层即完成结局。",
+      "entryConditionAst": null,
+      "bossIconId": "boss_dycyue",
+      "bossStageIds": [
+        "ro5_b_10",
+        "ro5_b_10_b",
+        "ro5_b_9_a",
+        "ro5_b_9_b",
+        "ro5_b_9_c",
+        "ro5_b_9_d",
+        "ro5_b_9_e"
+      ],
+      "identityResolution": {
+        "terminalZoneMethod": "prts_ending_card_under_core_area",
+        "bossStageMethod": "client_boss_icon_equals_stage_special_node"
+      },
+      "fieldEvidence": {
+        "endingIdentity": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "endingId, endingName, and bossIconId come from the fixed client topic table."
+        },
+        "terminalZoneAndEntryText": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "prts:rogue-5:408424"
+          ],
+          "notes": "Verbatim wikitext below the fixed PRTS entry heading, with comments and structural wrappers removed."
+        },
+        "bossStageIds": {
+          "reviewStatus": "client_verified",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7"
+          ],
+          "notes": "Derived from client ending.bossIconId == stage.specialNodeId."
+        }
+      },
+      "evidence": {
+        "reviewStatus": "public_sourced",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-5:408424"
+        ],
+        "notes": "Ending placement is public-sourced; ending and stage identities are client-verified."
+      },
+      "implementationStatus": "document_only",
+      "runtimeEnabled": false
+    }
+  ],
   "endingZones": [
     {
       "id": "rogue_1:zone_6",
@@ -30,13 +2615,19 @@
       "zoneId": "zone_6",
       "name": "渴欲大厅",
       "isHiddenZone": true,
-      "routeRole": null,
-      "endingIds": null,
+      "routeRole": "terminal",
+      "endingIds": [
+        "ro_ending_3",
+        "ro_ending_4"
+      ],
       "entryConditionText": null,
       "entryConditionAst": null,
       "predecessors": null,
       "successors": null,
-      "bossStageIds": null,
+      "bossStageIds": [
+        "ro1_b_8",
+        "ro1_b_9"
+      ],
       "eventPoolTag": null,
       "rewardTier": 6,
       "fieldEvidence": {
@@ -53,15 +2644,24 @@
             "user-review:2026-07-14"
           ],
           "notes": "Q11; this does not activate the route or override special-region stage rewards."
+        },
+        "routeFields": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7",
+            "prts:rogue-1:408420"
+          ],
+          "notes": "routeRole, endingIds, and bossStageIds are aggregated from generated per-ending routes."
         }
       },
       "evidence": {
-        "reviewStatus": "needs_review",
+        "reviewStatus": "public_sourced",
         "sourceRefs": [
           "client:roguelike-topic-table:634e7e7",
-          "user-review:2026-07-14"
+          "user-review:2026-07-14",
+          "prts:rogue-1:408420"
         ],
-        "notes": "Client fields and reward tier are known at different evidence levels; route semantics remain unresolved."
+        "notes": "Client fields, user-confirmed reward tier, and fixed-revision route facts are tracked separately in fieldEvidence."
       },
       "implementationStatus": "pending",
       "runtimeEnabled": false
@@ -72,13 +2672,19 @@
       "zoneId": "zone_6",
       "name": "幽海丛林",
       "isHiddenZone": true,
-      "routeRole": null,
-      "endingIds": null,
+      "routeRole": "terminal",
+      "endingIds": [
+        "ro2_ending_3",
+        "ro2_ending_4"
+      ],
       "entryConditionText": null,
       "entryConditionAst": null,
       "predecessors": null,
       "successors": null,
-      "bossStageIds": null,
+      "bossStageIds": [
+        "ro2_b_6",
+        "ro2_b_7"
+      ],
       "eventPoolTag": null,
       "rewardTier": 6,
       "fieldEvidence": {
@@ -95,15 +2701,24 @@
             "user-review:2026-07-14"
           ],
           "notes": "Q11; this does not activate the route or override special-region stage rewards."
+        },
+        "routeFields": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7",
+            "prts:rogue-2:408421"
+          ],
+          "notes": "routeRole, endingIds, and bossStageIds are aggregated from generated per-ending routes."
         }
       },
       "evidence": {
-        "reviewStatus": "needs_review",
+        "reviewStatus": "public_sourced",
         "sourceRefs": [
           "client:roguelike-topic-table:634e7e7",
-          "user-review:2026-07-14"
+          "user-review:2026-07-14",
+          "prts:rogue-2:408421"
         ],
-        "notes": "Client fields and reward tier are known at different evidence levels; route semantics remain unresolved."
+        "notes": "Client fields, user-confirmed reward tier, and fixed-revision route facts are tracked separately in fieldEvidence."
       },
       "implementationStatus": "pending",
       "runtimeEnabled": false
@@ -156,13 +2771,18 @@
       "zoneId": "zone_6",
       "name": "远见之构",
       "isHiddenZone": true,
-      "routeRole": null,
-      "endingIds": null,
+      "routeRole": "terminal",
+      "endingIds": [
+        "ro3_ending_3"
+      ],
       "entryConditionText": null,
       "entryConditionAst": null,
       "predecessors": null,
       "successors": null,
-      "bossStageIds": null,
+      "bossStageIds": [
+        "ro3_b_6",
+        "ro3_b_6_b"
+      ],
       "eventPoolTag": null,
       "rewardTier": 6,
       "fieldEvidence": {
@@ -179,15 +2799,24 @@
             "user-review:2026-07-14"
           ],
           "notes": "Q11; this does not activate the route or override special-region stage rewards."
+        },
+        "routeFields": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7",
+            "prts:rogue-3:408422"
+          ],
+          "notes": "routeRole, endingIds, and bossStageIds are aggregated from generated per-ending routes."
         }
       },
       "evidence": {
-        "reviewStatus": "needs_review",
+        "reviewStatus": "public_sourced",
         "sourceRefs": [
           "client:roguelike-topic-table:634e7e7",
-          "user-review:2026-07-14"
+          "user-review:2026-07-14",
+          "prts:rogue-3:408422"
         ],
-        "notes": "Client fields and reward tier are known at different evidence levels; route semantics remain unresolved."
+        "notes": "Client fields, user-confirmed reward tier, and fixed-revision route facts are tracked separately in fieldEvidence."
       },
       "implementationStatus": "pending",
       "runtimeEnabled": false
@@ -198,13 +2827,18 @@
       "zoneId": "zone_7",
       "name": "永恒之尘",
       "isHiddenZone": true,
-      "routeRole": null,
-      "endingIds": null,
+      "routeRole": "terminal",
+      "endingIds": [
+        "ro3_ending_4"
+      ],
       "entryConditionText": null,
       "entryConditionAst": null,
       "predecessors": null,
       "successors": null,
-      "bossStageIds": null,
+      "bossStageIds": [
+        "ro3_b_7",
+        "ro3_b_7_b"
+      ],
       "eventPoolTag": null,
       "rewardTier": 6,
       "fieldEvidence": {
@@ -221,15 +2855,24 @@
             "user-review:2026-07-14"
           ],
           "notes": "Q11; this does not activate the route or override special-region stage rewards."
+        },
+        "routeFields": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7",
+            "prts:rogue-3:408422"
+          ],
+          "notes": "routeRole, endingIds, and bossStageIds are aggregated from generated per-ending routes."
         }
       },
       "evidence": {
-        "reviewStatus": "needs_review",
+        "reviewStatus": "public_sourced",
         "sourceRefs": [
           "client:roguelike-topic-table:634e7e7",
-          "user-review:2026-07-14"
+          "user-review:2026-07-14",
+          "prts:rogue-3:408422"
         ],
-        "notes": "Client fields and reward tier are known at different evidence levels; route semantics remain unresolved."
+        "notes": "Client fields, user-confirmed reward tier, and fixed-revision route facts are tracked separately in fieldEvidence."
       },
       "implementationStatus": "pending",
       "runtimeEnabled": false
@@ -240,13 +2883,17 @@
       "zoneId": "zone_6",
       "name": "辉光天顶",
       "isHiddenZone": false,
-      "routeRole": null,
-      "endingIds": null,
+      "routeRole": "terminal",
+      "endingIds": [
+        "ro4_ending_3"
+      ],
       "entryConditionText": null,
       "entryConditionAst": null,
       "predecessors": null,
       "successors": null,
-      "bossStageIds": null,
+      "bossStageIds": [
+        "ro4_b_6"
+      ],
       "eventPoolTag": null,
       "rewardTier": 6,
       "fieldEvidence": {
@@ -263,15 +2910,24 @@
             "user-review:2026-07-14"
           ],
           "notes": "Q11; this does not activate the route or override special-region stage rewards."
+        },
+        "routeFields": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7",
+            "prts:rogue-4:408423"
+          ],
+          "notes": "routeRole, endingIds, and bossStageIds are aggregated from generated per-ending routes."
         }
       },
       "evidence": {
-        "reviewStatus": "needs_review",
+        "reviewStatus": "public_sourced",
         "sourceRefs": [
           "client:roguelike-topic-table:634e7e7",
-          "user-review:2026-07-14"
+          "user-review:2026-07-14",
+          "prts:rogue-4:408423"
         ],
-        "notes": "Client fields and reward tier are known at different evidence levels; route semantics remain unresolved."
+        "notes": "Client fields, user-confirmed reward tier, and fixed-revision route facts are tracked separately in fieldEvidence."
       },
       "implementationStatus": "pending",
       "runtimeEnabled": false
@@ -282,13 +2938,17 @@
       "zoneId": "zone_7",
       "name": "逍遥兰若",
       "isHiddenZone": false,
-      "routeRole": null,
-      "endingIds": null,
+      "routeRole": "terminal",
+      "endingIds": [
+        "ro4_ending_4"
+      ],
       "entryConditionText": null,
       "entryConditionAst": null,
       "predecessors": null,
       "successors": null,
-      "bossStageIds": null,
+      "bossStageIds": [
+        "ro4_b_7"
+      ],
       "eventPoolTag": null,
       "rewardTier": 6,
       "fieldEvidence": {
@@ -305,15 +2965,24 @@
             "user-review:2026-07-14"
           ],
           "notes": "Q11; this does not activate the route or override special-region stage rewards."
+        },
+        "routeFields": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7",
+            "prts:rogue-4:408423"
+          ],
+          "notes": "routeRole, endingIds, and bossStageIds are aggregated from generated per-ending routes."
         }
       },
       "evidence": {
-        "reviewStatus": "needs_review",
+        "reviewStatus": "public_sourced",
         "sourceRefs": [
           "client:roguelike-topic-table:634e7e7",
-          "user-review:2026-07-14"
+          "user-review:2026-07-14",
+          "prts:rogue-4:408423"
         ],
-        "notes": "Client fields and reward tier are known at different evidence levels; route semantics remain unresolved."
+        "notes": "Client fields, user-confirmed reward tier, and fixed-revision route facts are tracked separately in fieldEvidence."
       },
       "implementationStatus": "pending",
       "runtimeEnabled": false
@@ -324,13 +2993,17 @@
       "zoneId": "zone_8",
       "name": "无终安息",
       "isHiddenZone": false,
-      "routeRole": null,
-      "endingIds": null,
+      "routeRole": "terminal",
+      "endingIds": [
+        "ro4_ending_5"
+      ],
       "entryConditionText": null,
       "entryConditionAst": null,
       "predecessors": null,
       "successors": null,
-      "bossStageIds": null,
+      "bossStageIds": [
+        "ro4_b_8"
+      ],
       "eventPoolTag": null,
       "rewardTier": 6,
       "fieldEvidence": {
@@ -347,15 +3020,24 @@
             "user-review:2026-07-14"
           ],
           "notes": "Q11; this does not activate the route or override special-region stage rewards."
+        },
+        "routeFields": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7",
+            "prts:rogue-4:408423"
+          ],
+          "notes": "routeRole, endingIds, and bossStageIds are aggregated from generated per-ending routes."
         }
       },
       "evidence": {
-        "reviewStatus": "needs_review",
+        "reviewStatus": "public_sourced",
         "sourceRefs": [
           "client:roguelike-topic-table:634e7e7",
-          "user-review:2026-07-14"
+          "user-review:2026-07-14",
+          "prts:rogue-4:408423"
         ],
-        "notes": "Client fields and reward tier are known at different evidence levels; route semantics remain unresolved."
+        "notes": "Client fields, user-confirmed reward tier, and fixed-revision route facts are tracked separately in fieldEvidence."
       },
       "implementationStatus": "pending",
       "runtimeEnabled": false
@@ -366,13 +3048,17 @@
       "zoneId": "zone_6",
       "name": "始末陵",
       "isHiddenZone": false,
-      "routeRole": null,
-      "endingIds": null,
+      "routeRole": "terminal",
+      "endingIds": [
+        "ro5_ending_3"
+      ],
       "entryConditionText": null,
       "entryConditionAst": null,
       "predecessors": null,
       "successors": null,
-      "bossStageIds": null,
+      "bossStageIds": [
+        "ro5_b_6"
+      ],
       "eventPoolTag": null,
       "rewardTier": 6,
       "fieldEvidence": {
@@ -389,15 +3075,24 @@
             "user-review:2026-07-14"
           ],
           "notes": "Q11; this does not activate the route or override special-region stage rewards."
+        },
+        "routeFields": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7",
+            "prts:rogue-5:408424"
+          ],
+          "notes": "routeRole, endingIds, and bossStageIds are aggregated from generated per-ending routes."
         }
       },
       "evidence": {
-        "reviewStatus": "needs_review",
+        "reviewStatus": "public_sourced",
         "sourceRefs": [
           "client:roguelike-topic-table:634e7e7",
-          "user-review:2026-07-14"
+          "user-review:2026-07-14",
+          "prts:rogue-5:408424"
         ],
-        "notes": "Client fields and reward tier are known at different evidence levels; route semantics remain unresolved."
+        "notes": "Client fields, user-confirmed reward tier, and fixed-revision route facts are tracked separately in fieldEvidence."
       },
       "implementationStatus": "pending",
       "runtimeEnabled": false
@@ -408,13 +3103,17 @@
       "zoneId": "zone_7",
       "name": "明灭顶",
       "isHiddenZone": false,
-      "routeRole": null,
-      "endingIds": null,
+      "routeRole": "terminal",
+      "endingIds": [
+        "ro5_ending_4"
+      ],
       "entryConditionText": null,
       "entryConditionAst": null,
       "predecessors": null,
       "successors": null,
-      "bossStageIds": null,
+      "bossStageIds": [
+        "ro5_b_7"
+      ],
       "eventPoolTag": null,
       "rewardTier": 6,
       "fieldEvidence": {
@@ -431,15 +3130,24 @@
             "user-review:2026-07-14"
           ],
           "notes": "Q11; this does not activate the route or override special-region stage rewards."
+        },
+        "routeFields": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7",
+            "prts:rogue-5:408424"
+          ],
+          "notes": "routeRole, endingIds, and bossStageIds are aggregated from generated per-ending routes."
         }
       },
       "evidence": {
-        "reviewStatus": "needs_review",
+        "reviewStatus": "public_sourced",
         "sourceRefs": [
           "client:roguelike-topic-table:634e7e7",
-          "user-review:2026-07-14"
+          "user-review:2026-07-14",
+          "prts:rogue-5:408424"
         ],
-        "notes": "Client fields and reward tier are known at different evidence levels; route semantics remain unresolved."
+        "notes": "Client fields, user-confirmed reward tier, and fixed-revision route facts are tracked separately in fieldEvidence."
       },
       "implementationStatus": "pending",
       "runtimeEnabled": false
@@ -450,13 +3158,23 @@
       "zoneId": "zone_8",
       "name": "来去处",
       "isHiddenZone": false,
-      "routeRole": null,
-      "endingIds": null,
+      "routeRole": "terminal",
+      "endingIds": [
+        "ro5_ending_5"
+      ],
       "entryConditionText": null,
       "entryConditionAst": null,
       "predecessors": null,
       "successors": null,
-      "bossStageIds": null,
+      "bossStageIds": [
+        "ro5_b_10",
+        "ro5_b_10_b",
+        "ro5_b_9_a",
+        "ro5_b_9_b",
+        "ro5_b_9_c",
+        "ro5_b_9_d",
+        "ro5_b_9_e"
+      ],
       "eventPoolTag": null,
       "rewardTier": 6,
       "fieldEvidence": {
@@ -473,15 +3191,24 @@
             "user-review:2026-07-14"
           ],
           "notes": "Q11; this does not activate the route or override special-region stage rewards."
+        },
+        "routeFields": {
+          "reviewStatus": "public_sourced",
+          "sourceRefs": [
+            "client:roguelike-topic-table:634e7e7",
+            "prts:rogue-5:408424"
+          ],
+          "notes": "routeRole, endingIds, and bossStageIds are aggregated from generated per-ending routes."
         }
       },
       "evidence": {
-        "reviewStatus": "needs_review",
+        "reviewStatus": "public_sourced",
         "sourceRefs": [
           "client:roguelike-topic-table:634e7e7",
-          "user-review:2026-07-14"
+          "user-review:2026-07-14",
+          "prts:rogue-5:408424"
         ],
-        "notes": "Client fields and reward tier are known at different evidence levels; route semantics remain unresolved."
+        "notes": "Client fields, user-confirmed reward tier, and fixed-revision route facts are tracked separately in fieldEvidence."
       },
       "implementationStatus": "pending",
       "runtimeEnabled": false
@@ -613,46 +3340,567 @@
     "implementationStatus": "pending",
     "runtimeEnabled": false
   },
-  "unresolved": [
+  "quarantine": [
     {
-      "id": "ending-route-matrix",
-      "fields": [
-        "endingIds",
-        "orderedZones",
-        "entryConditions",
-        "bossStageIds",
-        "eventReplacements",
-        "settleSequence"
+      "id": "rogue_3:ro3_ending_c",
+      "kind": "ending_route",
+      "theme": "rogue_3",
+      "endingId": "ro3_ending_c",
+      "sourceName": "短暂光芒",
+      "candidateZoneIds": null,
+      "candidateStageIds": [
+        "ro3_b_4",
+        "ro3_b_4_b"
       ],
-      "description": "No ending route has a complete, fixed-revision matrix yet.",
+      "sourceNodeLengthText": null,
+      "sourceMaximumBranchesText": null,
+      "sourceLayoutText": null,
+      "reason": "The client ending is absent from the fixed PRTS region section; its shared boss icon does not establish a terminal zone.",
       "evidence": {
         "reviewStatus": "needs_review",
         "sourceRefs": [
-          "user-review:2026-07-14"
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-3:408422"
         ],
-        "notes": "Routes remain runtime-disabled."
+        "notes": "The source record is retained without selecting an unsupported canonical route or layout."
+      },
+      "implementationStatus": "unsupported",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_3:prts-area:deep-buried-maze",
+      "kind": "area_layout",
+      "theme": "rogue_3",
+      "endingId": null,
+      "sourceName": "深埋迷境",
+      "candidateZoneIds": [
+        "zone_s_2_1a_1",
+        "zone_s_2_1a_2",
+        "zone_s_2_1a_3",
+        "zone_s_2_1a_4",
+        "zone_s_2_1a_5",
+        "zone_s_2_1a_6",
+        "zone_s_2_1b_1",
+        "zone_s_2_1b_2",
+        "zone_s_2_1b_3",
+        "zone_s_2_1b_4",
+        "zone_s_2_1b_5",
+        "zone_s_2_1b_6",
+        "zone_s_2_1c_1",
+        "zone_s_2_1c_2",
+        "zone_s_2_1c_3",
+        "zone_s_2_1c_4",
+        "zone_s_2_1c_5",
+        "zone_s_2_1c_6",
+        "zone_s_2_1d_1",
+        "zone_s_2_1d_2",
+        "zone_s_2_1d_3",
+        "zone_s_2_1d_4",
+        "zone_s_2_1d_5",
+        "zone_s_2_1d_6",
+        "zone_s_2_1e_1",
+        "zone_s_2_1e_2",
+        "zone_s_2_1e_3",
+        "zone_s_2_1e_4",
+        "zone_s_2_1e_5",
+        "zone_s_2_1e_6",
+        "zone_s_2_2a_1",
+        "zone_s_2_2a_2",
+        "zone_s_2_2a_3",
+        "zone_s_2_2a_4",
+        "zone_s_2_2a_5",
+        "zone_s_2_2a_6",
+        "zone_s_2_2b_1",
+        "zone_s_2_2b_2",
+        "zone_s_2_2b_3",
+        "zone_s_2_2b_4",
+        "zone_s_2_2b_5",
+        "zone_s_2_2b_6",
+        "zone_s_2_2c_1",
+        "zone_s_2_2c_2",
+        "zone_s_2_2c_3",
+        "zone_s_2_2c_4",
+        "zone_s_2_2c_5",
+        "zone_s_2_2c_6",
+        "zone_s_2_3a_1",
+        "zone_s_2_3a_2",
+        "zone_s_2_3a_3",
+        "zone_s_2_3a_4",
+        "zone_s_2_3a_5",
+        "zone_s_2_3a_6",
+        "zone_s_2_3b_1",
+        "zone_s_2_3b_2",
+        "zone_s_2_3b_3",
+        "zone_s_2_3b_4",
+        "zone_s_2_3b_5",
+        "zone_s_2_3b_6",
+        "zone_s_2_3c_1",
+        "zone_s_2_3c_2",
+        "zone_s_2_3c_3",
+        "zone_s_2_3c_4",
+        "zone_s_2_3c_5",
+        "zone_s_2_3c_6",
+        "zone_s_3_1a_1",
+        "zone_s_3_1a_2",
+        "zone_s_3_1a_3",
+        "zone_s_3_1a_4",
+        "zone_s_3_1a_5",
+        "zone_s_3_1a_6",
+        "zone_s_3_1b_1",
+        "zone_s_3_1b_2",
+        "zone_s_3_1b_3",
+        "zone_s_3_1b_4",
+        "zone_s_3_1b_5",
+        "zone_s_3_1b_6",
+        "zone_s_3_1c_1",
+        "zone_s_3_1c_2",
+        "zone_s_3_1c_3",
+        "zone_s_3_1c_4",
+        "zone_s_3_1c_5",
+        "zone_s_3_1c_6",
+        "zone_s_3_1d_1",
+        "zone_s_3_1d_2",
+        "zone_s_3_1d_3",
+        "zone_s_3_1d_4",
+        "zone_s_3_1d_5",
+        "zone_s_3_1d_6",
+        "zone_s_3_1e_1",
+        "zone_s_3_1e_2",
+        "zone_s_3_1e_3",
+        "zone_s_3_1e_4",
+        "zone_s_3_1e_5",
+        "zone_s_3_1e_6",
+        "zone_s_3_2a_1",
+        "zone_s_3_2a_2",
+        "zone_s_3_2a_3",
+        "zone_s_3_2a_4",
+        "zone_s_3_2a_5",
+        "zone_s_3_2a_6",
+        "zone_s_3_2b_1",
+        "zone_s_3_2b_2",
+        "zone_s_3_2b_3",
+        "zone_s_3_2b_4",
+        "zone_s_3_2b_5",
+        "zone_s_3_2b_6",
+        "zone_s_3_2c_1",
+        "zone_s_3_2c_2",
+        "zone_s_3_2c_3",
+        "zone_s_3_2c_4",
+        "zone_s_3_2c_5",
+        "zone_s_3_2c_6",
+        "zone_s_3_3a_1",
+        "zone_s_3_3a_2",
+        "zone_s_3_3a_3",
+        "zone_s_3_3a_4",
+        "zone_s_3_3a_5",
+        "zone_s_3_3a_6",
+        "zone_s_3_3b_1",
+        "zone_s_3_3b_2",
+        "zone_s_3_3b_3",
+        "zone_s_3_3b_4",
+        "zone_s_3_3b_5",
+        "zone_s_3_3b_6",
+        "zone_s_3_3c_1",
+        "zone_s_3_3c_2",
+        "zone_s_3_3c_3",
+        "zone_s_3_3c_4",
+        "zone_s_3_3c_5",
+        "zone_s_3_3c_6",
+        "zone_s_4_1a_1",
+        "zone_s_4_1a_2",
+        "zone_s_4_1a_3",
+        "zone_s_4_1a_4",
+        "zone_s_4_1a_5",
+        "zone_s_4_1a_6",
+        "zone_s_4_1b_1",
+        "zone_s_4_1b_2",
+        "zone_s_4_1b_3",
+        "zone_s_4_1b_4",
+        "zone_s_4_1b_5",
+        "zone_s_4_1b_6",
+        "zone_s_4_1c_1",
+        "zone_s_4_1c_2",
+        "zone_s_4_1c_3",
+        "zone_s_4_1c_4",
+        "zone_s_4_1c_5",
+        "zone_s_4_1c_6",
+        "zone_s_4_1d_1",
+        "zone_s_4_1d_2",
+        "zone_s_4_1d_3",
+        "zone_s_4_1d_4",
+        "zone_s_4_1d_5",
+        "zone_s_4_1d_6",
+        "zone_s_4_1e_1",
+        "zone_s_4_1e_2",
+        "zone_s_4_1e_3",
+        "zone_s_4_1e_4",
+        "zone_s_4_1e_5",
+        "zone_s_4_1e_6",
+        "zone_s_4_2a_1",
+        "zone_s_4_2a_2",
+        "zone_s_4_2a_3",
+        "zone_s_4_2a_4",
+        "zone_s_4_2a_5",
+        "zone_s_4_2a_6",
+        "zone_s_4_2b_1",
+        "zone_s_4_2b_2",
+        "zone_s_4_2b_3",
+        "zone_s_4_2b_4",
+        "zone_s_4_2b_5",
+        "zone_s_4_2b_6",
+        "zone_s_4_2c_1",
+        "zone_s_4_2c_2",
+        "zone_s_4_2c_3",
+        "zone_s_4_2c_4",
+        "zone_s_4_2c_5",
+        "zone_s_4_2c_6",
+        "zone_s_4_3a_1",
+        "zone_s_4_3a_2",
+        "zone_s_4_3a_3",
+        "zone_s_4_3a_4",
+        "zone_s_4_3a_5",
+        "zone_s_4_3a_6",
+        "zone_s_4_3b_1",
+        "zone_s_4_3b_2",
+        "zone_s_4_3b_3",
+        "zone_s_4_3b_4",
+        "zone_s_4_3b_5",
+        "zone_s_4_3b_6",
+        "zone_s_4_3c_1",
+        "zone_s_4_3c_2",
+        "zone_s_4_3c_3",
+        "zone_s_4_3c_4",
+        "zone_s_4_3c_5",
+        "zone_s_4_3c_6",
+        "zone_s_5_1a_1",
+        "zone_s_5_1a_2",
+        "zone_s_5_1a_3",
+        "zone_s_5_1a_4",
+        "zone_s_5_1a_5",
+        "zone_s_5_1a_6",
+        "zone_s_5_1b_1",
+        "zone_s_5_1b_2",
+        "zone_s_5_1b_3",
+        "zone_s_5_1b_4",
+        "zone_s_5_1b_5",
+        "zone_s_5_1b_6",
+        "zone_s_5_1c_1",
+        "zone_s_5_1c_2",
+        "zone_s_5_1c_3",
+        "zone_s_5_1c_4",
+        "zone_s_5_1c_5",
+        "zone_s_5_1c_6",
+        "zone_s_5_1d_1",
+        "zone_s_5_1d_2",
+        "zone_s_5_1d_3",
+        "zone_s_5_1d_4",
+        "zone_s_5_1d_5",
+        "zone_s_5_1d_6",
+        "zone_s_5_1e_1",
+        "zone_s_5_1e_2",
+        "zone_s_5_1e_3",
+        "zone_s_5_1e_4",
+        "zone_s_5_1e_5",
+        "zone_s_5_1e_6",
+        "zone_s_5_2a_1",
+        "zone_s_5_2a_2",
+        "zone_s_5_2a_3",
+        "zone_s_5_2a_4",
+        "zone_s_5_2a_5",
+        "zone_s_5_2a_6",
+        "zone_s_5_2b_1",
+        "zone_s_5_2b_2",
+        "zone_s_5_2b_3",
+        "zone_s_5_2b_4",
+        "zone_s_5_2b_5",
+        "zone_s_5_2b_6",
+        "zone_s_5_2c_1",
+        "zone_s_5_2c_2",
+        "zone_s_5_2c_3",
+        "zone_s_5_2c_4",
+        "zone_s_5_2c_5",
+        "zone_s_5_2c_6",
+        "zone_s_5_3a_1",
+        "zone_s_5_3a_2",
+        "zone_s_5_3a_3",
+        "zone_s_5_3a_4",
+        "zone_s_5_3a_5",
+        "zone_s_5_3a_6",
+        "zone_s_5_3b_1",
+        "zone_s_5_3b_2",
+        "zone_s_5_3b_3",
+        "zone_s_5_3b_4",
+        "zone_s_5_3b_5",
+        "zone_s_5_3b_6",
+        "zone_s_5_3c_1",
+        "zone_s_5_3c_2",
+        "zone_s_5_3c_3",
+        "zone_s_5_3c_4",
+        "zone_s_5_3c_5",
+        "zone_s_5_3c_6",
+        "zone_s_6_1a_1",
+        "zone_s_6_1a_2",
+        "zone_s_6_1a_3",
+        "zone_s_6_1a_4",
+        "zone_s_6_1a_5",
+        "zone_s_6_1a_6",
+        "zone_s_6_1b_1",
+        "zone_s_6_1b_2",
+        "zone_s_6_1b_3",
+        "zone_s_6_1b_4",
+        "zone_s_6_1b_5",
+        "zone_s_6_1b_6",
+        "zone_s_6_1c_1",
+        "zone_s_6_1c_2",
+        "zone_s_6_1c_3",
+        "zone_s_6_1c_4",
+        "zone_s_6_1c_5",
+        "zone_s_6_1c_6",
+        "zone_s_6_1d_1",
+        "zone_s_6_1d_2",
+        "zone_s_6_1d_3",
+        "zone_s_6_1d_4",
+        "zone_s_6_1d_5",
+        "zone_s_6_1d_6",
+        "zone_s_6_1e_1",
+        "zone_s_6_1e_2",
+        "zone_s_6_1e_3",
+        "zone_s_6_1e_4",
+        "zone_s_6_1e_5",
+        "zone_s_6_1e_6",
+        "zone_s_6_2a_1",
+        "zone_s_6_2a_2",
+        "zone_s_6_2a_3",
+        "zone_s_6_2a_4",
+        "zone_s_6_2a_5",
+        "zone_s_6_2a_6",
+        "zone_s_6_2b_1",
+        "zone_s_6_2b_2",
+        "zone_s_6_2b_3",
+        "zone_s_6_2b_4",
+        "zone_s_6_2b_5",
+        "zone_s_6_2b_6",
+        "zone_s_6_2c_1",
+        "zone_s_6_2c_2",
+        "zone_s_6_2c_3",
+        "zone_s_6_2c_4",
+        "zone_s_6_2c_5",
+        "zone_s_6_2c_6",
+        "zone_s_6_3a_1",
+        "zone_s_6_3a_2",
+        "zone_s_6_3a_3",
+        "zone_s_6_3a_4",
+        "zone_s_6_3a_5",
+        "zone_s_6_3a_6",
+        "zone_s_6_3b_1",
+        "zone_s_6_3b_2",
+        "zone_s_6_3b_3",
+        "zone_s_6_3b_4",
+        "zone_s_6_3b_5",
+        "zone_s_6_3b_6",
+        "zone_s_6_3c_1",
+        "zone_s_6_3c_2",
+        "zone_s_6_3c_3",
+        "zone_s_6_3c_4",
+        "zone_s_6_3c_5",
+        "zone_s_6_3c_6"
+      ],
+      "candidateStageIds": null,
+      "sourceNodeLengthText": "？",
+      "sourceMaximumBranchesText": "？",
+      "sourceLayoutText": "①【3个诡意行商】→【3个诡意行商】\n②【2个不期而遇/失与得】→【2个不期而遇/失与得】\n③【2个非战斗节点】→【2个非战斗节点】→【2个非战斗节点】\n④【2个战斗节点】→【3个非战斗节点】→【不期而遇/兴致盎然】\n⑤【2个战斗节点】→【2个非战斗节点】→【不期而遇/兴致盎然】\n⑥【2个战斗节点】→【2~3个战斗节点】→【2个不期而遇】\n⑦【3个战斗节点】→【1个得偿所愿】\n⑧【3个战斗节点】→【2个战斗节点】\n⑨【2个战斗节点】→【3个战斗节点】",
+      "reason": "The fixed page lists nine layouts, while 330 same-name client zones encode variants not resolved by the page summary.",
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-3:408422"
+        ],
+        "notes": "The source record is retained without selecting an unsupported canonical route or layout."
+      },
+      "implementationStatus": "unsupported",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_4:prts-area:bizarre-chapter",
+      "kind": "area_layout",
+      "theme": "rogue_4",
+      "endingId": null,
+      "sourceName": "诡谲断章",
+      "candidateZoneIds": [
+        "zone_portal_end_1",
+        "zone_portal_end_2",
+        "zone_portal_normal_1",
+        "zone_portal_normal_2",
+        "zone_portal_normal_3",
+        "zone_portal_normal_4",
+        "zone_portal_normal_5",
+        "zone_portal_normal_6",
+        "zone_portal_revival_3",
+        "zone_portal_revival_4",
+        "zone_portal_revival_5",
+        "zone_portal_travel_1"
+      ],
+      "candidateStageIds": null,
+      "sourceNodeLengthText": "？",
+      "sourceMaximumBranchesText": "？",
+      "sourceLayoutText": "①【安全的角落】→【诡意行商】→【2个战斗节点】→【不期而遇（温暖余韵）】\n②【狭路相逢】→【得偿所愿】→【紧急作战】\n③【2个普通作战】→【得偿所愿】→【紧急作战】\n④【普通作战】→【得偿所愿】→【紧急作战】",
+      "reason": "The fixed page contains general and event-specific variants, while twelve same-name client zones are not individually identified.",
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-4:408423"
+        ],
+        "notes": "The source record is retained without selecting an unsupported canonical route or layout."
+      },
+      "implementationStatus": "unsupported",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_4:prts-area:no-end-rest-extra",
+      "kind": "area_layout",
+      "theme": "rogue_4",
+      "endingId": null,
+      "sourceName": "无终安息",
+      "candidateZoneIds": [
+        "zone_portal_end_3"
+      ],
+      "candidateStageIds": null,
+      "sourceNodeLengthText": null,
+      "sourceMaximumBranchesText": null,
+      "sourceLayoutText": "{{模糊|【不期而遇（[[萨卡兹的无终奇语/事件一览#消失——|消失——]]）】→【不期而遇（消失……）】→【不期而遇（消失。）】→【命运所指（　）】}}",
+      "reason": "The extra failure layout shares a title with the core ending zone and has no linear length/branch summary.",
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-4:408423"
+        ],
+        "notes": "The source record is retained without selecting an unsupported canonical route or layout."
+      },
+      "implementationStatus": "unsupported",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_5:prts-area:past-present-realm",
+      "kind": "area_layout",
+      "theme": "rogue_5",
+      "endingId": null,
+      "sourceName": "今昔境",
+      "candidateZoneIds": [
+        "zone_sky_2"
+      ],
+      "candidateStageIds": null,
+      "sourceNodeLengthText": null,
+      "sourceMaximumBranchesText": null,
+      "sourceLayoutText": "节点范围：5×5 节点总数：25（包括起点节点）",
+      "reason": "This is a 5x5 planar area, outside the linear area-layout record shape.",
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-5:408424"
+        ],
+        "notes": "The source record is retained without selecting an unsupported canonical route or layout."
+      },
+      "implementationStatus": "unsupported",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "rogue_5:prts-area:right-wrong-realm",
+      "kind": "area_layout",
+      "theme": "rogue_5",
+      "endingId": null,
+      "sourceName": "是非境",
+      "candidateZoneIds": [
+        "zone_sky_1",
+        "zone_sky_3"
+      ],
+      "candidateStageIds": null,
+      "sourceNodeLengthText": null,
+      "sourceMaximumBranchesText": null,
+      "sourceLayoutText": "节点范围：5×7 节点总数：≤32（包括起点节点）",
+      "reason": "This is a 5x7 planar area with two same-name client zone IDs, outside the linear area-layout record shape.",
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "client:roguelike-topic-table:634e7e7",
+          "prts:rogue-5:408424"
+        ],
+        "notes": "The source record is retained without selecting an unsupported canonical route or layout."
+      },
+      "implementationStatus": "unsupported",
+      "runtimeEnabled": false
+    }
+  ],
+  "unresolved": [
+    {
+      "id": "ending-route-semantics",
+      "fields": [
+        "orderedZones",
+        "entryConditionAst",
+        "eventReplacements",
+        "settleSequence"
+      ],
+      "description": "Terminal zones and 20 explicit entry texts are synchronized, but natural-language conditions and settlement effects are not executable rules.",
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "prts:rogue-1:408420",
+          "prts:rogue-2:408421",
+          "prts:rogue-3:408422",
+          "prts:rogue-4:408423",
+          "prts:rogue-5:408424"
+        ],
+        "notes": "Two base ending cards have no explicit entry heading; all routes remain runtime-disabled."
       },
       "implementationStatus": "pending",
       "runtimeEnabled": false
     },
     {
-      "id": "region-node-layouts",
+      "id": "area-layout-structure",
       "fields": [
         "columns",
-        "slotCounts",
         "nodeTypes",
         "connections",
         "guarantees"
       ],
-      "description": "Q12 requests a PRTS region-layout summary before generator changes.",
+      "description": "Core node lengths, maximum branches, and source summaries are fixed, but prose is not converted into generator graph constraints.",
       "evidence": {
         "reviewStatus": "needs_review",
         "sourceRefs": [
-          "user-review:2026-07-14"
+          "prts:rogue-1:408420",
+          "prts:rogue-2:408421",
+          "prts:rogue-3:408422",
+          "prts:rogue-4:408423",
+          "prts:rogue-5:408424"
         ],
-        "notes": "No approximate layout is encoded in this first phase."
+        "notes": "Source layout text is retained verbatim enough for review; no approximate graph is activated."
       },
       "implementationStatus": "pending",
+      "runtimeEnabled": false
+    },
+    {
+      "id": "special-area-layout-identity",
+      "fields": [
+        "candidateZoneIds",
+        "variantLayouts",
+        "planarLayouts"
+      ],
+      "description": "5 special-area source records remain quarantined from linear core layouts.",
+      "evidence": {
+        "reviewStatus": "needs_review",
+        "sourceRefs": [
+          "prts:rogue-1:408420",
+          "prts:rogue-2:408421",
+          "prts:rogue-3:408422",
+          "prts:rogue-4:408423",
+          "prts:rogue-5:408424"
+        ],
+        "notes": "Ambiguous client variants and planar layouts require separate models."
+      },
+      "implementationStatus": "unsupported",
       "runtimeEnabled": false
     }
   ]

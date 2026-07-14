@@ -92,8 +92,8 @@
       "revision": "408420",
       "accessedOn": "2026-07-14",
       "reviewStatus": "public_sourced",
-      "scope": "RO1 public base battle resource values.",
-      "constraints": "Does not establish protocol shape, private pool weights, or unrelated event/relic facts."
+      "scope": "RO1 public base battle resource values, region-section layout summaries, and ending-entry text.",
+      "constraints": "MediaWiki SHA-1 b602537278585d7040c4c526fe25ad4e8145c64f. Does not establish executable condition ASTs, private pool weights, detailed graph edges, or protocol shape."
     },
     {
       "id": "prts:rogue-2:408421",
@@ -102,8 +102,8 @@
       "revision": "408421",
       "accessedOn": "2026-07-14",
       "reviewStatus": "public_sourced",
-      "scope": "RO2 public base battle resource values.",
-      "constraints": "Does not establish protocol shape, private pool weights, or unrelated event/relic facts."
+      "scope": "RO2 public base battle resource values, region-section layout summaries, and ending-entry text.",
+      "constraints": "MediaWiki SHA-1 ccd182ace56c5800f4293801f97f663aca7b3d9d. Does not establish executable condition ASTs, private pool weights, detailed graph edges, or protocol shape."
     },
     {
       "id": "prts:rogue-3:408422",
@@ -112,8 +112,8 @@
       "revision": "408422",
       "accessedOn": "2026-07-14",
       "reviewStatus": "public_sourced",
-      "scope": "RO3 public base battle resource values.",
-      "constraints": "Does not establish protocol shape, private pool weights, or unrelated event/relic facts."
+      "scope": "RO3 public base battle resource values, region-section layout summaries, and ending-entry text.",
+      "constraints": "MediaWiki SHA-1 851ae40d3aed08731e74c6b08ae209f424cee113. Does not establish executable condition ASTs, private pool weights, detailed graph edges, or protocol shape."
     },
     {
       "id": "prts:rogue-4:408423",
@@ -122,8 +122,8 @@
       "revision": "408423",
       "accessedOn": "2026-07-14",
       "reviewStatus": "public_sourced",
-      "scope": "RO4 public base battle resource values.",
-      "constraints": "Does not establish protocol shape, private pool weights, or unrelated event/relic facts."
+      "scope": "RO4 public base battle resource values, region-section layout summaries, and ending-entry text.",
+      "constraints": "MediaWiki SHA-1 ca39b2ac37db1afbc6f834dfaa6e82ca0e207179. Does not establish executable condition ASTs, private pool weights, detailed graph edges, or protocol shape."
     },
     {
       "id": "prts:rogue-5:408424",
@@ -132,8 +132,58 @@
       "revision": "408424",
       "accessedOn": "2026-07-14",
       "reviewStatus": "public_sourced",
-      "scope": "RO5 public base battle resource values.",
-      "constraints": "Does not establish protocol shape, private pool weights, or unrelated event/relic facts."
+      "scope": "RO5 public base battle resource values, region-section layout summaries, and ending-entry text.",
+      "constraints": "MediaWiki SHA-1 519659b991f4ce965ebad7837a1ae938f37c693f. Does not establish executable condition ASTs, private pool weights, detailed graph edges, or protocol shape."
+    },
+    {
+      "id": "prts:rogue-1-events:408344",
+      "kind": "public_source",
+      "locator": "https://prts.wiki/w/Special:PermanentLink/408344",
+      "revision": "408344",
+      "accessedOn": "2026-07-14",
+      "reviewStatus": "public_sourced",
+      "scope": "RO1 event titles, page event groups, and explicit floor parameters.",
+      "constraints": "MediaWiki SHA-1 e1fb2503be3472dccbe70c1c2e3fdca18c1ee30c. Does not establish weights, hidden conditions, modes, effects, or protocol shape."
+    },
+    {
+      "id": "prts:rogue-2-events:408461",
+      "kind": "public_source",
+      "locator": "https://prts.wiki/w/Special:PermanentLink/408461",
+      "revision": "408461",
+      "accessedOn": "2026-07-14",
+      "reviewStatus": "public_sourced",
+      "scope": "RO2 event titles, page event groups, and explicit floor parameters.",
+      "constraints": "MediaWiki SHA-1 5fe7a759db05c2e68dd513062173b491d772b298. Does not establish weights, hidden conditions, modes, effects, or protocol shape."
+    },
+    {
+      "id": "prts:rogue-3-events:408462",
+      "kind": "public_source",
+      "locator": "https://prts.wiki/w/Special:PermanentLink/408462",
+      "revision": "408462",
+      "accessedOn": "2026-07-14",
+      "reviewStatus": "public_sourced",
+      "scope": "RO3 event titles, page event groups, and explicit floor parameters.",
+      "constraints": "MediaWiki SHA-1 adeadfdd958c92bef31a8042c6d0d53d7385bf03. Standard and month scenes can share titles and text; excluded candidates remain explicit."
+    },
+    {
+      "id": "prts:rogue-4-events:408463",
+      "kind": "public_source",
+      "locator": "https://prts.wiki/w/Special:PermanentLink/408463",
+      "revision": "408463",
+      "accessedOn": "2026-07-14",
+      "reviewStatus": "public_sourced",
+      "scope": "RO4 event titles, page event groups, and explicit floor parameters.",
+      "constraints": "MediaWiki SHA-1 e7b81b5e81ef21ee9f08f1f27753b05ce69ed9c3. Does not establish weights, hidden conditions, modes, effects, or protocol shape."
+    },
+    {
+      "id": "prts:rogue-5-events:408460",
+      "kind": "public_source",
+      "locator": "https://prts.wiki/w/Special:PermanentLink/408460",
+      "revision": "408460",
+      "accessedOn": "2026-07-14",
+      "reviewStatus": "public_sourced",
+      "scope": "RO5 event titles, page event groups, and explicit floor parameters.",
+      "constraints": "MediaWiki SHA-1 f9eaa7181d0fb4996d24c2c7df7fad27741bdde1. Does not establish weights, hidden conditions, modes, effects, or protocol shape."
     },
     {
       "id": "tomimi:sheet:BB08J2",

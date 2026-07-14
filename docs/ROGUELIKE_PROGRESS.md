@@ -1,7 +1,7 @@
 # Roguelike 模块完善进度
 
-> 最后更新：2026-07-14（进行中）  
-> 目标版本：客户端 `2.7.51 / Data 26-07-10`  
+> 最后更新：2026-07-14（进行中）
+> 目标版本：客户端 `2.7.51 / Data 26-07-10`
 > 证据优先级：当前客户端表/协议 > PRTS/官方资料 > 腾讯整理表 > B 站旧版统计
 
 ## 当前状态
@@ -13,8 +13,9 @@
 | `SyncData` | 已完成，待最终回归 | 按请求 UID 从仓储合并 `user.rlv2.current` | 完整依赖环境下补接口级回归 |
 | 终局结算 | 研究中 | 当前客户端元数据确认存在 `POST /rlv2/gameSettle`；现有 `GAME_OVER` 仅是内部不可继续闸门 | 确认请求/响应字段后实现最小安全清局流程 |
 | 战斗基础收益 | 已完成，待真实协议回归 | 五主题逐层普通/紧急矩阵已接入；EXP 自动结算升级，源石锭作为独立奖励领取；确认 `exploreExpOnKill` 不是该经验表 | 收集同版本真实 `battleFinish/chooseBattleReward` fixture；另行实现 Boss、特殊区域与主题乘区 |
-| 离线规则事实层 | 第一阶段已建立，未接线 | `data/rlv2/rules` 已分离客户端事实快照与人工规则；固定 `2.7.51`、GameData commit、topic table hash、Schema 和来源状态 | 固定藏品/事件/区域页面 revision，逐条转录成员关系并保持未知值为 `null` |
-| 事件楼层资格 | 契约已建，资料待转录 | 已建立 scene canonical 目录、事件 tag/alias 契约及 RO3 特殊区域 tag；尚未把 PRTS 事件模板逐条写入 annotations | 固定事件页 revision、完成 RO1/2/4/5 映射与 RO3 重名消歧，禁止全主题随机回退 |
+| 离线规则事实层 | 第二阶段进行中，未接线 | `data/rlv2/rules` 已分离客户端事实快照与人工规则；固定 `2.7.51`、GameData commit、topic table hash、Schema 和来源状态；事件与区域页资料已完成首轮同步 | 继续固定藏品页面 revision，逐条转录成员关系并保持未知值为 `null` |
+| 事件楼层资格 | 首轮资料转录完成，未接线 | 五个固定 PRTS revision 共 254 条页面事件已映射为 250 条 canonical 注解和 4 条 quarantine；171 条显式楼层范围已结构化，RO3 标准/month 候选分离 | 人工消歧 4 条特殊节点/变体，并补模式、结局条件、权重与效果；禁止全主题随机回退 |
+| 区域与结局资料 | 首轮资料转录完成，未接线 | 五个固定主题页生成 36 条核心线性布局、22 条结局路线和 20 条入口原文；6 条结局/特殊区域记录隔离；Boss stage 仅按客户端字段等式推导 | 将入口原文审成条件 AST；为特殊/平面区域单独建模；核心布局转图约束前逐列核验 |
 | 地图生成 | 已有安全约束，仍为近似 | 已实现基本可达、RO3 紧急节点上限等性质；`rollNodeData` 只可用于节点刷新候选，不能当自然地图白名单 | 每个受支持的 `theme × zone` 组合跑 2500 个固定种子硬验收 |
 | 主题专属模块 | 部分实现 | RO1 临时生命、RO2 部分灯火/骰子、RO4/5 初始化外形等已存在 | 按客户端协议逐模块实现，未知概率保持显式近似 |
 
@@ -30,11 +31,16 @@
 - EXP 在 `battleFinish` 自动入账并处理升级；源石锭作为独立 reward，经 `chooseBattleReward` 领取且不能重复发放或未领取即结束。
 - 新增完整矩阵、边界和 handler 事务测试；当前 roguelike 相关测试为 **50 项通过**。
 - 新建 `data/rlv2/rules` 离线事实层：从当前 topic table 提取主题、1489 件藏品、591 个关卡、390 个区域和 2495 个 scene，并将用户确认规则单独保存为未接线注解。
+- 固定五个 PRTS“事件一览”revision 及 SHA-1，转录 254 条页面事件；250 条绑定 canonical scene，4 条歧义记录进入 quarantine，171 条明确楼层完成结构化。
+- 新增确定性事件同步工具，校验页面 revision、客户端 scene 引用、RO3 month 重名候选和生成结果；运行时仍不联网、不加载这些规则。
+- 固定五个 PRTS 主题页 revision 及 SHA-1，转录 36 条核心区域布局和 22 条结局终点；20 条“进入方式”保留来源原文，条件 AST 仍为 `null`。
+- 从客户端 `bossIconId == specialNodeId` 推导结局 Boss stage 集合；RO1 空图标不猜测，`ro3_ending_c` 与 5 条特殊/平面区域记录进入 quarantine。
+- 新增确定性区域同步工具，校验 zone/ending/stage 引用、同名变体排除、固定计数和生成结果；运行时仍不联网、不加载这些规则。
 
 ## 进行中
 
 1. 从当前客户端 IL2CPP 元数据继续确认 `/rlv2/gameSettle` 的协议字段。
-2. 按固定 revision 将 PRTS/Tomimi 的藏品、事件、区域和模块事实转成版本化注解，运行时绝不联网。
+2. 按固定 revision 继续将 PRTS/Tomimi 的藏品和模块事实转成版本化注解；事件部分继续补条件、权重、效果及 4 条 quarantine，区域部分继续审入口 AST 与 6 条 quarantine，运行时绝不联网。
 3. 收集同版本真实战斗奖励协议 fixture，并独立建模 Boss、特殊区域、RO4 旗帜与主题乘区。
 
 ## 战斗基础收益矩阵
@@ -73,10 +79,13 @@
 | 2026-07-14 | 相关 Python 文件 `py_compile` | 通过 |
 | 2026-07-14 | 相关文件 `git diff --check` | 通过 |
 | 2026-07-14 | `data/rlv2/rules` JSON、Draft 2020-12 Schema、记录数、sourceRefs 与 canonical ID 交叉校验 | 通过 |
+| 2026-07-14 | 五个固定 PRTS 事件页 SHA-1、254 条来源记录、250 条 canonical 映射、4 条 quarantine、171 条楼层映射及同步确定性 | 通过 |
+| 2026-07-14 | 五个固定 PRTS 主题页 SHA-1、36 条核心布局、22 条结局路线、20 条入口原文、6 条 quarantine 及同步确定性 | 通过 |
 
 ## 资料与可复核来源
 
-- [PRTS 集成战略](https://prts.wiki/w/%E9%9B%86%E6%88%90%E6%88%98%E7%95%A5)及五个主题页、事件一览页（访问日期：2026-07-14）。收益矩阵对应五个主题页 revision：`rogue_1=408420`、`rogue_2=408421`、`rogue_3=408422`、`rogue_4=408423`、`rogue_5=408424`（页面时间均为 2026-07-13 UTC）。
+- [PRTS 集成战略](https://prts.wiki/w/%E9%9B%86%E6%88%90%E6%88%98%E7%95%A5)及五个主题页、事件一览页（访问日期：2026-07-14）。收益矩阵、核心区域摘要和结局入口对应五个主题页 revision：`rogue_1=408420`、`rogue_2=408421`、`rogue_3=408422`、`rogue_4=408423`、`rogue_5=408424`（页面时间均为 2026-07-13 UTC）。
+- 事件楼层对应五个事件页 revision：`rogue_1=408344`、`rogue_2=408461`、`rogue_3=408462`、`rogue_4=408463`、`rogue_5=408460`。每页 SHA-1 已写入 `manifest.json` 并由同步工具强校验。
 - [Bilibili BV1qC4y1Q7Gy](https://www.bilibili.com/video/BV1qC4y1Q7Gy)，用于萨米主题地图节点统计的交叉参考。
 - [腾讯文档指定工作表](https://docs.qq.com/sheet/DQkhoWVpEcUF2T3FV?tab=BB08J2)，用于玩家实测规则交叉检查，不作为运行时依赖。
 - 仓库路径 `data/excel` 是指向 `/Users/happyelements/ArknightsGameData/zh_CN/gamedata/excel` 的软链接；本轮直接复核其 `roguelike_topic_table.json`，SHA-256 为 `643df7574c8955c827bec2645ed09c06df44bc6654a85ead96002a8298b91bb6`。该表与客户端 IL2CPP 元数据共同作为版本协议和表结构事实基准。
@@ -88,5 +97,6 @@
 - 当前地图生成和结局改线仍在 zone 5 结束标准流程，尚不能自然进入隐藏第六层或 RO4/RO5 的替代 zone 7；矩阵已覆盖这些合法状态，但路线生成仍属独立缺口。
 - Boss、传送/特殊区域、RO4 旗帜、紧急额外掉落及藏品/主题乘区仍无可靠完整规则；当前不会回退到普通/紧急矩阵。
 - 奖励外形已按 `2.7.51` IL2CPP 字段约束实现，但仍缺同版本真实请求/响应 fixture。
-- RO3/RO4/RO5 的大量事件 choice 效果仍为空，补楼层资格只解决“何时出现”，不等于效果已还原。
+- 事件页明确给出的 171 条楼层范围已转录但尚未接线；模式、结局条件、权重及大量 choice 效果仍为空，4 条特殊节点/变体仍在 quarantine。补楼层资格只解决“可能在哪层出现”，不等于事件已还原。
+- 区域页的 36 条线性摘要和 22 条终点映射已转录但尚未接线；来源布局仍是 wikitext，入口条件 AST、完整有序路线、事件替换与结算顺序为空，6 条结局/特殊区域记录仍在 quarantine。
 - 完整 Flask 接口测试仍取决于 Flask、PyCryptodome、msgspec、colorama 等运行依赖是否可用。

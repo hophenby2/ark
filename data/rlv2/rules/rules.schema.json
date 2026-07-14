@@ -112,6 +112,274 @@
       },
       "additionalProperties": true
     },
+    "eventEligibility": {
+      "type": "object",
+      "required": [
+        "logicalDepths",
+        "zoneIds",
+        "modes",
+        "endingIds",
+        "conditionAst",
+        "weight"
+      ],
+      "properties": {
+        "logicalDepths": {
+          "oneOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 8
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "zoneIds": {
+          "oneOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "uniqueItems": true
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "modes": {
+          "oneOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "uniqueItems": true
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "endingIds": {
+          "oneOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "uniqueItems": true
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "conditionAst": {
+          "type": [
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "weight": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "eventIdentityResolution": {
+      "type": "object",
+      "required": [
+        "method",
+        "candidateSceneIds",
+        "excludedCandidateSceneIds"
+      ],
+      "properties": {
+        "method": {
+          "type": "string",
+          "enum": [
+            "title_unique",
+            "source_key_matches_scene_suffix",
+            "opening_description_unique",
+            "standard_scene_selected_over_month_variant"
+          ]
+        },
+        "candidateSceneIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "excludedCandidateSceneIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "eventAnnotation": {
+      "type": "object",
+      "required": [
+        "id",
+        "theme",
+        "sceneId",
+        "sourceEventKey",
+        "sourceTitle",
+        "sourceEventTypeLabel",
+        "eligibility",
+        "identityResolution",
+        "sourceAliases",
+        "evidence",
+        "implementationStatus",
+        "runtimeEnabled"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^rogue_[1-5]:.+$"
+        },
+        "theme": {
+          "type": "string",
+          "pattern": "^rogue_[1-5]$"
+        },
+        "sceneId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceEventKey": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceTitle": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceEventTypeLabel": {
+          "type": "string",
+          "minLength": 1
+        },
+        "eligibility": {
+          "$ref": "#/$defs/eventEligibility"
+        },
+        "identityResolution": {
+          "$ref": "#/$defs/eventIdentityResolution"
+        },
+        "sourceAliases": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidence"
+        },
+        "implementationStatus": {
+          "$ref": "#/$defs/implementationStatus"
+        },
+        "runtimeEnabled": {
+          "const": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "eventQuarantineRecord": {
+      "type": "object",
+      "required": [
+        "id",
+        "theme",
+        "sourceEventKey",
+        "sourceTitle",
+        "sourceEventTypeLabel",
+        "eligibility",
+        "reason",
+        "candidateSceneIds",
+        "sourceAliases",
+        "evidence",
+        "implementationStatus",
+        "runtimeEnabled"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^rogue_[1-5]:prts-event:.+$"
+        },
+        "theme": {
+          "type": "string",
+          "pattern": "^rogue_[1-5]$"
+        },
+        "sourceEventKey": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceTitle": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceEventTypeLabel": {
+          "type": "string",
+          "minLength": 1
+        },
+        "eligibility": {
+          "$ref": "#/$defs/eventEligibility"
+        },
+        "reason": {
+          "const": "ambiguous_scene_identity"
+        },
+        "candidateSceneIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 2,
+          "uniqueItems": true
+        },
+        "sourceAliases": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidence"
+        },
+        "implementationStatus": {
+          "$ref": "#/$defs/implementationStatus"
+        },
+        "runtimeEnabled": {
+          "const": false
+        }
+      },
+      "additionalProperties": false
+    },
     "source": {
       "type": "object",
       "required": [
@@ -974,9 +1242,11 @@
         "kind",
         "schemaVersion",
         "runtimeEnabled",
+        "sourceRefs",
         "tagDefinitions",
         "identityPolicy",
         "annotations",
+        "quarantine",
         "unresolved"
       ],
       "properties": {
@@ -992,6 +1262,15 @@
         "runtimeEnabled": {
           "const": false
         },
+        "sourceRefs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
         "tagDefinitions": {
           "type": "array",
           "items": {
@@ -1005,10 +1284,16 @@
           "type": "object",
           "patternProperties": {
             "^rogue_[1-5]:.+$": {
-              "$ref": "#/$defs/ruleRecord"
+              "$ref": "#/$defs/eventAnnotation"
             }
           },
           "additionalProperties": false
+        },
+        "quarantine": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/eventQuarantineRecord"
+          }
         },
         "unresolved": {
           "type": "array",
@@ -1099,6 +1384,340 @@
       },
       "additionalProperties": false
     },
+    "areaLayoutIdentityResolution": {
+      "type": "object",
+      "required": [
+        "method",
+        "excludedCandidateZoneIds"
+      ],
+      "properties": {
+        "method": {
+          "const": "explicit_core_zone_id_and_title"
+        },
+        "excludedCandidateZoneIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "areaLayoutRecord": {
+      "type": "object",
+      "required": [
+        "id",
+        "theme",
+        "zoneId",
+        "name",
+        "nodeLengthText",
+        "baseNodeLength",
+        "maximumBranches",
+        "sourceLayoutText",
+        "identityResolution",
+        "fieldEvidence",
+        "evidence",
+        "implementationStatus",
+        "runtimeEnabled"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^rogue_[1-5]:zone_[1-8]$"
+        },
+        "theme": {
+          "type": "string",
+          "pattern": "^rogue_[1-5]$"
+        },
+        "zoneId": {
+          "type": "string",
+          "pattern": "^zone_[1-8]$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "nodeLengthText": {
+          "type": "string",
+          "minLength": 1
+        },
+        "baseNodeLength": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "maximumBranches": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sourceLayoutText": {
+          "type": "string",
+          "minLength": 1
+        },
+        "identityResolution": {
+          "$ref": "#/$defs/areaLayoutIdentityResolution"
+        },
+        "fieldEvidence": {
+          "type": "object",
+          "required": [
+            "clientIdentity",
+            "layoutSummary"
+          ],
+          "properties": {
+            "clientIdentity": {
+              "$ref": "#/$defs/evidence"
+            },
+            "layoutSummary": {
+              "$ref": "#/$defs/evidence"
+            }
+          },
+          "additionalProperties": false
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidence"
+        },
+        "implementationStatus": {
+          "$ref": "#/$defs/implementationStatus"
+        },
+        "runtimeEnabled": {
+          "const": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "endingRouteIdentityResolution": {
+      "type": "object",
+      "required": [
+        "terminalZoneMethod",
+        "bossStageMethod"
+      ],
+      "properties": {
+        "terminalZoneMethod": {
+          "const": "prts_ending_card_under_core_area"
+        },
+        "bossStageMethod": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "client_boss_icon_equals_stage_special_node",
+            null
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "endingRouteRecord": {
+      "type": "object",
+      "required": [
+        "id",
+        "theme",
+        "endingId",
+        "endingName",
+        "terminalZoneId",
+        "entryConditionText",
+        "entryConditionAst",
+        "bossIconId",
+        "bossStageIds",
+        "identityResolution",
+        "fieldEvidence",
+        "evidence",
+        "implementationStatus",
+        "runtimeEnabled"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^rogue_[1-5]:.+$"
+        },
+        "theme": {
+          "type": "string",
+          "pattern": "^rogue_[1-5]$"
+        },
+        "endingId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "endingName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "terminalZoneId": {
+          "type": "string",
+          "pattern": "^zone_[1-8]$"
+        },
+        "entryConditionText": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "entryConditionAst": {
+          "const": null
+        },
+        "bossIconId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "bossStageIds": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "identityResolution": {
+          "$ref": "#/$defs/endingRouteIdentityResolution"
+        },
+        "fieldEvidence": {
+          "type": "object",
+          "required": [
+            "endingIdentity",
+            "terminalZoneAndEntryText",
+            "bossStageIds"
+          ],
+          "properties": {
+            "endingIdentity": {
+              "$ref": "#/$defs/evidence"
+            },
+            "terminalZoneAndEntryText": {
+              "$ref": "#/$defs/evidence"
+            },
+            "bossStageIds": {
+              "$ref": "#/$defs/evidence"
+            }
+          },
+          "additionalProperties": false
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidence"
+        },
+        "implementationStatus": {
+          "$ref": "#/$defs/implementationStatus"
+        },
+        "runtimeEnabled": {
+          "const": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "regionQuarantineRecord": {
+      "type": "object",
+      "required": [
+        "id",
+        "kind",
+        "theme",
+        "endingId",
+        "sourceName",
+        "candidateZoneIds",
+        "candidateStageIds",
+        "sourceNodeLengthText",
+        "sourceMaximumBranchesText",
+        "sourceLayoutText",
+        "reason",
+        "evidence",
+        "implementationStatus",
+        "runtimeEnabled"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^rogue_[1-5]:.+$"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "area_layout",
+            "ending_route"
+          ]
+        },
+        "theme": {
+          "type": "string",
+          "pattern": "^rogue_[1-5]$"
+        },
+        "endingId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "sourceName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "candidateZoneIds": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "candidateStageIds": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "sourceNodeLengthText": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "sourceMaximumBranchesText": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "sourceLayoutText": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidence"
+        },
+        "implementationStatus": {
+          "$ref": "#/$defs/implementationStatus"
+        },
+        "runtimeEnabled": {
+          "const": false
+        }
+      },
+      "additionalProperties": false
+    },
     "zoneRoutesDocument": {
       "type": "object",
       "required": [
@@ -1106,10 +1725,14 @@
         "kind",
         "schemaVersion",
         "runtimeEnabled",
+        "sourceRefs",
         "stageRewardPolicy",
+        "areaLayouts",
+        "endingRoutes",
         "endingZones",
         "specialRegions",
         "flagVariantMapping",
+        "quarantine",
         "unresolved"
       ],
       "properties": {
@@ -1125,8 +1748,31 @@
         "runtimeEnabled": {
           "const": false
         },
+        "sourceRefs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
         "stageRewardPolicy": {
           "$ref": "#/$defs/ruleRecord"
+        },
+        "areaLayouts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/areaLayoutRecord"
+          },
+          "minItems": 1
+        },
+        "endingRoutes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/endingRouteRecord"
+          },
+          "minItems": 1
         },
         "endingZones": {
           "type": "array",
@@ -1142,6 +1788,12 @@
         },
         "flagVariantMapping": {
           "$ref": "#/$defs/ruleRecord"
+        },
+        "quarantine": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/regionQuarantineRecord"
+          }
         },
         "unresolved": {
           "type": "array",
