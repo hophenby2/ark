@@ -132,6 +132,119 @@
                 "state": 2,
                 "ts": 1784047755
             },
+            "t_10002": {
+                "from": "initial",
+                "id": "rogue_1_recruit_ticket_all",
+                "index": "t_10002",
+                "list": [],
+                "mustExtra": 0,
+                "needAssist": true,
+                "result": {
+                    "charBuff": [],
+                    "charId": "char_1035_wisdel",
+                    "currentEquip": "uniequip_002_wisdel",
+                    "defaultSkillIndex": 2,
+                    "equip": {
+                        "uniequip_001_wisdel": {
+                            "hide": 0,
+                            "level": 1,
+                            "locked": 0
+                        },
+                        "uniequip_002_wisdel": {
+                            "hide": 0,
+                            "level": 3,
+                            "locked": 0
+                        }
+                    },
+                    "evolvePhase": 2,
+                    "exp": 0,
+                    "favorPoint": 25570,
+                    "gainTime": 1743132975,
+                    "instId": "10000",
+                    "isCure": false,
+                    "isUpgrade": true,
+                    "level": 90,
+                    "mainSkillLvl": 7,
+                    "population": 3,
+                    "potentialRank": 5,
+                    "skills": [
+                        {
+                            "completeUpgradeTime": -1,
+                            "skillId": "skchr_wisdel_1",
+                            "specializeLevel": 3,
+                            "state": 0,
+                            "unlock": 1
+                        },
+                        {
+                            "completeUpgradeTime": -1,
+                            "skillId": "skchr_wisdel_2",
+                            "specializeLevel": 3,
+                            "state": 0,
+                            "unlock": 1
+                        },
+                        {
+                            "completeUpgradeTime": -1,
+                            "skillId": "skchr_wisdel_3",
+                            "specializeLevel": 3,
+                            "state": 0,
+                            "unlock": 1
+                        }
+                    ],
+                    "skin": "char_1035_wisdel@sale#14",
+                    "starMark": 0,
+                    "troopInstId": "0",
+                    "type": "NORMAL",
+                    "upgradeLimited": false,
+                    "upgradePhase": 1,
+                    "voiceLan": "JP"
+                },
+                "state": 2,
+                "ts": 1784047957
+            },
+            "t_10003": {
+                "from": "initial",
+                "id": "rogue_1_recruit_ticket_all",
+                "index": "t_10003",
+                "list": [],
+                "mustExtra": 0,
+                "needAssist": true,
+                "result": {
+                    "charBuff": [],
+                    "charId": "char_123_fang",
+                    "currentEquip": null,
+                    "defaultSkillIndex": 0,
+                    "equip": {},
+                    "evolvePhase": 1,
+                    "exp": 0,
+                    "favorPoint": 25570,
+                    "gainTime": 1743132975,
+                    "instId": "10003",
+                    "isCure": false,
+                    "isUpgrade": false,
+                    "level": 55,
+                    "mainSkillLvl": 7,
+                    "population": 0,
+                    "potentialRank": 5,
+                    "skills": [
+                        {
+                            "completeUpgradeTime": -1,
+                            "skillId": "skcom_charge_cost[1]",
+                            "specializeLevel": 0,
+                            "state": 0,
+                            "unlock": 1
+                        }
+                    ],
+                    "skin": "char_123_fang@winter#1",
+                    "starMark": 0,
+                    "troopInstId": "0",
+                    "type": "NORMAL",
+                    "upgradeLimited": true,
+                    "upgradePhase": 0,
+                    "voiceLan": "JP"
+                },
+                "state": 2,
+                "ts": 1784048077
+            },
             "t_9999": {
                 "from": "initial",
                 "id": "rogue_1_recruit_ticket_tank",
@@ -189,6 +302,12 @@
                 "id": "rogue_1_relic_m15",
                 "index": "r_1",
                 "ts": 1784047783
+            },
+            "r_2": {
+                "count": 1,
+                "id": "rogue_1_relic_m15",
+                "index": "r_2",
+                "ts": 1784048098
             }
         },
         "trap": null
@@ -260,7 +379,8 @@
                             "usedCount": 0
                         },
                         "stage": "ro1_n_2_3",
-                        "type": 1
+                        "type": 1,
+                        "visited": true
                     },
                     "2": {
                         "index": "2",
@@ -302,7 +422,8 @@
                             "count": 0,
                             "usedCount": 0
                         },
-                        "type": 16
+                        "type": 16,
+                        "visited": true
                     },
                     "201": {
                         "index": "201",
@@ -380,119 +501,35 @@
         "chgEnding": false,
         "cursor": {
             "position": {
-                "x": 0,
+                "x": 2,
                 "y": 0
             },
             "zone": 2
         },
-        "pending": [
-            {
-                "content": {
-                    "battle": {
-                        "boxInfo": {},
-                        "chestCnt": 100,
-                        "diceRoll": [],
-                        "goldTrapCnt": 10,
-                        "sanity": 0,
-                        "state": 1,
-                        "tmpChar": [],
-                        "unKeepBuff": [
-                            {
-                                "blackboard": [
-                                    {
-                                        "key": "key",
-                                        "value": 0.0,
-                                        "valueStr": "recruit_upgrade_medic"
-                                    },
-                                    {
-                                        "key": "value",
-                                        "value": 1.0,
-                                        "valueStr": null
-                                    }
-                                ],
-                                "key": "dynamic_update"
-                            },
-                            {
-                                "blackboard": [
-                                    {
-                                        "key": "key",
-                                        "value": 0.0,
-                                        "valueStr": "recruit_upgrade_sniper"
-                                    },
-                                    {
-                                        "key": "value",
-                                        "value": 1.0,
-                                        "valueStr": null
-                                    }
-                                ],
-                                "key": "dynamic_update"
-                            },
-                            {
-                                "blackboard": [
-                                    {
-                                        "key": "rarity",
-                                        "value": 0.0,
-                                        "valueStr": "TIER_4,TIER_5,TIER_6"
-                                    },
-                                    {
-                                        "key": "profession",
-                                        "value": 0.0,
-                                        "valueStr": "MEDIC,SNIPER"
-                                    },
-                                    {
-                                        "key": "delta",
-                                        "value": 0.0,
-                                        "valueStr": null
-                                    }
-                                ],
-                                "key": "recruit_cost"
-                            },
-                            {
-                                "blackboard": [
-                                    {
-                                        "key": "hp",
-                                        "value": 10.0,
-                                        "valueStr": null
-                                    }
-                                ],
-                                "key": "battle_fail_protect"
-                            }
-                        ]
-                    },
-                    "done": false,
-                    "popReport": false
-                },
-                "type": "BATTLE"
-            }
-        ],
+        "pending": [],
         "property": {
             "capacity": 6,
-            "conPerfectBattle": 0,
-            "exp": 0,
-            "gold": 6,
+            "conPerfectBattle": 1,
+            "exp": 14,
+            "gold": 12,
             "hp": {
-                "current": 4,
+                "current": 1,
                 "max": 4
             },
-            "level": 1,
+            "level": 2,
             "maxLevel": 10,
             "population": {
-                "cost": 6,
-                "max": 6
+                "cost": 9,
+                "max": 10
             },
             "shield": 0
         },
-        "state": "PENDING",
+        "state": "WAIT_MOVE",
         "status": {
             "bankPut": 0
         },
         "toEnding": "ro_ending_1",
-        "trace": [
-            {
-                "position": null,
-                "zone": 2
-            }
-        ]
+        "trace": []
     },
     "record": {
         "brief": null
@@ -502,8 +539,8 @@
             "10000": {
                 "charBuff": [],
                 "charId": "char_1035_wisdel",
-                "currentEquip": null,
-                "defaultSkillIndex": 1,
+                "currentEquip": "uniequip_002_wisdel",
+                "defaultSkillIndex": 2,
                 "equip": {
                     "uniequip_001_wisdel": {
                         "hide": 0,
@@ -516,46 +553,46 @@
                         "locked": 0
                     }
                 },
-                "evolvePhase": 1,
+                "evolvePhase": 2,
                 "exp": 0,
                 "favorPoint": 25570,
                 "gainTime": 1743132975,
                 "instId": "10000",
                 "isCure": false,
-                "isUpgrade": false,
-                "level": 80,
+                "isUpgrade": true,
+                "level": 90,
                 "mainSkillLvl": 7,
-                "population": 6,
+                "population": 3,
                 "potentialRank": 5,
                 "skills": [
                     {
                         "completeUpgradeTime": -1,
                         "skillId": "skchr_wisdel_1",
-                        "specializeLevel": 0,
+                        "specializeLevel": 3,
                         "state": 0,
                         "unlock": 1
                     },
                     {
                         "completeUpgradeTime": -1,
                         "skillId": "skchr_wisdel_2",
-                        "specializeLevel": 0,
+                        "specializeLevel": 3,
                         "state": 0,
                         "unlock": 1
                     },
                     {
                         "completeUpgradeTime": -1,
                         "skillId": "skchr_wisdel_3",
-                        "specializeLevel": 0,
+                        "specializeLevel": 3,
                         "state": 0,
-                        "unlock": 0
+                        "unlock": 1
                     }
                 ],
                 "skin": "char_1035_wisdel@sale#14",
                 "starMark": 0,
                 "troopInstId": "0",
                 "type": "NORMAL",
-                "upgradeLimited": true,
-                "upgradePhase": 0,
+                "upgradeLimited": false,
+                "upgradePhase": 1,
                 "voiceLan": "JP"
             },
             "10001": {
@@ -619,6 +656,40 @@
                     }
                 ],
                 "skin": "char_284_spot@boc#3",
+                "starMark": 0,
+                "troopInstId": "0",
+                "type": "NORMAL",
+                "upgradeLimited": true,
+                "upgradePhase": 0,
+                "voiceLan": "JP"
+            },
+            "10003": {
+                "charBuff": [],
+                "charId": "char_123_fang",
+                "currentEquip": null,
+                "defaultSkillIndex": 0,
+                "equip": {},
+                "evolvePhase": 1,
+                "exp": 0,
+                "favorPoint": 25570,
+                "gainTime": 1743132975,
+                "instId": "10003",
+                "isCure": false,
+                "isUpgrade": false,
+                "level": 55,
+                "mainSkillLvl": 7,
+                "population": 0,
+                "potentialRank": 5,
+                "skills": [
+                    {
+                        "completeUpgradeTime": -1,
+                        "skillId": "skcom_charge_cost[1]",
+                        "specializeLevel": 0,
+                        "state": 0,
+                        "unlock": 1
+                    }
+                ],
+                "skin": "char_123_fang@winter#1",
                 "starMark": 0,
                 "troopInstId": "0",
                 "type": "NORMAL",
