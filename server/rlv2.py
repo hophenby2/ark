@@ -1,8 +1,8 @@
 from flask import request
 from copy import deepcopy
 from collections import deque
+from contextvars import ContextVar
 from functools import wraps
-from threading import RLock
 from virtualtime import time
 import random
 import os
@@ -11,14 +11,12 @@ import hashlib
 
 from constants import (
     SYNC_DATA_TEMPLATE_PATH,
-    RLV2_JSON_PATH,
     RLV2_USER_SETTINGS_PATH,
     CONFIG_PATH,
     RLV2_SETTINGS_PATH,
-    SERVER_DATA_PATH
 )
 
-from utils import read_json, write_json, decrypt_battle_data, writeLog, get_memory
+from utils import read_json, decrypt_battle_data, writeLog, get_memory
 from rlv2_logic import (
     apply_numeric_delta,
     battle_experience,
@@ -36,40 +34,83 @@ from rlv2_logic import (
     select_player_level_table,
     settle_battle_life,
 )
+from rlv2_repository import (
+    InvalidUserIdError,
+    LegacyMirrorError,
+    MissingUserIdError,
+    RunRepositoryError,
+    get_run_repository,
+)
 import data.rlv2_data
 
 
-_RUN_LOCK = RLock()
+_ACTIVE_RUN_TRANSACTION = ContextVar("active_rlv2_transaction", default=None)
+
+
+def _response_status(result) -> int:
+    if isinstance(result, tuple) and len(result) >= 2:
+        status = result[1]
+        if isinstance(status, int):
+            return status
+    return 200
 
 
 def _serialized_run(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        with _RUN_LOCK:
+        if _ACTIVE_RUN_TRANSACTION.get() is not None:
             return func(*args, **kwargs)
+
+        try:
+            repository = get_run_repository()
+            uid = repository.uid_from_headers(request.headers)
+            result = None
+            try:
+                with repository.transaction(uid) as transaction:
+                    token = _ACTIVE_RUN_TRANSACTION.set(transaction)
+                    try:
+                        result = func(*args, **kwargs)
+                        if _response_status(result) < 400:
+                            transaction.commit()
+                    finally:
+                        _ACTIVE_RUN_TRANSACTION.reset(token)
+            except LegacyMirrorError as exc:
+                writeLog(f"Roguelike legacy mirror update failed: {exc}")
+            return result
+        except (MissingUserIdError, InvalidUserIdError) as exc:
+            return {"error": str(exc)}, 400
+        except RunRepositoryError as exc:
+            writeLog(f"Roguelike repository error: {exc}")
+            return {"error": "roguelike storage is unavailable"}, 503
 
     return wrapper
 
 
-def _atomic_write_json(data: dict, path: str) -> None:
-    temp_path = f"{path}.{os.getpid()}.tmp"
-    try:
-        write_json(data, temp_path)
-        os.replace(temp_path, path)
-    finally:
-        if os.path.exists(temp_path):
-            os.remove(temp_path)
+def _active_transaction():
+    transaction = _ACTIVE_RUN_TRANSACTION.get()
+    if transaction is None:
+        raise RunRepositoryError("roguelike action has no active transaction")
+    return transaction
+
+
+def _load_run() -> dict:
+    return _active_transaction().run
+
+
+def _load_server_data() -> dict:
+    return _active_transaction().server_data
 
 
 def _persist_run(rlv2: dict, server_data: dict | None = None) -> None:
-    _atomic_write_json(rlv2, RLV2_JSON_PATH)
+    transaction = _active_transaction()
+    transaction.run = rlv2
     if server_data is not None:
-        _atomic_write_json(server_data, SERVER_DATA_PATH)
+        transaction.server_data = server_data
 
 
 @_serialized_run
 def rlv2GiveUpGame():
-    server_data = read_json(SERVER_DATA_PATH)
+    server_data = _load_server_data()
     seed = server_data["rlv2_seed"]
     deque_seed = deque(server_data["seed_list"])
     if seed is not None:
@@ -347,7 +388,7 @@ def rlv2CreateGame():
             char["instId"] = char_id
             rlv2["troop"]["chars"][char_id] = char
 
-    server_data = read_json(SERVER_DATA_PATH)
+    server_data = _load_server_data()
     if not server_data.get("rlv2_seed"):
         server_data["rlv2_seed"] = os.urandom(16).hex()
     _persist_run(rlv2, server_data)
@@ -371,7 +412,7 @@ def rlv2ChooseInitialRelic():
     request_data = request.get_json()
     select = request_data["select"]
 
-    rlv2 = read_json(RLV2_JSON_PATH)
+    rlv2 = _load_run()
     pending = rlv2["player"]["pending"]
     if not pending or pending[0].get("type") != "GAME_INIT_RELIC":
         return {"error": "initial relic selection is not pending"}, 409
@@ -401,8 +442,8 @@ def rlv2ChooseInitialRelic():
 def rlv2SelectChoice():
     json_body = request.get_json()
     choice: str = json_body["choice"]
-    rlv2 = read_json(RLV2_JSON_PATH)
-    server_data = read_json(SERVER_DATA_PATH)
+    rlv2 = _load_run()
+    server_data = _load_server_data()
     rlv2_table = get_memory("roguelike_topic_table")
     event_choices = get_memory("event_choices")
     theme = rlv2["game"]["theme"]
@@ -599,7 +640,7 @@ def rlv2SelectChoice():
 @_serialized_run
 def rlv2ChooseInitialRecruitSet():
     request_data = request.get_json() or {}
-    rlv2 = read_json(RLV2_JSON_PATH)
+    rlv2 = _load_run()
     player_pending = rlv2["player"]["pending"]
     if not player_pending or player_pending[0].get("type") != "GAME_INIT_RECRUIT_SET":
         return {"error": "initial recruit set selection is not pending"}, 409
@@ -620,7 +661,7 @@ def rlv2ChooseInitialRecruitSet():
     config = read_json(CONFIG_PATH)
     if not config["rlv2Config"]["allChars"]:
         theme = rlv2["game"]["theme"]
-        server_data = read_json(SERVER_DATA_PATH)
+        server_data = _load_server_data()
         rng = random.Random(
             f"{server_data.get('rlv2_seed')}_{theme}_{selected_group}"
         )
@@ -663,7 +704,7 @@ def rlv2ActiveRecruitTicket():
     request_data = request.get_json()
     ticket_id = request_data["id"]
 
-    rlv2 = read_json(RLV2_JSON_PATH)
+    rlv2 = _load_run()
     ticket = rlv2["inventory"]["recruit"].get(ticket_id)
     if ticket is None or ticket["state"] != 0:
         return {"error": f"recruit ticket is unavailable: {ticket_id}"}, 400
@@ -708,7 +749,7 @@ def rlv2RecruitChar():
     ticket_id = request_data["ticketIndex"]
     option_id = int(request_data["optionId"])
 
-    rlv2 = read_json(RLV2_JSON_PATH)
+    rlv2 = _load_run()
     ticket = rlv2["inventory"]["recruit"].get(ticket_id)
     if ticket is None or ticket["state"] != 1:
         return {"error": f"recruit ticket is not active: {ticket_id}"}, 400
@@ -777,7 +818,7 @@ def rlv2CloseRecruitTicket():
     request_data = request.get_json()
     ticket_id = request_data["id"]
 
-    rlv2 = read_json(RLV2_JSON_PATH)
+    rlv2 = _load_run()
     ticket = rlv2["inventory"]["recruit"].get(ticket_id)
     pending = rlv2["player"]["pending"]
     if (
@@ -812,8 +853,8 @@ def rlv2CloseRecruitTicket():
 
 @_serialized_run
 def rlv2FinishEvent():
-    server_data = read_json(SERVER_DATA_PATH)
-    rlv2 = read_json(RLV2_JSON_PATH)
+    server_data = _load_server_data()
+    rlv2 = _load_run()
     pending = rlv2["player"]["pending"]
     if rlv2["player"]["state"] != "INIT":
         return {"error": "initialization is not active"}, 409
@@ -890,7 +931,7 @@ def rlv2MoveAndBattleStart():
     request_data = request.get_json()
     stage_id = request_data["stageId"]
 
-    rlv2 = read_json(RLV2_JSON_PATH)
+    rlv2 = _load_run()
     previous_cursor = deepcopy(rlv2["player"]["cursor"])
     if request_data["to"] is not None:
         if rlv2["player"]["state"] != "WAIT_MOVE" or rlv2["player"]["pending"]:
@@ -955,7 +996,7 @@ def rlv2MoveAndBattleStart():
     rlv2["player"]["trace"].append(previous_cursor)
     buffs = _rlv2.getBuffs(rlv2, stage_id)
     theme = rlv2["game"]["theme"]
-    server_data = read_json(SERVER_DATA_PATH)
+    server_data = _load_server_data()
     rng = random.Random(
         f"{server_data.get('rlv2_seed')}_{theme}_{stage_id}_"
         f"{rlv2['player']['cursor']}"
@@ -1053,7 +1094,7 @@ def rlv2BattleFinish():
     if "completeState" not in battle_data:
         return {"error": "invalid encrypted battle result"}, 400
 
-    rlv2 = read_json(RLV2_JSON_PATH)
+    rlv2 = _load_run()
     pending = rlv2["player"]["pending"]
     if not pending or pending[0].get("type") != "BATTLE":
         return {"error": "battle result is not pending"}, 409
@@ -1139,8 +1180,8 @@ def rlv2BattleFinish():
 
 @_serialized_run
 def rlv2FinishBattleReward():
-    server_data = read_json(SERVER_DATA_PATH)
-    rlv2 = read_json(RLV2_JSON_PATH)
+    server_data = _load_server_data()
+    rlv2 = _load_run()
     pending = rlv2["player"]["pending"]
     if not pending or pending[0].get("type") != "BATTLE_REWARD":
         return {"error": "battle reward settlement is not pending"}, 409
@@ -1171,8 +1212,8 @@ def rlv2MoveTo():
     x = request_data["to"]["x"]
     y = request_data["to"]["y"]
 
-    server_data = read_json(SERVER_DATA_PATH)
-    rlv2 = read_json(RLV2_JSON_PATH)
+    server_data = _load_server_data()
+    rlv2 = _load_run()
     rlv2_table = get_memory("roguelike_topic_table")
     event_choices = get_memory("event_choices")
     cursor = rlv2["player"]["cursor"]
@@ -1326,8 +1367,8 @@ def rlv2MoveTo():
 
 @_serialized_run
 def rlv2LeaveShop():
-    server_data = read_json(SERVER_DATA_PATH)
-    rlv2 = read_json(RLV2_JSON_PATH)
+    server_data = _load_server_data()
+    rlv2 = _load_run()
     pending = rlv2["player"]["pending"]
     if not pending or pending[0].get("type") != "SHOP":
         return {"error": "shop is not pending"}, 409
@@ -1356,7 +1397,7 @@ def rlv2BuyGoods(select: int=None):
         request_data = request.get_json()
         select = int(request_data["select"][0])
 
-    rlv2 = read_json(RLV2_JSON_PATH)
+    rlv2 = _load_run()
     pending = rlv2["player"]["pending"]
     if not pending or pending[0].get("type") != "SHOP":
         return {"error": "shop purchase is not pending"}, 409
@@ -1411,7 +1452,7 @@ def rlv2ChooseBattleReward():
     request_data = request.get_json()
     index = int(request_data["index"])
 
-    rlv2 = read_json(RLV2_JSON_PATH)
+    rlv2 = _load_run()
     pending = rlv2["player"]["pending"]
     if not pending or pending[0].get("type") != "BATTLE_REWARD":
         return {"error": "battle reward selection is not pending"}, 409
@@ -1446,7 +1487,7 @@ def rlv2ChooseBattleReward():
 
 @_serialized_run
 def rlv2CopperConfirmDraw():
-    rlv2 = read_json(RLV2_JSON_PATH)
+    rlv2 = _load_run()
     pending = rlv2["player"]["pending"]
     if not pending or pending[0].get("type") != "DRAW_COPPER":
         return {"error": "copper draw is not pending"}, 409
@@ -1474,7 +1515,7 @@ def rlv2CopperConfirmDraw():
 @_serialized_run
 def rlv2CopperRedraw():
 
-    rlv2_data = read_json(RLV2_JSON_PATH)
+    rlv2_data = _load_run()
     pending = rlv2_data["player"]["pending"]
     if not pending or pending[0].get("type") != "DRAW_COPPER":
         return {"error": "copper draw is not pending"}, 409
@@ -1485,7 +1526,7 @@ def rlv2CopperRedraw():
     for key, value in bag.items():
         value["isDrawn"] = False
 
-    server_data = read_json(SERVER_DATA_PATH)
+    server_data = _load_server_data()
     redraw_count = int(copper_module.get("redrawCount", 0))
     rng = random.Random(
         f"{server_data.get('rlv2_seed')}_copper_redraw_{redraw_count}"

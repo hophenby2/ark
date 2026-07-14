@@ -6,3 +6,4 @@ data/excel
 assets/
 mods/
 .runtime/
+data/user/rlv2_runs.sqlite3*
