@@ -70,15 +70,15 @@ flowchart TD
 | `event_choices.json` | 场景入口列表和 choice 效果解释 | 没有楼层、结局、藏品、一次性标记等完整 eligibility |
 | `server/data/rlv2_data.py` | 手工难度 Buff | RO1、RO4、RO5 为空；来源和表结构没有启动期校验 |
 | `data/user/rlv2Settings.json` | 少量特殊关卡楼层映射 | 只覆盖 24 个关卡，其他关卡依赖 ID 字符串解析 |
-| `data/user/rlv2UserSettings.json` | `allChars` 模式的初始干员列表 | 是全局文件，不随 UID 隔离 |
+| `data/user/rlv2UserSettings.json` | 旧版 `allChars` 模式的初始干员列表 | 当前主流程不再读取该列表 |
 
 当前有效配置需要特别注意：
 
 - `config/multiUserConfig.json` 为 `enabled=false`，运行在单用户 sentinel 模式。
 - `config/config.json` 中 `rlv2Config.allChars=true`。
-- `data/user/rlv2UserSettings.json` 当前只配置了 `char_4080_lin`。
+- `data/user/rlv2UserSettings.json` 当前仍保留 `char_4080_lin`，但不会再将其注入开局队伍。
 
-因此默认实际流程会直接把配置干员注入队伍，并跳过初始招募券生成；这和变量名“allChars”以及原版招募流程都不完全一致。
+默认流程现在只把 `allChars` 用于招募候选池和实例编号；普通开局队伍为空，选择招募组后按表生成初始招募券。
 
 ## 4. 请求、事务与持久化
 
@@ -219,7 +219,7 @@ stateDiagram-v2
 ### 6.5 战斗与奖励
 
 - 战斗开始会校验地图关卡和路线，将状态设为 `PENDING` 并压入 `BATTLE`。
-- 下发内容包括藏品/分队/难度 Buff、固定的 `chestCnt=100`、`goldTrapCnt=100` 和箱子信息；RO2 还会生成 100 个骰点及骰子 token。
+- 下发内容包括藏品/分队/难度 Buff、固定的 `chestCnt=100`、`goldTrapCnt=10` 和箱子信息；RO2 还会生成 100 个骰点及骰子 token。
 - 战斗完成依赖客户端加密结果中的 `completeState` 和 `leftHp`。`PASS(2)` 与 `COMPLETE(3)` 都是胜利，结算生命/护盾并生成 `BATTLE_REWARD`；只有 `FAIL(1)` 进入 `GAME_SETTLE`。响应补齐 `CommonFinishBattleResponse` 字段，已应用的成功或放弃结果重试时返回当前状态 200，不重复发奖。
 - 当前工作区已改为按 `theme + zone + normal/emergency` 表结算基础经验和源石锭，并校验主题表中的 `expItemId/goldItemId`。经验立即入账，源石锭作为待领取奖励发放。
 - 当前奖励仍固定附带一张全职业券；Boss 节点没有独立基础经验/源石锭规则，只会得到固定券。

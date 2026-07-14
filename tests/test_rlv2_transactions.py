@@ -80,6 +80,7 @@ class Rlv2TransactionIntegrationTest(unittest.TestCase):
         self.request.headers = {}
         self.request.get_json = lambda: {}
         self.rlv2.decrypt_battle_data = lambda value: {}
+        self.rlv2.read_json = lambda path: {}
         self.topic_table = {
             "details": {"rogue_1": self._battle_theme_data()}
         }
@@ -177,6 +178,37 @@ class Rlv2TransactionIntegrationTest(unittest.TestCase):
             "buff": {"tmpHP": 0, "squadBuff": []},
             "module": {},
             "record": {},
+            "troop": {"chars": {}},
+        }
+
+    @staticmethod
+    def _initial_recruit_run():
+        return {
+            "player": {
+                "state": "INIT",
+                "pending": [
+                    {
+                        "type": "GAME_INIT_RECRUIT_SET",
+                        "content": {
+                            "initRecruitSet": {
+                                "option": ["recruit_group_1"]
+                            }
+                        },
+                    },
+                    {
+                        "type": "GAME_INIT_RECRUIT",
+                        "content": {
+                            "initRecruit": {
+                                "tickets": [],
+                                "showChar": [],
+                                "team": None,
+                            }
+                        },
+                    },
+                ],
+            },
+            "game": {"theme": "rogue_1"},
+            "inventory": {"recruit": {}},
             "troop": {"chars": {}},
         }
 
@@ -332,6 +364,205 @@ class Rlv2TransactionIntegrationTest(unittest.TestCase):
         snapshot = self.repository.load("alice")
         self.assertEqual(snapshot.run["count"], 2)
         self.assertEqual(snapshot.revision, initial.revision + 1)
+
+    def test_create_game_does_not_inject_configured_initial_operator(self):
+        self.topic_table = {
+            "details": {
+                "rogue_1": {
+                    "init": [
+                        {
+                            "modeId": "NORMAL",
+                            "modeGrade": 0,
+                            "predefinedId": None,
+                            "initialBandRelic": [],
+                            "initialRecruitGroup": ["recruit_group_1"],
+                            "initialHp": 4,
+                            "initialMaxHp": 4,
+                            "initialGold": 6,
+                            "initialShield": 0,
+                            "initialSquadCapacity": 6,
+                            "initialPopulation": 6,
+                            "initialKey": 0,
+                        }
+                    ],
+                    "endings": {
+                        "ending": {"id": "ending", "priority": 0}
+                    },
+                    "detailConst": {
+                        "playerLevelTable": {
+                            "1": {
+                                "exp": 0,
+                                "populationUp": 0,
+                                "squadCapacityUp": 0,
+                                "maxHpUp": 0,
+                                "battleCharLimitUp": 0,
+                            }
+                        }
+                    },
+                    "difficulties": [],
+                    "gameConst": {},
+                    "monthSquad": {},
+                }
+            }
+        }
+        self.rlv2.read_json = lambda path: {
+            "rlv2Config": {"allChars": True}
+        }
+        original_get_chars = self.rlv2._rlv2.getChars
+        self.addCleanup(
+            setattr, self.rlv2._rlv2, "getChars", original_get_chars
+        )
+        self.rlv2._rlv2.getChars = lambda **kwargs: [
+            {
+                "charId": "char_4080_lin",
+                "currentTmpl": None,
+                "evolvePhase": 2,
+                "instId": "1",
+            }
+        ]
+        self.request.headers = {"Uid": "alice"}
+        self.request.get_json = lambda: {
+            "theme": "rogue_1",
+            "mode": "NORMAL",
+            "modeGrade": 0,
+        }
+
+        response = self.rlv2.rlv2CreateGame()
+
+        self.assertIn("playerDataDelta", response)
+        snapshot = self.repository.load("alice")
+        self.assertEqual(snapshot.run["troop"]["chars"], {})
+
+    def test_initial_recruit_set_creates_three_tickets_with_all_chars(self):
+        ticket_item_ids = [
+            "rogue_1_recruit_ticket_pioneer",
+            "rogue_1_recruit_ticket_sniper",
+            "rogue_1_recruit_ticket_special",
+        ]
+        self.topic_table = {
+            "details": {
+                "rogue_1": {
+                    "recruitTickets": {
+                        ticket_item_id: {} for ticket_item_id in ticket_item_ids
+                    }
+                }
+            }
+        }
+        self.rlv2.read_json = lambda path: {
+            "rlv2Config": {"allChars": True}
+        }
+        initial = self.repository.save(
+            "alice",
+            self._initial_recruit_run(),
+            {"rlv2_seed": "seed", "seed_list": []},
+        )
+        self.request.headers = {"Uid": "alice"}
+        self.request.get_json = lambda: {"select": "recruit_group_1"}
+
+        response = self.rlv2.rlv2ChooseInitialRecruitSet()
+
+        self.assertIn("playerDataDelta", response)
+        snapshot = self.repository.load("alice")
+        self.assertEqual(snapshot.revision, initial.revision + 1)
+        pending = snapshot.run["player"]["pending"][0]
+        self.assertEqual(pending["type"], "GAME_INIT_RECRUIT")
+        ticket_ids = pending["content"]["initRecruit"]["tickets"]
+        self.assertEqual(len(ticket_ids), 3)
+        self.assertEqual(set(ticket_ids), set(snapshot.run["inventory"]["recruit"]))
+        self.assertEqual(
+            {
+                ticket["id"]
+                for ticket in snapshot.run["inventory"]["recruit"].values()
+            },
+            set(ticket_item_ids),
+        )
+        self.assertTrue(
+            all(
+                ticket["state"] == 0
+                for ticket in snapshot.run["inventory"]["recruit"].values()
+            )
+        )
+
+    def test_map_battle_start_uses_ten_percent_gopnik_chance(self):
+        run = self._battle_run()
+        run["player"]["state"] = "WAIT_MOVE"
+        run["player"]["pending"] = []
+        run["player"]["cursor"]["position"] = None
+        self.repository.save(
+            "alice", run, {"rlv2_seed": "seed", "seed_list": []}
+        )
+        original_get_buffs = self.rlv2._rlv2.getBuffs
+        self.addCleanup(
+            setattr, self.rlv2._rlv2, "getBuffs", original_get_buffs
+        )
+        self.rlv2._rlv2.getBuffs = lambda run, stage_id: []
+        self.request.headers = {"Uid": "alice"}
+        self.request.get_json = lambda: {
+            "stageId": "ro1_n_1_test",
+            "to": {"x": 0, "y": 0},
+        }
+
+        response = self.rlv2.rlv2MoveAndBattleStart()
+
+        self.assertIn("playerDataDelta", response)
+        snapshot = self.repository.load("alice")
+        battle = snapshot.run["player"]["pending"][0]["content"]["battle"]
+        self.assertEqual(battle["goldTrapCnt"], 10)
+
+    def test_event_battle_uses_ten_percent_gopnik_chance(self):
+        run = self._battle_run()
+        run["player"]["pending"] = [
+            {
+                "type": "SCENE",
+                "content": {
+                    "scene": {"choices": {"choice_fight": True}}
+                },
+            }
+        ]
+        self.topic_table["details"]["rogue_1"].update(
+            {
+                "choices": {
+                    "choice_fight": {"nextSceneId": None}
+                },
+                "stages": {"ro1_event_battle": {}},
+            }
+        )
+        event_choices = {
+            "rogue_1": {
+                "choices": {
+                    "choice_fight": {"choices": "ro1_event_battle"}
+                }
+            }
+        }
+        self.rlv2.get_memory = lambda key: (
+            self.topic_table
+            if key == "roguelike_topic_table"
+            else event_choices
+            if key == "event_choices"
+            else {}
+        )
+        original_can_pay = self.rlv2._rlv2.canPayChoice
+        original_get_buffs = self.rlv2._rlv2.getBuffs
+        self.addCleanup(
+            setattr, self.rlv2._rlv2, "canPayChoice", original_can_pay
+        )
+        self.addCleanup(
+            setattr, self.rlv2._rlv2, "getBuffs", original_get_buffs
+        )
+        self.rlv2._rlv2.canPayChoice = lambda run, choice: True
+        self.rlv2._rlv2.getBuffs = lambda run, stage_id: []
+        self.repository.save(
+            "alice", run, {"rlv2_seed": "seed", "seed_list": []}
+        )
+        self.request.headers = {"Uid": "alice"}
+        self.request.get_json = lambda: {"choice": "choice_fight"}
+
+        response = self.rlv2.rlv2SelectChoice()
+
+        self.assertIn("playerDataDelta", response)
+        snapshot = self.repository.load("alice")
+        battle = snapshot.run["player"]["pending"][0]["content"]["battle"]
+        self.assertEqual(battle["goldTrapCnt"], 10)
 
     def test_battle_finish_grants_exp_and_queues_gold_as_a_separate_reward(self):
         initial = self.repository.save(

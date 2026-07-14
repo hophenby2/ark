@@ -140,6 +140,25 @@ class Rlv2LogicTest(unittest.TestCase):
         self.assertEqual(reward["state"], 3)
         self.assertEqual(reward["isPerfect"], 1)
 
+    def test_legacy_battle_gopnik_chance_is_normalized(self):
+        run = {
+            "player": {
+                "state": "PENDING",
+                "pending": [
+                    {
+                        "type": "BATTLE",
+                        "content": {"battle": {"goldTrapCnt": 100}},
+                    }
+                ],
+                "status": {},
+            }
+        }
+
+        self.assertTrue(normalize_current_run(run, 1))
+        battle = run["player"]["pending"][0]["content"]["battle"]
+        self.assertEqual(battle["goldTrapCnt"], 10)
+        self.assertFalse(normalize_current_run(run, 2))
+
     def test_init_property_uses_table_level_and_resource_limits(self):
         config = select_init_config(
             self.topic_table, "rogue_2", "NORMAL", 0

@@ -26,6 +26,7 @@ from rlv2_logic import (
     clamp_player_property,
     collect_difficulty_buffs,
     enforce_emergency_node_limits,
+    GOPNIK_SPAWN_PERCENT,
     has_numeric_cost,
     normalize_current_run,
     prepare_recruit_candidates,
@@ -560,22 +561,6 @@ def rlv2CreateGame():
     if initial_key and key_item_id:
         rlv2["inventory"]["consumable"][key_item_id] = initial_key
 
-    config = read_json(CONFIG_PATH)
-    if config["rlv2Config"]["allChars"]:
-        chars = _rlv2.getChars(use_user_defaults=True)
-        unique_chars = {}
-        for char in chars:
-            key = (char["charId"], char.get("currentTmpl"))
-            if (
-                key not in unique_chars
-                or char["evolvePhase"] > unique_chars[key]["evolvePhase"]
-            ):
-                unique_chars[key] = char
-        for i, char in enumerate(unique_chars.values()):
-            char_id = getNextCharId(rlv2)
-            char["instId"] = char_id
-            rlv2["troop"]["chars"][char_id] = char
-
     server_data = _load_server_data()
     if not server_data.get("rlv2_seed"):
         server_data["rlv2_seed"] = os.urandom(16).hex()
@@ -760,7 +745,7 @@ def rlv2SelectChoice():
                         "boxInfo": [],
                         "chestCnt": 100,
                         "diceRoll": [],
-                        "goldTrapCnt": 100,
+                        "goldTrapCnt": GOPNIK_SPAWN_PERCENT,
                         "sanity": 0,
                         "state": 1,
                         "tmpChar": [],
@@ -846,29 +831,27 @@ def rlv2ChooseInitialRecruitSet():
         return {"error": f"invalid initial recruit group: {selected_group}"}, 400
     rlv2["player"]["pending"].pop(0)
 
-    config = read_json(CONFIG_PATH)
-    if not config["rlv2Config"]["allChars"]:
-        theme = rlv2["game"]["theme"]
-        server_data = _load_server_data()
-        rng = random.Random(
-            f"{server_data.get('rlv2_seed')}_{theme}_{selected_group}"
-        )
-        try:
-            ticket_item_ids = recruit_group_ticket_ids(theme, selected_group, rng)
-        except ValueError as exc:
-            return {"error": str(exc)}, 400
-        ticket_table = get_memory("roguelike_topic_table")["details"][theme][
-            "recruitTickets"
-        ]
+    theme = rlv2["game"]["theme"]
+    server_data = _load_server_data()
+    rng = random.Random(
+        f"{server_data.get('rlv2_seed')}_{theme}_{selected_group}"
+    )
+    try:
+        ticket_item_ids = recruit_group_ticket_ids(theme, selected_group, rng)
+    except ValueError as exc:
+        return {"error": str(exc)}, 400
+    ticket_table = get_memory("roguelike_topic_table")["details"][theme][
+        "recruitTickets"
+    ]
 
-        for ticket_item_id in ticket_item_ids:
-            if ticket_item_id not in ticket_table:
-                return {"error": f"unknown initial recruit ticket: {ticket_item_id}"}, 500
-            ticket_id = _rlv2.getNextTicketIndex(rlv2)
-            _rlv2.addTicket(rlv2, ticket_id, ticket_item_id)
-            rlv2["player"]["pending"][0]["content"]["initRecruit"]["tickets"].append(
-                ticket_id
-            )
+    for ticket_item_id in ticket_item_ids:
+        if ticket_item_id not in ticket_table:
+            return {"error": f"unknown initial recruit ticket: {ticket_item_id}"}, 500
+        ticket_id = _rlv2.getNextTicketIndex(rlv2)
+        _rlv2.addTicket(rlv2, ticket_id, ticket_item_id)
+        rlv2["player"]["pending"][0]["content"]["initRecruit"]["tickets"].append(
+            ticket_id
+        )
 
     _persist_run(rlv2)
 
@@ -1244,7 +1227,7 @@ def rlv2MoveAndBattleStart():
                 "battle": {
                     "state": 1,
                     "chestCnt": 100,
-                    "goldTrapCnt": 100,
+                    "goldTrapCnt": GOPNIK_SPAWN_PERCENT,
                     "diceRoll": dice_roll,
                     "boxInfo": box_info,
                     "tmpChar": [],

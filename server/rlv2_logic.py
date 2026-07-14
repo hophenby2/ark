@@ -32,6 +32,8 @@ LATE_THEME_UPGRADE_COST = {
     "TIER_5": 1,
 }
 
+GOPNIK_SPAWN_PERCENT = 10
+
 PROFESSION_SUFFIXES = (
     "pioneer",
     "warrior",
@@ -828,6 +830,13 @@ def normalize_current_run(run: dict, end_ts: int) -> bool:
             if reward.get("show") == "1" or "show" not in reward:
                 reward["show"] = None
                 changed = True
+
+    if isinstance(first_pending, dict) and first_pending.get("type") == "BATTLE":
+        content = first_pending.get("content")
+        battle = content.get("battle") if isinstance(content, dict) else None
+        if isinstance(battle, dict) and battle.get("goldTrapCnt") == 100:
+            battle["goldTrapCnt"] = GOPNIK_SPAWN_PERCENT
+            changed = True
 
     status = player.get("status")
     game_result = status.get("gameResult") if isinstance(status, dict) else None
