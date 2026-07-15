@@ -12,9 +12,11 @@ sys.path.insert(0, str(ROOT / "server"))
 from rlv2_logic import (  # noqa: E402
     RO5_ALWAYS_FIVE_MIMIC_STAGES,
     apply_numeric_delta,
+    apply_battle_reward_modifiers,
     battle_base_reward,
     battle_mimic_group_count,
     battle_resource_item_ids,
+    build_ending_result,
     build_initial_property,
     clamp_player_property,
     clamp_sanity_module,
@@ -120,6 +122,31 @@ class Rlv2LogicTest(unittest.TestCase):
         self.assertEqual(result["brief"]["band"], "rogue_1_band_1")
         self.assertEqual(result["record"]["cntZone"], 1)
         self.assertFalse(normalize_current_run(run, 21))
+
+    def test_ending_record_counts_visited_route_zones_instead_of_zone_id(self):
+        for zone, ordered_zones, expected_count in (
+            (7, [1, 2, 3, 4, 5, 7], 6),
+            (8, [1, 2, 3, 4, 5, 7, 8], 7),
+        ):
+            with self.subTest(zone=zone):
+                run = {
+                    "_server": {"route": {"orderedZones": ordered_zones}},
+                    "player": {
+                        "property": {"level": 1},
+                        "cursor": {"zone": zone, "position": None},
+                        "toEnding": "ro5_ending_5",
+                    },
+                    "game": {"theme": "rogue_5", "mode": "NORMAL"},
+                    "map": {"zones": {str(zone): {"id": f"zone_{zone}"}}},
+                    "inventory": {"relic": {}, "exploreTool": {}},
+                    "troop": {"chars": {}},
+                    "buff": {"squadBuff": []},
+                    "module": {},
+                }
+
+                result = build_ending_result(run, True, 100)
+
+                self.assertEqual(result["record"]["cntZone"], expected_count)
 
     def test_legacy_battle_reward_fields_are_normalized(self):
         run = {
@@ -762,6 +789,66 @@ class Rlv2LogicTest(unittest.TestCase):
                         battle_base_reward(theme, 7, node_type),
                         battle_base_reward(theme, 6, node_type),
                     )
+
+    def test_battle_reward_modifiers_multiply_and_floor_each_resource(self):
+        final_relic = "rogue_5_relic_final_7"
+        relic_table = self.topic_table["details"]["rogue_5"]["relics"]
+        inventory = {"r_0": {"id": final_relic, "count": 1}}
+
+        self.assertEqual(
+            apply_battle_reward_modifiers(
+                5, "rogue_5_exp", inventory, relic_table
+            ),
+            2,
+        )
+        self.assertEqual(
+            apply_battle_reward_modifiers(
+                5, "rogue_5_gold", inventory, relic_table
+            ),
+            2,
+        )
+        self.assertEqual(
+            apply_battle_reward_modifiers(
+                5, "rogue_5_hp", inventory, relic_table
+            ),
+            5,
+        )
+
+        synthetic_table = {
+            "first": {
+                "buffs": [
+                    {
+                        "key": "up_reward",
+                        "blackboard": [
+                            {"key": "id", "valueStr": "exp"},
+                            {"key": "up", "value": 0.1},
+                            {"key": "mask", "valueStr": "battle"},
+                        ],
+                    }
+                ]
+            },
+            "second": {
+                "buffs": [
+                    {
+                        "key": "up_reward",
+                        "blackboard": [
+                            {"key": "id", "valueStr": "exp"},
+                            {"key": "up", "value": 0.1},
+                            {"key": "mask", "valueStr": "battle"},
+                        ],
+                    }
+                ]
+            },
+        }
+        self.assertEqual(
+            apply_battle_reward_modifiers(
+                10,
+                "exp",
+                {"r_0": {"id": "first"}, "r_1": {"id": "second"}},
+                synthetic_table,
+            ),
+            12,
+        )
 
     def test_battle_base_reward_rejects_unknown_cells(self):
         for theme in (None, "", "rogue_0", "rogue_6"):

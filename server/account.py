@@ -22,7 +22,8 @@ from rlv2_repository import (
     RunRepositoryError,
     get_run_repository,
 )
-from rlv2_logic import normalize_current_run
+from rlv2_event_rules import runtime_event_rules
+from rlv2_logic import normalize_current_run, public_run_value
 from user import checkin
 from utils import read_json, write_json, get_memory, run_after_response, memory_cache, writeLog
 from virtualtime import time
@@ -36,7 +37,10 @@ def _merge_rlv2_current(player_data):
     current_run = snapshot.run
     game = current_run.get("game") if isinstance(current_run, dict) else None
     theme = game.get("theme") if isinstance(game, dict) else None
-    choice_rules = get_memory("event_choices").get(theme, {}).get("choices", {})
+    event_rules = runtime_event_rules(
+        theme, get_memory("event_choices").get(theme, {})
+    )
+    choice_rules = event_rules.get("choices", {})
     disabled_choice_ids = {
         choice_id
         for choice_id, rule in choice_rules.items()
@@ -52,7 +56,7 @@ def _merge_rlv2_current(player_data):
 
     user_rlv2 = player_data.get("user", {}).get("rlv2")
     if isinstance(user_rlv2, dict) and isinstance(current_run, dict):
-        user_rlv2["current"] = current_run
+        user_rlv2["current"] = public_run_value(current_run)
 
 
 def accountLogin():

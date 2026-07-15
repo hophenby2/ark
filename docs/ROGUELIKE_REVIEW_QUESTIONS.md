@@ -4,6 +4,7 @@
 > 目标客户端：国服 `2.7.51 / Data 26-07-10`  
 > 用途：只记录下一步实现中缺少证据的规则、当前猜测和保守方案，供人工核对。  
 > 关联文档：[ROGUELIKE_PROGRESS.md](./ROGUELIKE_PROGRESS.md)、[ROGUELIKE_ANALYSIS.md](./ROGUELIKE_ANALYSIS.md)
+> 文档状态：保留用户原始结论的决策记录；其中“当前实现”描述可能是填写时快照，最新完成度以关联进度文档为准。
 
 ## 1. 核对方式
 

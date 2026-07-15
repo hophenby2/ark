@@ -2,7 +2,7 @@
 
 > 建立日期：2026-07-14
 > 目标客户端：国服 `2.7.51`
-> 当前边界：只建设版本化离线数据，不修改运行时逻辑
+> 文档状态：历史阶段计划；本文记录第一步离线事实层的原始边界，后续阶段已有部分运行时实现，当前状态以 [ROGUELIKE_PROGRESS.md](./ROGUELIKE_PROGRESS.md) 为准
 
 ## 1. 结论
 
@@ -11,7 +11,7 @@
 1. **客户端事实目录**：从当前 `roguelike_topic_table.json` 机械提取主题、藏品、关卡、区域和场景的 canonical ID 及可直接证明的字段。
 2. **人工规则注解**：保存奖励池、事件资格、区域路线和主题模块规则。每条关系单独记录来源与核对状态，未确认值保持 `null`。
 
-两层数据在接入前均设置 `runtimeEnabled=false`。本阶段不修改 `server/`、SQLite schema、handler、地图生成器、状态机或现有测试预期。
+两层数据在首次接入前均设置 `runtimeEnabled=false`。本节保留建档时“不修改运行时”的阶段边界；当前核心区域、结局路线和经审核事件子集已经通过严格适配器接入。
 
 ## 2. 数据基线
 
@@ -67,7 +67,7 @@
 
 这些规则目前没有同版本协议样本或逐条外部证据，统一标为 `user_confirmed` 或 `needs_review`，不能标为 `client_verified`。
 
-## 6. 明确暂缓
+## 6. 建档时明确暂缓
 
 - `finishGame/gameSettle` 与 per-UID outer 存储不改。
 - 状态转移矩阵、request-id 幂等和空 `202` 接口行为不改。

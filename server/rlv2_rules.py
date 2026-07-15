@@ -97,8 +97,14 @@ _REPEATABLE_EVENT_SCENES = frozenset(
         ("rogue_2", "scene_ro2_hp2_enter"),
         ("rogue_2", "scene_ro2_key_enter"),
         ("rogue_2", "scene_ro2_dice2_enter"),
+        ("rogue_4", "scene_ro4_fin4_enter"),
     }
 )
+
+_AVAILABLE_FIXED_NODE_SCENES = {
+    ("rogue_5", 8192): ("scene_ro5_portalboss_enter",),
+    ("rogue_5", 1048576): ("scene_ro5_portalboss_enter",),
+}
 
 
 def _column(minimum: int, maximum: int, *kinds: str, **extra) -> dict:
@@ -507,6 +513,16 @@ def event_scene_candidates(
             return []
     if not available:
         return []
+
+    fixed = [
+        scene_id
+        for scene_id in _AVAILABLE_FIXED_NODE_SCENES.get(
+            (theme, node_type), ()
+        )
+        if scene_id in available
+    ]
+    if fixed:
+        return fixed
 
     quarantined = _quarantined_scene_keys()
     result = []

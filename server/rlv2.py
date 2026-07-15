@@ -18,6 +18,7 @@ from constants import (
 from utils import read_json, decrypt_battle_data, writeLog, get_memory
 from rlv2_logic import (
     apply_numeric_delta,
+    apply_battle_reward_modifiers,
     battle_mimic_group_count,
     battle_base_reward,
     battle_resource_item_ids,
@@ -33,6 +34,7 @@ from rlv2_logic import (
     normalize_current_run,
     prepare_recruit_candidates,
     prepare_predefined_characters,
+    public_run_value,
     recruit_group_ticket_ids,
     sample_event_choices,
     select_weighted_event_branch,
@@ -42,6 +44,25 @@ from rlv2_logic import (
     select_init_config,
     select_player_level_table,
     settle_battle_life,
+    shop_item_pool_candidates,
+)
+from rlv2_ending_rules import (
+    boss_ending_for_zone,
+    build_route_plan,
+    default_ending,
+    ending_branch_reset_for_acquired_item,
+    ending_for_acquired_item,
+    ending_priority,
+    is_overlay_ending,
+    is_supported_ending,
+    patch_current_boss,
+    route_plan_is_valid,
+    route_next_zone,
+)
+from rlv2_event_rules import (
+    contextual_event_choices,
+    fixed_scene_for_zone,
+    runtime_event_rules,
 )
 from rlv2_repository import (
     InvalidUserIdError,
@@ -108,7 +129,7 @@ def _serialized_run(func):
                         _ACTIVE_RUN_TRANSACTION.reset(token)
             except LegacyMirrorError as exc:
                 writeLog(f"Roguelike legacy mirror update failed: {exc}")
-            return result
+            return public_run_value(result)
         except (MissingUserIdError, InvalidUserIdError) as exc:
             return {"error": str(exc)}, 400
         except RunRepositoryError as exc:
@@ -130,7 +151,9 @@ def _load_run() -> dict:
     game = run.get("game") if isinstance(run, dict) else None
     theme = game.get("theme") if isinstance(game, dict) else None
     event_choices = get_memory("event_choices")
-    choice_rules = event_choices.get(theme, {}).get("choices", {})
+    choice_rules = runtime_event_rules(
+        theme, event_choices.get(theme, {})
+    ).get("choices", {})
     disabled_choice_ids = {
         choice_id
         for choice_id, rule in choice_rules.items()
@@ -154,7 +177,7 @@ def _persist_run(rlv2: dict, server_data: dict | None = None) -> None:
 def _current_run_delta(rlv2: dict) -> dict:
     return {
         "playerDataDelta": {
-            "modified": {"rlv2": {"current": rlv2}},
+            "modified": {"rlv2": {"current": public_run_value(rlv2)}},
             "deleted": {},
         },
         "pushMessage": [],
@@ -471,6 +494,11 @@ def rlv2CreateGame():
         )
 
     rlv2 = {
+        "_server": {
+            "schemaVersion": 1,
+            "events": {},
+            "route": build_route_plan(theme, ending),
+        },
         "player": {
             "state": "INIT",
             "property": initial_property,
@@ -655,7 +683,7 @@ def rlv2SelectChoice():
     rlv2_table = get_memory("roguelike_topic_table")
     event_choices = get_memory("event_choices")
     theme = rlv2["game"]["theme"]
-    theme_events = event_choices.get(theme, {})
+    theme_events = runtime_event_rules(theme, event_choices.get(theme, {}))
     choice_rules = theme_events.get("choices", {})
     scene_rules = theme_events.get("sceneRules", {})
     pending = rlv2["player"]["pending"]
@@ -828,6 +856,18 @@ def rlv2SelectChoice():
         node_id = str(position["x"] * 100 + position["y"])
         zone = str(rlv2["player"]["cursor"]["zone"])
         rlv2["map"]["zones"][zone]["nodes"][node_id]["stage"] = stage_id
+        event_battle_reward = choice_data.get("eventBattleReward")
+        if isinstance(event_battle_reward, str):
+            private = rlv2.setdefault("_server", {})
+            events = private.setdefault("events", {})
+            events["pendingBattleReward"] = {
+                "choiceId": choice,
+                "stageId": stage_id,
+                "itemId": event_battle_reward,
+                "required": choice_data.get("eventBattleRewardRequired") is True,
+                "zone": int(zone),
+                "nodeId": node_id,
+            }
         rlv2["player"]["pending"].insert(
             0,
             {
@@ -877,6 +917,11 @@ def rlv2SelectChoice():
             apply_numeric_delta(rlv2["player"]["property"], reward)
         elif reward is not None:
             grant_event_items(reward)
+        get_all = choice_data.get("getAll", [])
+        if isinstance(get_all, list):
+            for item_id in get_all:
+                if isinstance(item_id, str):
+                    add_event_item(resolve_item(item_id))
 
         player_level_table, _ = select_player_level_table(
             rlv2_table["details"][theme],
@@ -1426,6 +1471,31 @@ def rlv2BattleFinish():
         zone = rlv2["map"]["zones"][str(cursor["zone"])]
         node = zone["nodes"][node_id]
         node_type = node.get("type")
+        perfect_battle = bool(
+            battle_data["completeState"] == 3 and life_earn["hp"] == 0
+        )
+        for relic in rlv2["inventory"]["relic"].values():
+            relic_data = theme_data.get("relics", {}).get(relic.get("id"), {})
+            for buff in relic_data.get("buffs", []):
+                key = buff.get("key")
+                if key == "gain_on_perfect" and not perfect_battle:
+                    continue
+                if key not in {"battle_extra_reward", "gain_on_perfect"}:
+                    continue
+                blackboard = {
+                    entry.get("key"): entry
+                    for entry in buff.get("blackboard", [])
+                    if isinstance(entry, dict)
+                }
+                item_id = blackboard.get("id", {}).get("valueStr")
+                count = int(blackboard.get("count", {}).get("value", 0))
+                if isinstance(item_id, str):
+                    _rlv2.grant_resource(rlv2, item_id, count)
+        clamp_sanity_module(rlv2["module"])
+        if rlv2["player"]["property"]["hp"]["current"] <= 0:
+            _rlv2.endRun(rlv2, False, "LIFE_POINT_ZERO")
+            _persist_run(rlv2)
+            return _battle_finish_response(rlv2)
         exp_gain = 0
         gold_gain = 0
         resource_ids = None
@@ -1439,6 +1509,18 @@ def rlv2BattleFinish():
                 resource_ids = battle_resource_item_ids(theme_data)
             except ValueError as exc:
                 return {"error": str(exc)}, 500
+            exp_gain = apply_battle_reward_modifiers(
+                exp_gain,
+                resource_ids["exp"],
+                rlv2["inventory"]["relic"],
+                theme_data.get("relics", {}),
+            )
+            gold_gain = apply_battle_reward_modifiers(
+                gold_gain,
+                resource_ids["gold"],
+                rlv2["inventory"]["relic"],
+                theme_data.get("relics", {}),
+            )
             if not _rlv2.grant_resource(
                 rlv2, resource_ids["exp"], exp_gain
             ):
@@ -1468,6 +1550,70 @@ def rlv2BattleFinish():
                     "done": False,
                 }
             )
+        special_rewards = {}
+        private_events = rlv2.get("_server", {}).get("events", {})
+        pending_event_reward = private_events.get("pendingBattleReward")
+        if (
+            isinstance(pending_event_reward, dict)
+            and pending_event_reward.get("stageId") == node.get("stage")
+            and pending_event_reward.get("zone") == cursor["zone"]
+            and pending_event_reward.get("nodeId") == node_id
+        ):
+            item_id = pending_event_reward.get("itemId")
+            if isinstance(item_id, str):
+                special_rewards[item_id] = (
+                    pending_event_reward.get("required") is True
+                )
+            private_events.pop("pendingBattleReward", None)
+
+        if (
+            theme == "rogue_1"
+            and cursor["zone"] == 3
+            and node_type == 4
+            and _rlv2.hasItem(rlv2, "rogue_1_relic_m19")
+            and not _rlv2.hasItem(rlv2, "rogue_1_relic_m20")
+        ):
+            special_rewards.setdefault("rogue_1_relic_m20", False)
+
+        game_const = theme_data.get("gameConst", {})
+        special_trap_id = game_const.get("specialTrapId")
+        trap_reward_relic_id = game_const.get("trapRewardRelicId")
+        extra_battle_info = stats.get("extraBattleInfo", {})
+        knight_killed = (
+            extra_battle_info.get(f"SIMPLE,{special_trap_id},killed")
+            if isinstance(extra_battle_info, dict)
+            and isinstance(special_trap_id, str)
+            else None
+        )
+        if (
+            theme == "rogue_2"
+            and isinstance(trap_reward_relic_id, str)
+            and isinstance(knight_killed, (int, float))
+            and not isinstance(knight_killed, bool)
+            and knight_killed > 0
+            and _rlv2.hasItem(rlv2, "rogue_2_relic_grace_83")
+            and not _rlv2.hasItem(rlv2, trap_reward_relic_id)
+        ):
+            special_rewards[trap_reward_relic_id] = True
+
+        required_reward_indexes = []
+        for item_id, required in special_rewards.items():
+            if item_id not in theme_data["items"]:
+                return {"error": f"unknown event battle reward: {item_id}"}, 500
+            reward_index = str(len(rewards))
+            rewards.append(
+                {
+                    "index": reward_index,
+                    "items": [{"sub": 0, "id": item_id, "count": 1}],
+                    "done": False,
+                }
+            )
+            if required:
+                required_reward_indexes.append(reward_index)
+        if required_reward_indexes:
+            private_events["requiredBattleRewardIndexes"] = required_reward_indexes
+        else:
+            private_events.pop("requiredBattleRewardIndexes", None)
         rewards.append(
             {
                 "index": str(len(rewards)),
@@ -1514,21 +1660,27 @@ def rlv2FinishBattleReward():
     pending = rlv2["player"]["pending"]
     if not pending or pending[0].get("type") != "BATTLE_REWARD":
         return {"error": "battle reward settlement is not pending"}, 409
-    theme = rlv2["game"]["theme"]
-    theme_data = get_memory("roguelike_topic_table")["details"][theme]
-    try:
-        gold_item_id = battle_resource_item_ids(theme_data)["gold"]
-    except ValueError as exc:
-        return {"error": str(exc)}, 500
     rewards = pending[0]["content"]["battleReward"].get("rewards", [])
-    has_unclaimed_gold = any(
+    private_events = rlv2.get("_server", {}).get("events", {})
+    required_indexes = (
+        private_events.get("requiredBattleRewardIndexes", [])
+        if isinstance(private_events, dict)
+        else []
+    )
+    required_indexes = {
+        str(index)
+        for index in required_indexes
+        if isinstance(index, (str, int)) and not isinstance(index, bool)
+    }
+    has_unclaimed_required_reward = any(
         not reward.get("done")
-        and len(reward.get("items", [])) == 1
-        and reward["items"][0].get("id") == gold_item_id
+        and str(reward.get("index")) in required_indexes
         for reward in rewards
     )
-    if has_unclaimed_gold:
-        return {"error": "battle gold reward must be claimed first"}, 409
+    if has_unclaimed_required_reward:
+        return {"error": "required event battle reward must be claimed first"}, 409
+    if isinstance(private_events, dict):
+        private_events.pop("requiredBattleRewardIndexes", None)
     rlv2["player"]["state"] = "WAIT_MOVE"
     rlv2["player"]["pending"] = []
     if rlv2["player"]["trace"]:
@@ -1606,16 +1758,23 @@ def rlv2MoveTo():
         theme_data = rlv2_table["details"][theme]
         item_pool = list(theme_data["archiveComp"]["relic"]["relic"])
         item_pool += list(theme_data["archiveComp"]["trap"]["trap"])
-        item_pool = list(dict.fromkeys(item_pool))
+        item_pool = shop_item_pool_candidates(
+            theme, list(dict.fromkeys(item_pool))
+        )
         sampled_items = rng.sample(item_pool, min(5, len(item_pool)))
         shop_items = [ticket, *sampled_items]
         rarity_price = {"NORMAL": 8, "RARE": 12, "SUPER_RARE": 16}
         goods = []
         for index, item_id in enumerate(shop_items):
             item_data = theme_data["items"][item_id]
-            price = 4 if item_data["type"] == "RECRUIT_TICKET" else rarity_price.get(
-                item_data["rarity"], 8
-            )
+            if item_id == "rogue_3_relic_boss_4a":
+                price = 1
+            else:
+                price = (
+                    4
+                    if item_data["type"] == "RECRUIT_TICKET"
+                    else rarity_price.get(item_data["rarity"], 8)
+                )
             goods.append(
                 {
                     "index": str(index),
@@ -1633,10 +1792,12 @@ def rlv2MoveTo():
     zone = str(rlv2["player"]["cursor"]["zone"])
     node_type:int = rlv2["map"]["zones"][zone]["nodes"][node_id]["type"]
     match node_type:
-        case 16 | 32 | 64 | 128 | 256 | 512 | 1024 | 2048 | 8192 | 16384 | 32768 | 65536 | 131072 | 262144 | 524288 | 1048576:
+        case 16 | 32 | 64 | 128 | 256 | 512 | 1024 | 2048 | 8192 | 16384 | 32768 | 65536 | 262144 | 524288 | 1048576:
             choices = {}
             choiceAdditional = {}
-            theme_events = event_choices.get(theme, {})
+            theme_events = runtime_event_rules(
+                theme, event_choices.get(theme, {})
+            )
             choice_rules = theme_events.get("choices", {})
             scene_rules = theme_events.get("sceneRules", {})
             raw_enter_scenes = theme_events.get("enter", {})
@@ -1665,6 +1826,14 @@ def rlv2MoveTo():
                 if requirement is not None and not _rlv2.canPayChoice(
                     rlv2, {"require": requirement}
                 ):
+                    return None
+                enabled = contextual_event_choices(
+                    theme,
+                    scene_id,
+                    enabled,
+                    lambda item_id: _rlv2.hasItem(rlv2, item_id),
+                )
+                if not enabled:
                     return None
                 return enabled
 
@@ -1730,6 +1899,18 @@ def rlv2MoveTo():
                     }
                 }
                 rlv2["player"]["pending"].insert(0, pending_event)
+        case 131072:
+            fragment = rlv2.get("module", {}).get("fragment")
+            fragments = fragment.get("fragments") if isinstance(fragment, dict) else {}
+            pending_event = {
+                "type": "ALCHEMY",
+                "content": {
+                    "alchemy": {"canAlchemy": len(fragments) >= 2},
+                    "done": False,
+                    "popReport": False,
+                },
+            }
+            rlv2["player"]["pending"].insert(0, pending_event)
         case 8 | 4096:
             goods = getGoods()
             pending_event = {
@@ -2007,8 +2188,156 @@ def rlv2NodeMissionGiveUp():
 def rlv2NodeMissionCloseTip():
     return {}, 202
 
+@_serialized_run
 def rlv2ReadEndingChange():
-    return {}, 202
+    rlv2 = _load_run()
+    player = rlv2.get("player") if isinstance(rlv2, dict) else None
+    if not isinstance(player, dict):
+        return {"error": "there is no active roguelike run"}, 409
+    player["chgEnding"] = False
+    _persist_run(rlv2)
+    return _current_run_delta(rlv2)
+
+
+@_serialized_run
+def rlv2Alchemy():
+    request_data = request.get_json() or {}
+    fragment_indexes = request_data.get("fragmentIndex")
+    leave = request_data.get("leave")
+    if not isinstance(leave, bool) or not isinstance(fragment_indexes, list):
+        return {"error": "invalid alchemy request"}, 400
+    if any(not isinstance(index, str) for index in fragment_indexes):
+        return {"error": "invalid alchemy fragment index"}, 400
+
+    rlv2 = _load_run()
+    player = rlv2.get("player")
+    pending = player.get("pending") if isinstance(player, dict) else None
+    if (
+        not isinstance(player, dict)
+        or player.get("state") != "PENDING"
+        or not isinstance(pending, list)
+        or not pending
+        or pending[0].get("type") != "ALCHEMY"
+    ):
+        return {"error": "alchemy is not pending"}, 409
+
+    server_data = _load_server_data()
+    if leave:
+        if fragment_indexes:
+            return {"error": "leaving alchemy cannot consume fragments"}, 400
+        pending.pop(0)
+        player["state"] = "WAIT_MOVE"
+        _rlv2.finishNode(rlv2, server_data)
+        _persist_run(rlv2, server_data)
+        return _current_run_delta(rlv2)
+
+    if len(fragment_indexes) != 2 or len(set(fragment_indexes)) != 2:
+        return {"error": "alchemy requires two distinct fragment instances"}, 400
+    fragment = rlv2.get("module", {}).get("fragment")
+    fragments = fragment.get("fragments") if isinstance(fragment, dict) else None
+    if not isinstance(fragments, dict):
+        return {"error": "fragment module is unavailable"}, 409
+    selected = [fragments.get(index) for index in fragment_indexes]
+    if any(not isinstance(entry, dict) or entry.get("used") for entry in selected):
+        return {"error": "alchemy fragment is unavailable"}, 400
+    if any(not isinstance(entry.get("id"), str) for entry in selected):
+        return {"error": "alchemy fragment has an invalid item id"}, 500
+
+    theme = rlv2.get("game", {}).get("theme")
+    topic_table = get_memory("roguelike_topic_table")
+    fragment_rules = (
+        topic_table.get("modules", {})
+        .get(theme, {})
+        .get("fragment", {})
+    )
+    selected_ids = sorted(entry["id"] for entry in selected)
+    formula = next(
+        (
+            value
+            for value in fragment_rules.get("alchemyFormulaData", {}).values()
+            if isinstance(value, dict)
+            and sorted(value.get("fragmentIds", [])) == selected_ids
+        ),
+        None,
+    )
+    if formula is None:
+        return {
+            "error": "random alchemy outcomes are not supported without a verified pool"
+        }, 501
+
+    reward_id = formula.get("rewardId")
+    reward_count = formula.get("rewardCount")
+    theme_items = topic_table.get("details", {}).get(theme, {}).get("items", {})
+    if (
+        not isinstance(reward_id, str)
+        or type(reward_count) is not int
+        or reward_count <= 0
+        or reward_id not in theme_items
+    ):
+        return {"error": "invalid alchemy formula reward"}, 500
+
+    for index in fragment_indexes:
+        fragments.pop(index)
+    _rlv2.recalculateFragmentWeight(rlv2)
+    events = rlv2.setdefault("_server", {}).setdefault("events", {})
+    events["pendingAlchemyReward"] = {
+        "itemId": reward_id,
+        "count": reward_count,
+    }
+    pending[0] = {
+        "type": "ALCHEMY_REWARD",
+        "content": {
+            "alchemyReward": {
+                "items": [{"id": reward_id, "count": reward_count}],
+                "isSSR": theme_items[reward_id].get("rarity") == "SUPER_RARE",
+                "isFail": False,
+            },
+            "done": False,
+            "popReport": False,
+        },
+    }
+    _persist_run(rlv2, server_data)
+    return _current_run_delta(rlv2)
+
+
+@_serialized_run
+def rlv2AlchemyReward():
+    request_data = request.get_json() or {}
+    reward_index = request_data.get("index")
+    if type(reward_index) is not int:
+        return {"error": "invalid alchemy reward index"}, 400
+
+    rlv2 = _load_run()
+    player = rlv2.get("player")
+    pending = player.get("pending") if isinstance(player, dict) else None
+    events = rlv2.get("_server", {}).get("events", {})
+    reward = events.get("pendingAlchemyReward") if isinstance(events, dict) else None
+    if (
+        not isinstance(player, dict)
+        or player.get("state") != "PENDING"
+        or not isinstance(pending, list)
+        or not pending
+        or pending[0].get("type") != "ALCHEMY_REWARD"
+        or not isinstance(reward, dict)
+    ):
+        return {"error": "alchemy reward is not pending"}, 409
+    if reward_index != 0:
+        return {"error": "alchemy reward index is out of range"}, 400
+
+    item_id = reward.get("itemId")
+    count = reward.get("count")
+    if not isinstance(item_id, str) or type(count) is not int or count <= 0:
+        return {"error": "invalid pending alchemy reward"}, 500
+
+    _rlv2.add_item(rlv2, item_id, count)
+    events.pop("pendingAlchemyReward", None)
+    pending.pop(0)
+    player["state"] = "WAIT_MOVE"
+    server_data = _load_server_data()
+    _rlv2.finishNode(rlv2, server_data)
+    _persist_run(rlv2, server_data)
+    return _current_run_delta(rlv2)
+
 
 def rlv2RerollNode():
     return {}, 202
@@ -2119,6 +2448,16 @@ class _rlv2:
         trap = rlv2["inventory"].get("trap")
         if trap and trap.get("id") == item and trap.get("count", 1) >= count:
             return True
+        fragment = rlv2.get("module", {}).get("fragment")
+        fragments = fragment.get("fragments") if isinstance(fragment, dict) else None
+        if isinstance(fragments, dict):
+            fragment_count = sum(
+                max(1, int(entry.get("count", 1)))
+                for entry in fragments.values()
+                if isinstance(entry, dict) and entry.get("id") == item
+            )
+            if fragment_count >= count:
+                return True
         return any(
             tool["id"] == item and tool.get("count", 1) >= count
             for tool in rlv2["inventory"].get("exploreTool", {}).values()
@@ -2131,6 +2470,8 @@ class _rlv2:
         if requirement is not None:
             if not isinstance(requirement, dict) or set(requirement) - {
                 "items",
+                "itemsAny",
+                "notItems",
                 "moduleMin",
             }:
                 return False
@@ -2141,6 +2482,28 @@ class _rlv2:
                 or count <= 0
                 or not _rlv2.hasItem(rlv2, item_id, count)
                 for item_id, count in items.items()
+            ):
+                return False
+            any_items = requirement.get("itemsAny", {})
+            if not isinstance(any_items, dict) or any(
+                not isinstance(item_id, str)
+                or type(count) is not int
+                or count <= 0
+                for item_id, count in any_items.items()
+            ):
+                return False
+            if any_items and not any(
+                _rlv2.hasItem(rlv2, item_id, count)
+                for item_id, count in any_items.items()
+            ):
+                return False
+            excluded_items = requirement.get("notItems", {})
+            if not isinstance(excluded_items, dict) or any(
+                not isinstance(item_id, str)
+                or type(count) is not int
+                or count <= 0
+                or _rlv2.hasItem(rlv2, item_id, count)
+                for item_id, count in excluded_items.items()
             ):
                 return False
             module_minimum = requirement.get("moduleMin", {})
@@ -2170,6 +2533,172 @@ class _rlv2:
                 return False
         return True
 
+    def routeState(rlv2: dict) -> dict | None:
+        game = rlv2.get("game")
+        player = rlv2.get("player")
+        if not isinstance(game, dict) or not isinstance(player, dict):
+            return None
+        theme = game.get("theme")
+        ending = player.get("toEnding")
+        if not is_supported_ending(theme, ending):
+            return None
+
+        cursor = player.get("cursor")
+        zone = cursor.get("zone", 1) if isinstance(cursor, dict) else 1
+        zone = zone if type(zone) is int and zone > 0 else 1
+        private = rlv2.setdefault("_server", {})
+        private.setdefault("schemaVersion", 1)
+        private.setdefault("events", {})
+        route = private.get("route")
+        if not route_plan_is_valid(theme, ending, route, zone):
+            route = build_route_plan(
+                theme,
+                ending,
+                zone,
+                route if isinstance(route, dict) else None,
+            )
+            if route is None:
+                return None
+            private["route"] = route
+        return route
+
+    def patchCurrentBoss(rlv2: dict, route: dict) -> None:
+        patch_current_boss(rlv2, route)
+
+    def rebaseBaseEnding(rlv2: dict, base_ending: str, source: str) -> bool:
+        game = rlv2.get("game")
+        player = rlv2.get("player")
+        if not isinstance(game, dict) or not isinstance(player, dict):
+            return False
+        theme = game.get("theme")
+        current_ending = player.get("toEnding")
+        if not is_supported_ending(theme, current_ending) or not is_supported_ending(
+            theme, base_ending
+        ):
+            return False
+
+        cursor = player.get("cursor")
+        zone = cursor.get("zone", 1) if isinstance(cursor, dict) else 1
+        zone = zone if type(zone) is int and zone > 0 else 1
+        base_route = build_route_plan(theme, base_ending, zone)
+        route = build_route_plan(theme, current_ending, zone, base_route)
+        if route is None or zone not in route.get("orderedZones", []):
+            return False
+        route["source"] = source
+        player["chgEnding"] = True
+        rlv2.setdefault("_server", {})["route"] = route
+        _rlv2.patchCurrentBoss(rlv2, route)
+        return True
+
+    def setEnding(
+        rlv2: dict,
+        ending: str,
+        source: str,
+        allow_downgrade: bool = False,
+    ) -> bool:
+        game = rlv2.get("game")
+        player = rlv2.get("player")
+        if not isinstance(game, dict) or not isinstance(player, dict):
+            return False
+        theme = game.get("theme")
+        if not is_supported_ending(theme, ending):
+            return False
+
+        current_ending = player.get("toEnding")
+        if current_ending == ending:
+            return True
+        cursor = player.get("cursor")
+        zone = cursor.get("zone", 1) if isinstance(cursor, dict) else 1
+        zone = zone if type(zone) is int and zone > 0 else 1
+        previous = _rlv2.routeState(rlv2)
+        target_priority = ending_priority(theme, ending)
+        if (
+            is_overlay_ending(theme, current_ending)
+            and not is_overlay_ending(theme, ending)
+        ):
+            underlay_ending = (
+                previous.get("underlayEndingId")
+                if isinstance(previous, dict)
+                else None
+            )
+            if (
+                underlay_ending == ending
+            ):
+                return True
+            underlay_priority = ending_priority(theme, underlay_ending)
+            if (
+                underlay_priority is not None
+                and target_priority is not None
+                and target_priority <= underlay_priority
+                and not allow_downgrade
+            ):
+                return True
+            underlay = build_route_plan(theme, ending, zone, previous)
+            route = build_route_plan(theme, current_ending, zone, underlay)
+            if route is None or zone not in route.get("orderedZones", []):
+                return False
+            route["source"] = source
+            player["chgEnding"] = True
+            rlv2.setdefault("_server", {})["route"] = route
+            _rlv2.patchCurrentBoss(rlv2, route)
+            return True
+        current_priority = ending_priority(theme, current_ending)
+        if (
+            current_priority is not None
+            and target_priority is not None
+            and target_priority <= current_priority
+            and not allow_downgrade
+        ):
+            return True
+
+        route = build_route_plan(theme, ending, zone, previous)
+        if route is None or zone not in route.get("orderedZones", []):
+            return False
+        route["source"] = source
+        player["toEnding"] = ending
+        # The client exposes this flag and an explicit acknowledgement endpoint.
+        # No route change is reported for an idempotent assignment.
+        player["chgEnding"] = True
+        rlv2.setdefault("_server", {})["route"] = route
+        _rlv2.patchCurrentBoss(rlv2, route)
+        return True
+
+    def applyEndingItem(rlv2: dict, item_id: str) -> None:
+        theme = rlv2.get("game", {}).get("theme")
+        branch_reset = ending_branch_reset_for_acquired_item(theme, item_id)
+        if branch_reset is not None:
+            cancelled_ending, fallback_ending = branch_reset
+            current_ending = rlv2.get("player", {}).get("toEnding")
+            if current_ending == cancelled_ending:
+                _rlv2.setEnding(
+                    rlv2,
+                    fallback_ending,
+                    f"item:{item_id}",
+                    allow_downgrade=True,
+                )
+            else:
+                current_priority = ending_priority(theme, current_ending)
+                cancelled_priority = ending_priority(theme, cancelled_ending)
+                if (
+                    current_priority is not None
+                    and cancelled_priority is not None
+                    and current_priority > cancelled_priority
+                ):
+                    _rlv2.rebaseBaseEnding(
+                        rlv2,
+                        fallback_ending,
+                        f"item:{item_id}",
+                    )
+            return
+
+        ending = ending_for_acquired_item(theme, item_id)
+        if ending is not None:
+            _rlv2.setEnding(
+                rlv2,
+                ending,
+                f"item:{item_id}",
+            )
+
     def finishNode(rlv2: dict, server_data: dict) -> bool:
         cursor = rlv2["player"]["cursor"]
         position = cursor.get("position")
@@ -2181,20 +2710,27 @@ class _rlv2:
         if not node or not node.get("zone_end"):
             return False
         ending = rlv2["player"].get("toEnding")
-        final_depth = terminal_depth(rlv2["game"]["theme"], ending)
-        if final_depth is None:
-            final_depth = 5
-        if cursor["zone"] >= final_depth:
+        route = _rlv2.routeState(rlv2)
+        if route is None:
+            _rlv2.endRun(rlv2, False, "INVALID_ENDING_ROUTE")
+            return True
+        ordered_zones = route.get("orderedZones", [])
+        next_zone = route_next_zone(route, cursor["zone"])
+        if next_zone is None:
+            if not ordered_zones or cursor["zone"] != ordered_zones[-1]:
+                _rlv2.endRun(rlv2, False, "INVALID_ENDING_ROUTE")
+                return True
             _rlv2.endRun(rlv2, True, "ENDING_REACHED")
             return True
 
-        cursor["zone"] += 1
+        cursor["zone"] = next_zone
         cursor["position"] = None
         zones, seed = _rlv2.getMap_new(
             rlv2["game"]["theme"],
             server_data.get("rlv2_seed"),
             cursor["zone"],
             ending,
+            boss_ending_for_zone(route, cursor["zone"]),
         )
         rlv2["map"].setdefault("zones", {}).update(zones)
         server_data["rlv2_seed"] = seed
@@ -2217,6 +2753,34 @@ class _rlv2:
         while i in d:
             i += 1
         return f"e_{i}"
+
+    def getNextFragmentIndex(rlv2):
+        fragment = rlv2.get("module", {}).get("fragment")
+        fragments = fragment.get("fragments") if isinstance(fragment, dict) else {}
+        used = {
+            int(index[2:])
+            for index in fragments
+            if isinstance(index, str)
+            and index.startswith("f_")
+            and index[2:].isdigit()
+        }
+        index = 0
+        while index in used:
+            index += 1
+        return f"f_{index}"
+
+    def recalculateFragmentWeight(rlv2):
+        fragment = rlv2.get("module", {}).get("fragment")
+        if not isinstance(fragment, dict):
+            return
+        fragments = fragment.get("fragments")
+        if not isinstance(fragments, dict):
+            return
+        fragment["totalWeight"] = sum(
+            max(0, int(entry.get("weight", 0)))
+            for entry in fragments.values()
+            if isinstance(entry, dict) and not entry.get("used")
+        )
     
     def getChars(
         use_user_defaults=False, rlv2_data: dict = None, ticket_item_id: str = None
@@ -2389,6 +2953,7 @@ class _rlv2:
         seed: str = None,
         zone: int = 1,
         ending: str = None,
+        boss_ending: str = None,
     ):
         theme_data = get_memory("roguelike_topic_table")["details"][theme]
         layout = area_layout(theme, zone)
@@ -2432,8 +2997,21 @@ class _rlv2:
             ]
 
         def boss_pool() -> list[str]:
-            terminal = zone == final_depth
-            candidates = boss_stage_ids(theme, ending) if terminal else mid_boss_pool()
+            resolved_ending = boss_ending
+            if resolved_ending is None and zone == final_depth:
+                resolved_ending = ending
+            elif (
+                resolved_ending is None
+                and zone == 5
+                and isinstance(final_depth, int)
+                and final_depth > 5
+            ):
+                resolved_ending = default_ending(theme)
+            candidates = (
+                boss_stage_ids(theme, resolved_ending)
+                if resolved_ending is not None
+                else mid_boss_pool()
+            )
             verified = [
                 stage_id
                 for stage_id in candidates
@@ -2442,7 +3020,7 @@ class _rlv2:
             ]
             # Shared specialNodeId only proves boss identity. Variant selection
             # needs difficulty/event state that this generator does not model.
-            return verified[:1] if terminal else verified
+            return verified[:1] if resolved_ending is not None else verified
 
         def weighted_type(kind: str) -> int:
             type_weights = {
@@ -2523,8 +3101,11 @@ class _rlv2:
                 }
                 if x == len(column_specs) - 1:
                     node["zone_end"] = True
-                if spec.get("scene_id"):
-                    node["scene"] = spec["scene_id"]
+                scene_id = spec.get("scene_id")
+                if scene_id is None and node_type == 65536:
+                    scene_id = fixed_scene_for_zone(theme, zone)
+                if scene_id:
+                    node["scene"] = scene_id
 
                 if node_type in {1, 2}:
                     logical_depths = spec.get("stage_depths")
@@ -2853,9 +3434,15 @@ class _rlv2:
         elif item_type == "GOLD":
             prop["gold"] = count if cover else prop["gold"] + count
         elif item_type == "POPULATION":
-            prop["population"]["max"] = (
-                count if cover else prop["population"]["max"] + count
-            )
+            population = prop["population"]
+            if cover:
+                population["max"] = max(population["cost"], count)
+            elif count < 0:
+                population["max"] = max(
+                    population["cost"], population["max"] + count
+                )
+            else:
+                population["max"] += count
         elif item_type == "SQUAD_CAPACITY":
             prop["capacity"] = count if cover else prop["capacity"] + count
         elif item_type == "EXP":
@@ -2871,6 +3458,19 @@ class _rlv2:
         elif item_type == "VISION" and rlv2["module"].get("vision") is not None:
             vision = rlv2["module"]["vision"]
             vision["value"] = count if cover else vision["value"] + count
+        elif item_type == "CHAOS_PURIFY" and rlv2["module"].get("chaos") is not None:
+            chaos = rlv2["module"]["chaos"]
+            current = chaos.get("value", 0)
+            if not isinstance(current, (int, float)) or isinstance(current, bool):
+                return False
+            # Earning purification lowers collapse; spending it raises collapse.
+            chaos["value"] = max(0, -count if cover else current - count)
+        elif item_type == "MAX_WEIGHT" and rlv2["module"].get("fragment") is not None:
+            fragment = rlv2["module"]["fragment"]
+            current = fragment.get("limitWeight", 0)
+            if type(current) is not int:
+                return False
+            fragment["limitWeight"] = max(0, count if cover else current + count)
         else:
             return False
 
@@ -2879,9 +3479,9 @@ class _rlv2:
 
     def add_item(rlv2: dict, item: str, count: int = 1):
         theme = rlv2["game"]["theme"]
-        item_data = get_memory("roguelike_topic_table")["details"][theme][
-            "items"
-        ].get(item)
+        topic_table = get_memory("roguelike_topic_table")
+        theme_data = topic_table["details"][theme]
+        item_data = theme_data["items"].get(item)
         if item_data is None:
             raise ValueError(f"unknown roguelike item: {item}")
 
@@ -2917,12 +3517,27 @@ class _rlv2:
                             blackboard.get("value", {}).get("value", 0)
                         )
                     continue
-                if buff["key"] not in {"immediate_reward", "item_cover_set"}:
+                if buff["key"] not in {
+                    "immediate_reward",
+                    "immediate_cost",
+                    "item_cover_set",
+                }:
                     continue
                 blackboard = {entry["key"]: entry for entry in buff["blackboard"]}
                 reward_id = blackboard.get("id", {}).get("valueStr")
                 reward_count = int(blackboard.get("count", {}).get("value", 0))
-                if reward_id is not None:
+                if buff["key"] == "immediate_cost":
+                    if reward_id is None or reward_count <= 0:
+                        continue
+                    if _rlv2.grant_resource(rlv2, reward_id, -reward_count):
+                        continue
+                    if reward_id in theme_data["items"]:
+                        if not _rlv2.remove_item(rlv2, reward_id, reward_count):
+                            raise ValueError(
+                                f"failed to consume immediate item cost: {reward_id}"
+                            )
+                    continue
+                if reward_id is not None and reward_count > 0:
                     granted = _rlv2.grant_resource(
                         rlv2,
                         reward_id,
@@ -2946,6 +3561,8 @@ class _rlv2:
                                 if buff["key"] == "item_cover_set"
                                 else unresolved.get(reward_id, 0) + reward_count
                             )
+            _rlv2.applyEndingItem(rlv2, item)
+            clamp_sanity_module(rlv2["module"])
             return created_tickets or relic_id
 
         if item_type == "ACTIVE_TOOL":
@@ -2967,45 +3584,132 @@ class _rlv2:
             }
             return tool_id
 
+        if item_type == "FRAGMENT":
+            fragment = rlv2.get("module", {}).get("fragment")
+            if not isinstance(fragment, dict) or not isinstance(
+                fragment.get("fragments"), dict
+            ):
+                raise ValueError("fragment item requires the RO4 fragment module")
+            fragment_data = (
+                topic_table.get("modules", {})
+                .get(theme, {})
+                .get("fragment", {})
+                .get("fragmentData", {})
+                .get(item)
+            )
+            if not isinstance(fragment_data, dict):
+                raise ValueError(f"missing fragment data: {item}")
+            created = []
+            for _ in range(count):
+                fragment_id = _rlv2.getNextFragmentIndex(rlv2)
+                fragment["fragments"][fragment_id] = {
+                    "id": item,
+                    "index": fragment_id,
+                    "used": False,
+                    "ts": time(),
+                    "weight": int(fragment_data.get("weight", 0)),
+                    "value": int(fragment_data.get("value", 0)),
+                    "price": 0,
+                }
+                created.append(fragment_id)
+            _rlv2.recalculateFragmentWeight(rlv2)
+            return created[0] if created else None
+
         if _rlv2.grant_resource(rlv2, item, count):
             return item
 
         consumable = rlv2["inventory"]["consumable"]
         consumable[item] = consumable.get(item, 0) + count
+        _rlv2.applyEndingItem(rlv2, item)
         return item
 
     def remove_item(rlv2: dict, item: str, count: int = 1):
-        for index, relic in list(rlv2["inventory"]["relic"].items()):
-            if relic["id"] != item:
-                continue
-            if relic["count"] > count:
-                relic["count"] -= count
+        if not isinstance(item, str) or type(count) is not int or count <= 0:
+            return False
+        inventory = rlv2["inventory"]
+        relics = inventory["relic"]
+        recruit = inventory["recruit"]
+        consumable = inventory["consumable"]
+        tools = inventory["exploreTool"]
+        trap = inventory.get("trap")
+        fragment = rlv2.get("module", {}).get("fragment")
+        fragments = fragment.get("fragments") if isinstance(fragment, dict) else None
+        available = consumable.get(item, 0)
+        available += sum(
+            relic.get("count", 1)
+            for relic in relics.values()
+            if relic.get("id") == item
+        )
+        available += sum(
+            ticket.get("count", 1)
+            for ticket in recruit.values()
+            if ticket.get("id") == item
+        )
+        available += sum(
+            tool.get("count", 1)
+            for tool in tools.values()
+            if tool.get("id") == item
+        )
+        if isinstance(trap, dict) and trap.get("id") == item:
+            available += trap.get("count", 1)
+        if isinstance(fragments, dict):
+            available += sum(
+                max(1, int(entry.get("count", 1)))
+                for entry in fragments.values()
+                if isinstance(entry, dict) and entry.get("id") == item
+            )
+        if available < count:
+            return False
+
+        remaining = count
+        for collection in (relics, recruit):
+            for index, entry in list(collection.items()):
+                if remaining <= 0 or entry.get("id") != item:
+                    continue
+                entry_count = max(1, int(entry.get("count", 1)))
+                removed = min(entry_count, remaining)
+                if removed == entry_count:
+                    del collection[index]
+                else:
+                    entry["count"] = entry_count - removed
+                remaining -= removed
+
+        if remaining and item in consumable:
+            removed = min(int(consumable[item]), remaining)
+            consumable[item] -= removed
+            remaining -= removed
+            if consumable[item] <= 0:
+                consumable.pop(item, None)
+
+        if remaining and isinstance(trap, dict) and trap.get("id") == item:
+            trap_count = max(1, int(trap.get("count", 1)))
+            removed = min(trap_count, remaining)
+            remaining -= removed
+            if removed == trap_count:
+                inventory["trap"] = None
             else:
-                del rlv2["inventory"]["relic"][index]
-            return True
+                trap["count"] = trap_count - removed
 
-        for index, ticket in list(rlv2["inventory"]["recruit"].items()):
-            if ticket["id"] == item:
-                del rlv2["inventory"]["recruit"][index]
-                return True
-
-        consumable = rlv2["inventory"]["consumable"]
-        if item in consumable:
-            consumable[item] = max(0, consumable[item] - count)
-            if consumable[item] == 0:
-                del consumable[item]
-            return True
-
-        if rlv2["inventory"]["trap"] is not None:
-            if rlv2["inventory"]["trap"]["id"] == item:
-                rlv2["inventory"]["trap"] = None
-                return True
-
-        for index, tool in list(rlv2["inventory"]["exploreTool"].items()):
-            if tool["id"] == item:
-                del rlv2["inventory"]["exploreTool"][index]
-                return True
-        return False
+        for index, tool in list(tools.items()):
+            if remaining <= 0 or tool.get("id") != item:
+                continue
+            tool_count = max(1, int(tool.get("count", 1)))
+            removed = min(tool_count, remaining)
+            remaining -= removed
+            if removed == tool_count:
+                del tools[index]
+            else:
+                tool["count"] = tool_count - removed
+        if remaining and isinstance(fragments, dict):
+            for index, entry in list(fragments.items()):
+                if remaining <= 0 or not isinstance(entry, dict):
+                    continue
+                if entry.get("id") != item:
+                    continue
+                del fragments[index]
+                remaining -= 1
+            _rlv2.recalculateFragmentWeight(rlv2)
+        return remaining == 0
 
     def ro5_drawCopper(randomseed:str):
         coppper_bag = {}

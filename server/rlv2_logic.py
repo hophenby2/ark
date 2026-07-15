@@ -1,6 +1,17 @@
 from copy import deepcopy
+from decimal import Decimal, InvalidOperation
 from random import Random
 from typing import Any
+
+from rlv2_ending_rules import (
+    EVENT_ONLY_ITEM_IDS,
+    build_route_plan,
+    default_ending,
+    is_supported_ending,
+    patch_current_boss,
+    route_completed_zone_count,
+    route_plan_is_valid,
+)
 
 
 RECRUIT_COST = {
@@ -130,6 +141,7 @@ RESERVED_EVENT_RELIC_IDS = frozenset(
         "rogue_2_relic_fight_46",
     }
 )
+RESERVED_EVENT_RELIC_IDS = RESERVED_EVENT_RELIC_IDS | EVENT_ONLY_ITEM_IDS
 
 PROFESSION_SUFFIXES = (
     "pioneer",
@@ -464,6 +476,17 @@ def event_relic_pool_candidates(
     return candidates
 
 
+def shop_item_pool_candidates(theme: str, item_ids: list[str]) -> list[str]:
+    """Remove event-only items from the generic trader archive pool."""
+    if not isinstance(theme, str) or not isinstance(item_ids, list):
+        return []
+    return [
+        item_id
+        for item_id in item_ids
+        if isinstance(item_id, str) and item_id not in RESERVED_EVENT_RELIC_IDS
+    ]
+
+
 def event_probability_succeeds(probability: dict, rng: Random) -> bool:
     """Resolve a validated event effect probability."""
     if not isinstance(probability, dict):
@@ -673,6 +696,56 @@ def battle_base_reward(theme: str, zone: int, node_type: int) -> tuple[int, int]
     return zones[reward_zone - 1][node_type - 1]
 
 
+def apply_battle_reward_modifiers(
+    base_count: int,
+    resource_id: str,
+    relic_inventory: dict,
+    relic_table: dict,
+) -> int:
+    """Apply multiplicative ``up_reward`` battle buffs with floor rounding."""
+    if (
+        type(base_count) is not int
+        or base_count < 0
+        or not isinstance(resource_id, str)
+        or not isinstance(relic_inventory, dict)
+        or not isinstance(relic_table, dict)
+    ):
+        raise ValueError("invalid battle reward modifier input")
+
+    multiplier = Decimal(1)
+    for relic in relic_inventory.values():
+        if not isinstance(relic, dict):
+            continue
+        relic_data = relic_table.get(relic.get("id"))
+        if not isinstance(relic_data, dict):
+            continue
+        relic_count = relic.get("count", 1)
+        relic_count = relic_count if type(relic_count) is int and relic_count > 0 else 1
+        for buff in relic_data.get("buffs", []):
+            if not isinstance(buff, dict) or buff.get("key") != "up_reward":
+                continue
+            blackboard = {
+                entry.get("key"): entry
+                for entry in buff.get("blackboard", [])
+                if isinstance(entry, dict) and isinstance(entry.get("key"), str)
+            }
+            if (
+                blackboard.get("id", {}).get("valueStr") != resource_id
+                or blackboard.get("mask", {}).get("valueStr") != "battle"
+            ):
+                continue
+            up = blackboard.get("up", {}).get("value")
+            if not isinstance(up, (int, float)) or isinstance(up, bool):
+                continue
+            try:
+                factor = Decimal(1) + Decimal(str(up))
+            except InvalidOperation:
+                continue
+            multiplier *= factor ** relic_count
+
+    return max(0, int(Decimal(base_count) * multiplier))
+
+
 def battle_resource_item_ids(theme_data: dict) -> dict[str, str]:
     """Return table-defined battle resource IDs after validating their item types."""
     try:
@@ -871,6 +944,21 @@ def _mapping_values(value: Any) -> list[dict]:
     return [item for item in values if isinstance(item, dict)]
 
 
+def public_run_value(value: Any) -> Any:
+    """Return a response-safe copy with server-private state removed."""
+    if isinstance(value, dict):
+        return {
+            key: public_run_value(item)
+            for key, item in value.items()
+            if key != "_server"
+        }
+    if isinstance(value, list):
+        return [public_run_value(item) for item in value]
+    if isinstance(value, tuple):
+        return tuple(public_run_value(item) for item in value)
+    return deepcopy(value)
+
+
 def build_ending_result(
     run: dict, success: bool, end_ts: int
 ) -> dict[str, dict]:
@@ -983,8 +1071,14 @@ def build_ending_result(
     }
     squad_buffs = buff.get("squadBuff")
     squad_buffs = squad_buffs if isinstance(squad_buffs, list) else []
+    cursor_zone = _protocol_int(cursor.get("zone"))
+    private = run.get("_server") if isinstance(run, dict) else None
+    route = private.get("route") if isinstance(private, dict) else None
+    route_zone_count = route_completed_zone_count(route, cursor_zone)
     record = {
-        "cntZone": _protocol_int(cursor.get("zone")),
+        "cntZone": (
+            route_zone_count if route_zone_count is not None else cursor_zone
+        ),
         "relicList": [
             item["id"] for item in relics if isinstance(item.get("id"), str)
         ],
@@ -1059,6 +1153,65 @@ def normalize_current_run(
         return False
 
     changed = False
+    game = run.get("game")
+    theme = game.get("theme") if isinstance(game, dict) else None
+    if default_ending(theme) is not None:
+        if type(player.get("chgEnding")) is not bool:
+            player["chgEnding"] = False
+            changed = True
+
+        ending = player.get("toEnding")
+        if ending in {None, ""}:
+            ending = default_ending(theme)
+            player["toEnding"] = ending
+            changed = True
+
+        private = run.get("_server")
+        if not isinstance(private, dict):
+            private = {}
+            run["_server"] = private
+            changed = True
+        if private.get("schemaVersion") != 1:
+            private["schemaVersion"] = 1
+            changed = True
+        if not isinstance(private.get("events"), dict):
+            private["events"] = {}
+            changed = True
+
+        route = private.get("route")
+        if is_supported_ending(theme, ending):
+            cursor = player.get("cursor")
+            zone = cursor.get("zone", 1) if isinstance(cursor, dict) else 1
+            zone = zone if type(zone) is int and zone > 0 else 1
+            candidate_route = build_route_plan(
+                theme, ending, zone, route if isinstance(route, dict) else None
+            )
+            if (
+                isinstance(candidate_route, dict)
+                and zone not in candidate_route.get("orderedZones", [])
+                and isinstance(route, dict)
+            ):
+                previous_ending = route.get("endingId")
+                if (
+                    previous_ending != ending
+                    and is_supported_ending(theme, previous_ending)
+                    and isinstance(route.get("orderedZones"), list)
+                    and zone in route["orderedZones"]
+                    and route_plan_is_valid(theme, previous_ending, route, zone)
+                ):
+                    ending = previous_ending
+                    player["toEnding"] = ending
+                    changed = True
+            if not route_plan_is_valid(theme, ending, route, zone):
+                private["route"] = build_route_plan(
+                    theme, ending, zone, route if isinstance(route, dict) else None
+                )
+                patch_current_boss(run, private["route"])
+                changed = True
+        elif "route" in private:
+            private.pop("route", None)
+            changed = True
+
     pending = player.get("pending")
     first_pending = (
         pending[0]

@@ -485,6 +485,8 @@ app.add_url_rule("/rlv2/nodeMission/confirm", methods=["POST"], view_func=rlv2.r
 app.add_url_rule("/rlv2/nodeMission/giveUp", methods=["POST"], view_func=rlv2.rlv2NodeMissionGiveUp)
 app.add_url_rule("/rlv2/nodeMission/closeTip", methods=["POST"], view_func=rlv2.rlv2NodeMissionCloseTip)
 app.add_url_rule("/rlv2/readEndingChange", methods=["POST"], view_func=rlv2.rlv2ReadEndingChange)
+app.add_url_rule("/rlv2/alchemy", methods=["POST"], view_func=rlv2.rlv2Alchemy)
+app.add_url_rule("/rlv2/alchemyReward", methods=["POST"], view_func=rlv2.rlv2AlchemyReward)
 app.add_url_rule("/rlv2/rerollNode", methods=["POST"], view_func=rlv2.rlv2RerollNode)
 app.add_url_rule("/rlv2/upgradeNode", methods=["POST"], view_func=rlv2.rlv2UpgradeNode)
 app.add_url_rule("/rlv2/getTicketAssistList", methods=["POST"], view_func=rlv2.rlv2GetTicketAssistList)

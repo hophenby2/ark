@@ -1,6 +1,6 @@
 # Roguelike 模块分析与原版拟合路线
 
-> 审计日期：2026-07-14  
+> 审计日期：2026-07-15
 > 客户端基准：国服 `2.7.51`，资源版本 `26-07-10`（仓库配置中的完整资源版本为 `26-07-10-13-49-06_a14b4a` / `26-07-10-13-52-38_fcd8ed`）  
 > 范围：`rogue_1` 至 `rogue_5`。`rogue_0` 是项目测试入口，不作为原版主题讨论。
 
@@ -10,13 +10,13 @@
 
 它仍不能被视为原版规则模拟器。主要差距不是几个数值，而是以下三类服务端规则尚未建模：
 
-1. 地图仍由通用随机权重生成，没有按主题、楼层和拓扑模板完成“节点槽位、节点池、保底/上限、结局占位、连线”的生成过程。
-2. 事件没有按楼层、资源、藏品、结局和主题模块状态过滤；五个主题的核心模块大多只有初始数据结构，没有完整状态转移。
+1. 核心地图已接入 36 条区域约束、22 条结局 Boss/终点和显式隐藏层路线，但问号节点权重、详细拓扑、特殊/平面区域及区域专属状态仍未完整建模。
+2. 事件已按楼层、节点类别及一组藏品/模块门槛过滤，并实现经审核的结局事件链子集；模式、历史解锁、完整 eligibility、随机权重和五主题核心模块状态仍不完整。
 3. 终局目前只有零奖励的安全清局闭环，原版分数、BP 和外层奖励仍未实现；除 `battleFinish` 重试外，动作级幂等和若干状态机分支仍不完整，多个已注册接口仍返回空 `202`。
 
 按 UID 的存档隔离与事务基线已经落地，因此后续顺序调整为“状态机与终局协议 -> 表驱动的公共规则 -> 地图生成 -> 五主题机制 -> 协议回归”，而不是继续堆叠事件特判。
 
-本轮已经落地的高置信修复包括：SQLite 按 UID 保存 run、随机种子与 revision，动作级 `BEGIN IMMEDIATE` 事务与 revision/CAS，Legacy 单一 owner 迁移，`SyncData` 按 UID 合并唯一真源；以及按表开局与等级/招募规则、月队及阿米娅升变职业、事件支付与当前场景门禁、即时券队列、商店库存与余额、战斗生命/护盾/经验、失败终止、失败结果重试幂等、零奖励安全清局、路线解锁成本、RO3 紧急节点约束和 RO5 通宝确认路由。五主题普通/紧急基础收益也已按固定矩阵接入并通过事务回归；完整主题模块、奖励池、拓扑模板和原版外层结算仍属于后续阶段。
+本轮已经落地的高置信修复包括：SQLite 按 UID 保存 run、随机种子与 revision，动作级 `BEGIN IMMEDIATE` 事务与 revision/CAS，Legacy 单一 owner 迁移，`SyncData` 按 UID 合并唯一真源；以及按表开局与等级/招募规则、事件支付与门禁、商店库存、战斗结算和零奖励安全清局。新增的结局规则会按关键物品更新 `toEnding/chgEnding`，以显式 `orderedZones/bossEndings` 驱动 zone 6/7/8、ending5 underlay 和当前未访问 Boss 替换；新增事件 overlay 接入 RO1 关键链、RO2 灯火门槛/骑士死亡、RO4 构想炼金及 RO3-5 经审核剧情/结局事件。完整主题模块、特殊区域、历史结局解锁、奖励池和原版外层结算仍属于后续阶段。
 
 ## 2. 证据使用原则
 
@@ -44,11 +44,14 @@
 | HTTP 路由 | [server/app.py](../server/app.py) 的 `/rlv2/*` 路由 | 将客户端接口映射到 handler | 大量已注册接口仍只返回 `202` 空对象 |
 | 流程编排 | [server/rlv2.py](../server/rlv2.py) | 读请求、推进 `pending/state`、生成地图、结算并持久化 | 文件过大；协议、领域规则、存储和主题特判混合 |
 | 纯逻辑 | [server/rlv2_logic.py](../server/rlv2_logic.py) | 开局表选择、等级、资源增减、难度 Buff、招募和战斗生命结算 | 是合适的拆分边界，但尚未覆盖地图、奖励、事件资格与主题模块 |
+| 结局与事件规则 | [server/rlv2_ending_rules.py](../server/rlv2_ending_rules.py)、[server/rlv2_event_rules.py](../server/rlv2_event_rules.py) | 显式核心路线、逐层 Boss、关键物品触发及经审核事件 overlay | 只覆盖可由当前 Excel 与固定 PRTS revision 确认的子集；不含特殊区域和历史解锁存档 |
 | 客户端表 | [data/excel/roguelike_topic_table.json](../data/excel/roguelike_topic_table.json) | 主题、模式、初始值、关卡、物品、节点类型、月队、难度等 | 不能单独还原服务端生成算法 |
 | 人工补充数据 | [data/rlv2/event_choices.json](../data/rlv2/event_choices.json)、[server/data/rlv2_data.py](../server/data/rlv2_data.py) | 事件效果和部分难度 Buff | 数据来源/版本未逐条记录；事件效果与解释器耦合 |
 | 局内存储 | [server/rlv2_repository.py](../server/rlv2_repository.py) | SQLite 按 UID 保存 run、随机种子与 revision；同一事务提交并通过 CAS 拒绝陈旧写入 | 动作级 request-id 幂等日志尚未实现；`Uid` 请求头仍缺认证 |
 | Legacy 兼容 | `data/user/rlv2.json`、`data/user/serverData.json` | 单用户一次性导入及可选兼容镜像；多用户必须显式指定唯一 owner | 镜像不是事实源，不能重新参与多用户归属推断 |
-| 测试 | [tests/test_rlv2_logic.py](../tests/test_rlv2_logic.py)、[tests/test_rlv2_repository.py](../tests/test_rlv2_repository.py)、[tests/test_rlv2_transactions.py](../tests/test_rlv2_transactions.py) | 纯逻辑、UID 隔离、迁移、CAS、事务提交/回滚和嵌套 handler 回归 | 尚缺完整依赖环境下的接口状态机、地图性质和主题模块回归 |
+| 测试 | [tests/test_rlv2_logic.py](../tests/test_rlv2_logic.py)、[tests/test_rlv2_repository.py](../tests/test_rlv2_repository.py)、[tests/test_rlv2_rules.py](../tests/test_rlv2_rules.py)、[tests/test_rlv2_transactions.py](../tests/test_rlv2_transactions.py)、[tests/test_rlv2_ending_routes.py](../tests/test_rlv2_ending_routes.py) | 纯逻辑、UID 隔离、事务、地图规则和结局路线回归 | 尚缺完整依赖环境下的接口状态机、特殊区域和主题模块回归 |
+
+当前全量 133 项 RLV2 测试通过：logic 50、repository 11、rules 9、transactions 42、ending routes 21。路线测试覆盖显式路线、逐层 Boss、合法手工 `toEnding`、坏路线修复、额外层手改保护、ending5 underlay 优先级、跳层计数和私有状态剥离；事务测试覆盖 RO1 关键链、RO2 骑士死亡必领、RO4 构想炼金、RO5 追忆仪、普通 gold 跳过和零生命失败。另对 36 个 `theme × zone` 各运行固定 seed `hard-property-0..2499`，共 90000 张地图、849924 个节点，硬性质审计全部通过。
 
 建议保持 `rlv2_logic.py` 无 Flask、无磁盘 I/O，并继续拆出三个明确边界：
 
@@ -69,6 +72,9 @@
 | `inventory` | 藏品、券、道具、消耗品、探索工具 | 所有增减走统一账本；数量不得为负；一次性效果只结算一次 |
 | `buff` | 临时生命、分队 Buff 等公共效果 | 可持久效果与单场效果分离，不污染全局表对象 |
 | `module` | 五主题专属状态 | 只由对应主题规则修改，且能从动作日志确定性重放 |
+| `_server` | `schemaVersion/events/route` 服务端私有中间态 | 随当前局原子持久化；所有 HTTP 响应和 `SyncData` 必须递归剥离，不能进入客户端协议 |
+
+`_server.route` 保存 `endingId/baseEndingId/underlayEndingId/orderedZones/bossEndings`；`_server.events` 保存事件战待发奖励、`requiredBattleRewardIndexes` 和 `pendingAlchemyReward`。旧存档会在读取时补齐该结构；它不是客户端状态模型的一部分。
 
 当前主流程可概括为：
 
@@ -79,7 +85,8 @@
 | 开始探索 | `rlv2FinishEvent()` | `INIT` -> 生成第一层 -> `WAIT_MOVE` | 近似；地图不是原版生成器 |
 | 非战斗节点 | `rlv2MoveTo()`、`rlv2SelectChoice()`、商店接口 | `WAIT_MOVE` -> `PENDING` -> `WAIT_MOVE` | 有邻接/重复访问和余额校验；节点类型与事件资格仍过于通用 |
 | 战斗节点 | `rlv2MoveAndBattleStart()`、`rlv2BattleFinish()` | `WAIT_MOVE` -> `BATTLE` -> `BATTLE_REWARD` | 普通/紧急基础 EXP 自动结算并升级；基础源石锭进入独立 reward；掉落池和主题乘区仍是近似 |
-| 奖励 | `rlv2ChooseBattleReward()`、`rlv2FinishBattleReward()` | 领取奖励/招募 -> 完成节点或进下一层 | 按整数 `index + sub` 单项领取且可防重复；基础源石锭未领取时禁止结束；全职业券仍是占位近似 |
+| 奖励 | `rlv2ChooseBattleReward()`、`rlv2FinishBattleReward()` | 领取奖励/招募 -> 完成节点或进下一层 | 按整数 `index + sub` 单项领取且可防重复；普通源石锭和券可跳过，只有明确必得的事件奖励会阻止结束；全职业券仍是占位近似 |
+| 结局改线/跨层 | 关键物品入库、`rlv2ReadEndingChange()`、`_rlv2.finishNode()` | 更新 `toEnding` 与私有路线 -> 确认提示 -> 按显式下一层生成地图 | 核心 zone 5/6/7/8 和逐层 Boss 已实现；特殊区域及历史解锁门槛未实现 |
 | 放弃 | `rlv2GiveUpGame()` | 任意局内状态 -> 当前 UID 的空局 | 已在当前 UID 的仓储事务内清局；它仍不能代替原版终局结算 |
 
 后续不应让每个 handler 自行 `pop(0)`。应建立显式状态转移表，例如只有 `BATTLE_REWARD` 能接受 `chooseBattleReward`，只有奖励与其插入的招募流程都完成后才能 `finishBattleReward`。每条命令同时校验 `run_id`、`revision`、`state`、首个 `pending.type` 和目标对象状态。
@@ -95,15 +102,15 @@
 | 月队预置干员 | 已实现 | `prepare_predefined_characters()` | 覆盖阿米娅模板、多形态、玩家缺失干员的协议行为 |
 | 初始招募组与券后缀 | 已实现 | `recruit_group_ticket_ids()` | 用表/协议验证随机高级券的抽取权重，而不只验证职业集合 |
 | 招募/进阶/希望 | 已实现/近似 | `prepare_recruit_candidates()`、`rlv2RecruitChar()` | 特殊免费规则、助战、留券、主题专属减费和不能进阶条件 |
-| 生命、护盾、经验、升级 | 已实现/近似 | `settle_battle_life()`、`battle_base_reward()`、`resolve_player_levels()` | 已区分 RO1 每场临时生命与后续主题可消耗护盾；普通/紧急经验已按楼层结算，复活和完整最终结算仍缺失 |
+| 生命、护盾、经验、升级 | 已实现/近似 | `settle_battle_life()`、`battle_base_reward()`、`resolve_player_levels()` | 已区分 RO1 每场临时生命与后续主题可消耗护盾；普通/紧急经验已按楼层结算，战后效果将生命扣至 0 会直接失败；复活和完整最终结算仍缺失 |
 | 难度 Buff | 近似 | `_rlv2.getBuffs()`、`collect_difficulty_buffs()` | 把手写按层倍率与当前表/抓包逐项对齐；区分替换和叠加 |
-| 藏品/道具入库 | 近似 | `_rlv2.add_item()`、`grant_resource()` | 已处理 `level_life_point_add`、即时资源和即时券队列；RO4/RO5 专属资源暂存账本，尚未全部转成主题状态 |
-| 事件 | 近似 | `event_choices.json`、`rlv2SelectChoice()` | 已校验当前场景和资源支付；仍缺楼层/藏品/结局/模块 eligibility、概率及一次性标记 |
-| 商店 | 近似 | `rlv2MoveTo()`、`rlv2BuyGoods()` | 表驱动商品池、折扣、刷新、银行、投资、战斗商店和主题交互 |
+| 藏品/道具入库 | 近似 | `_rlv2.add_item()`、`grant_resource()`、`remove_item()` | 已处理即时资源/券、结局触发、跨实例原子扣除、RO3 `CHAOS_PURIFY`、RO4 `FRAGMENT/MAX_WEIGHT` 和 `immediate_cost`；`immediate_mutation` 与其余 RO4/RO5 专属资源尚未完整转成主题状态 |
+| 事件 | 部分实现 | `event_choices.json`、`runtime_event_rules()`、`rlv2SelectChoice()` | 已校验楼层/节点/场景/部分藏品和模块门槛，并支持事件战后关键奖励；仍缺模式、历史、完整 eligibility、权重和大量 RO3-5 效果 |
+| 商店 | 近似 | `rlv2MoveTo()`、`rlv2BuyGoods()` | 已排除事件链专属物品并保留 RO3 `视界邀约` 的 1 锭来源；仍缺表驱动权重、折扣、刷新、银行、投资和主题交互 |
 | 普通/紧急基础收益 | 已实现，待真实协议回归 | `battle_base_reward()`、`battle_resource_item_ids()`、`rlv2BattleFinish()` | 60 格矩阵、资源类型、标准区域、Boss/特殊区域边界及领取事务均有测试；仍缺同版本真实响应 fixture |
 | 战斗奖励池 | 近似 | `rlv2BattleFinish()`、`rlv2ChooseBattleReward()` | 按节点/关卡/难度生成券、藏品和主题额外掉落；紧急额外奖励及各独立乘区仍待实现 |
-| 地图 | 近似 | `_rlv2.getMap_new()` | 已落实 RO3 紧急节点性质约束和付费纵向路线；通用权重仍不能代表完整原版拓扑 |
-| 多结局 | 未实现/安全近似 | `player.toEnding`、`player.chgEnding` | 当前到终点只进入带原因的不可继续状态；结局条件、改线、隐藏层、Boss/事件替换和外层结算未实现 |
+| 地图 | 近似 | `_rlv2.getMap_new()`、`build_route_plan()` | 36 条核心区域约束、显式隐藏层顺序和逐层 Boss 已接入；特殊/平面区域及通用权重仍不能代表完整原版拓扑 |
+| 多结局 | 核心路线已实现 | `player.toEnding/chgEnding`、`ENDING_ON_ACQUIRE`、`rlv2ReadEndingChange()` | 关键物品或手工合法 `toEnding` 可改线并替换未访问 Boss；RO2 骑士死亡可产生必领 `grace_84` 并恢复默认路线；仍缺 per-UID 历史解锁、特殊区域和原版外层结算 |
 | 银行/节点任务/刷新/助战等 | 未实现 | `rlv2BankPut()` 至 `rlv2ChooseInitialExploreTool()` | 多个路由目前只返回空对象与 HTTP 202 |
 
 ### 普通/紧急基础收益矩阵
@@ -127,9 +134,9 @@
 - RO4 旗帜挑战在 zone 2-5 有独立升级行，但当前 run/node 没有可靠的奖励 variant 标志；`levelReplaceIds` 在普通关卡中也广泛存在，不能作为旗帜判据。本轮只发基础行。
 - Boss 不纳入本轮矩阵。RO2-RO5 存在 Boss 关卡变体、特殊险路恶敌或额外减半条件；当前 handler 明确不发矩阵 EXP/gold，只保留占位全职业券，后续必须进入独立规则分支。
 
-当前 `_rlv2.finishNode()` 已按所选 ending 的终点层判断，生成器也能构造核心 zone 6/7/8 和 canonical Boss；但 `toEnding` 的事件/藏品触发及完整有序路线仍未建模，不能把所有隐藏路线简化为连续 `zone + 1`。第六档和显式 alias 能正确结算合法状态，这仍不能替代 EndingRoute 状态机。
+当前 `_rlv2.finishNode()` 不再统一执行 `zone + 1`，而是读取私有 EndingRoute：RO3 ending4 可从 zone 5 或已进入的 zone 6 前往 zone 7；RO4/RO5 ending4 从 zone 5 前往 zone 7；RO4/RO5 ending5 在此前实际终局 zone 5/6/7 后追加 zone 8。路线逐层保存 `bossEndings`，因此隐藏路线的 zone 5 仍使用已经确定的基础 Boss，最终隐藏层使用目标结局 Boss。ending5 overlay 可升级但不会被后来取得的低优先级 underlay 物品降级；损坏路线会重建，已进入额外层后手改成终点在身后的 ending 会恢复仍包含当前位置的原有效路线。合法手工 `toEnding` 会即时替换当前层未访问 Boss，跳层 `record.cntZone` 按实际路线位置计数；这些只提供核心路线的调试/兼容能力，不代表已校验原版历史解锁门槛。
 
-当前 `event_choices.json` 包含五主题条目，但“存在数据”不等于“已实现条件”：审计快照中 `rogue_1` 到 `rogue_5` 分别有 107、176、923、357、1788 个 choice。运行时现已按主题、节点类别、明确楼层、quarantine 和已录入持有条件过滤，并禁用空入口及若干未知掷骰/路线场景；模式、历史、完整结局条件与 RO3-5 效果仍未实现。
+当前 `event_choices.json` 包含五主题条目，但“存在数据”不等于“已实现条件”：审计快照中 `rogue_1` 到 `rogue_5` 分别有 107、176、923、357、1788 个 choice。运行时会叠加 `rlv2_event_rules.py` 中经审核的严格子集：RO1 writer 事件战、RO2 关键门槛/骑士撤线、RO4 构想炼金，以及 RO3-5 的少量固定剧情/结局场景；其余仍按主题、节点类别、明确楼层和 quarantine 过滤。RO2“深蓝之心”同时要求前置藏品和灯火 `>=20`，园林选项自身免费且必出；骑士死亡只匹配 `SIMPLE,<specialTrapId>,killed > 0`，必领 `grace_84` 后恢复默认路线/Boss。RO4 `D01/D02` 进入 fragment 模块，固定 Excel 公式可经 `/alchemy`、`/alchemyReward` 合成“巴别塔誓言”，随机炼金池不猜测。RO2 `bossa1` 掷骰结果协议未知，相关选项保持禁用；RO3 `ex3` 随机权重未知，安全降级为离开。模式、历史、完整 eligibility 与大量效果仍未实现。
 
 客户端 `PlayerRoguelikePlayerState` 只有 `NONE/INIT/PENDING/WAIT_MOVE`，因此终局必须直接生成 `PENDING + GAME_SETTLE + content.result`，不能写入 `GAME_OVER` 或不存在的 `status.gameResult`。`gameSettle` 以对象型零分和字段完整的零外层收益结构清空当前局，并在同一事务回收 seed；旧的 `GAME_OVER`、错误 `GAME_SETTLE` 和旧战斗奖励会在登录/动作入口自动迁移。该闭环不改全局外层进度，不能当作原版终局奖励实现；分数、BP、记录和奖励仍必须依据同版本抓包补齐。
 
@@ -139,17 +146,19 @@
 
 | 主题 | 客户端模块/公开核心机制 | 当前实现 | 结论与下一步 |
 | --- | --- | --- | --- |
-| `rogue_1` 傀影与猩红孤钻 | `moduleTypes=[]`；经典生命/临时生命、剧目（`CAPSULE`）、幕间余兴及古堡节点 | `module` 无专属初始化；RO1 临时生命参与战斗结算；剧目没有消费状态机 | 近似。按腾讯整理资料，剧目是本层一次性触发器：命中后必须标记消费，换层再重置；不能每次访问都重新抽取 |
-| `rogue_2` 水月与深蓝之树 | `SANCHECK`、`DICE`；灯火区间、骰子、排异反应、钥匙、深入海洋 | 初始化 `san=100` 和骰子次数；战斗生成骰点和骰子 token；可增减灯火/次数 | 近似。骰子结果必须与灯火区间共同决定检定，并真实改变干员排异/战斗状态；当前预生成 100 个结果且未形成完整消耗/检定链 |
-| `rogue_3` 探索者的银凇止境 | `CHAOS`、`TOTEMBUFF`、`VISION`；坍缩、密文板、抗干扰指数、树篱之途 | 初始化 `chaos/totem/vision` 外形；战斗经验和部分难度 Buff 生效 | 大部未实现。坍缩应由进层、非完美战斗和特定资源支出等动作驱动，并按表选择/升级/净化范式，最多同时维护四个范式；密文板拼装和抗干扰遮蔽也需进入地图/战斗规则 |
-| `rogue_4` 萨卡兹的无终奇语 | `FRAGMENT`、`DISASTER`、`NODE_UPGRADE`；构想/负荷、灵感、时代（灾厄）、节点升级 | 初始化 `fragment/disaster/nodeUpgrade`；按干员星级计算负荷；RO4 节点带一次刷新外形 | 大部未实现。需要构想库存与携带账本、负荷溢出规则、灵感独立乘区、时代推进/消除、节点临时与永久升级；`setTroopCarry`、`rerollNode`、`upgradeNode` 仍为空 |
-| `rogue_5` 岁的界园志异 | `COPPER`、`WRATH`、`CANDLE`、`SKY`；大炎通宝、戌绘、烛火、特殊区域和留存招募券 | 固定建立 7 枚通宝袋并随机展示 3 枚；初始化 `wrath/sky` 外形；初始券后缀已有主题区分 | 大部未实现。通宝必须依据交换图、层级/倒计时和 token flags 推进，不是从袋中任取三枚；鎏金、重抽成本、戌绘、烛火、天域/特殊区域、留券接口均需补齐 |
+| `rogue_1` 傀影与猩红孤钻 | `moduleTypes=[]`；经典生命/临时生命、剧目（`CAPSULE`）、幕间余兴及古堡节点 | 临时生命参与结算；已接 `m16`、`m19 -> m20 -> m21` 和 writer `n01/n02` 关键链，可切换四个核心结局 | 近似。剧目触发/消费/换层重置仍未实现，事件链也不代表所有历史/模式门槛已还原 |
+| `rogue_2` 水月与深蓝之树 | `SANCHECK`、`DICE`；灯火区间、骰子、排异反应、钥匙、深入海洋 | 初始化灯火/骰子；“深蓝之心”校验藏品和 `>=20` 灯火；关键藏品/Buff 已接入；精确骑士死亡字段生成必领 `grace_84` 并恢复默认路线 | 近似。`immediate_mutation`、骰子 pending、排异反应和完整检定仍缺失 |
+| `rogue_3` 探索者的银凇止境 | `CHAOS`、`TOTEMBUFF`、`VISION`；坍缩、密文板、抗干扰指数、树篱之途 | 初始化模块外形；`CHAOS_PURIFY` 方向已接入；固定剧情和部分关键事件/结局物品已接入，核心 ending4 可前往 zone 7 | 大部未实现。坍缩完整状态机、密文板拼装、抗干扰遮蔽及特殊支路仍需进入地图/战斗规则 |
+| `rogue_4` 萨卡兹的无终奇语 | `FRAGMENT`、`DISASTER`、`NODE_UPGRADE`；构想/负荷、灵感、时代（灾厄）、节点升级 | `D01/D02` 进入 fragment 并计算负荷；固定公式炼金与奖励接口、`MAX_WEIGHT`、ending2 巴别塔誓言门槛及 zone 7/8 核心路线已接入 | 仍不完整。随机炼金池、刷新、2V2、诡谲断章、时代和节点升级缺失 |
+| `rogue_5` 岁的界园志异 | `COPPER`、`WRATH`、`CANDLE`、`SKY`；大炎通宝、戌绘、烛火、特殊区域和留存招募券 | 通宝初始展示；追忆仪清资源/收益倍率及必领“小磨唧”事件战、少量固定剧情和 zone 7/8 核心路线已接入 | 大部未实现。普通“古今交汇”入口、5x5/5x7 `module.sky`、AP/移动、留存券/燃烛、退出和跨战敌人生命仍缺失；无追忆仪的 portal 当前安全绕过 |
+
+自然可达性仍是事件 overlay 的重要边界：RO3 `story2/story3`、RO4 `end2` 和 RO5 `portalboss` 的 `logicalDepths` 为空且没有固定场景映射，当前普通地图不会自然进入；密文板强制支路、刷新/传送、特殊区域和 RO4/RO5 若干关键藏品也仍没有完整自然 grant path。规则表中存在 choice 不等于完整事件链已可游玩。
 
 主题机制应当以事件驱动方式实现。例如 `BattleCompleted` 同时交给公共结算器、RO2 灯火/排异规则、RO3 坍缩规则、藏品乘区和任务计数器处理，最后一次性提交状态。这样能避免把同一触发条件散落在多个 HTTP handler 中。
 
 ## 7. 地图生成：视频结论与当前差距
 
-`_rlv2.getMap_new()` 当前按 `zone * 2` 建列，按通用权重抽节点类型，再随机补边并修复无入边/无出边节点。这保证了基本可达性，但没有使用主题拓扑模板，也没有先区分战斗池、事件池和特殊槽位。
+`_rlv2.getMap_new()` 当前从固定 `zone_routes.json` 读取 36 个核心区域的列数、分支上限和已审核列规格，再按逻辑层选择普通/紧急关卡，按路线传入的逐层 ending 选择 Boss，最后只连接相邻列并修复入边。它已经不是简单的 `zone * 2` 通用地图，但问号列权重、详细连线概率、特殊/平面区域和结局条件 AST 仍属于近似或未实现。
 
 结合 B 站视频的萨米实测，可以把候选算法拆为以下可验证步骤：
 
@@ -166,7 +175,7 @@
 - 第三至第六层最多两个紧急作战。
 - 结局节点计入模板节点总数。
 
-这些约束仍应由当前客户端表或同版本样本复核后再推广到其他主题。实现时不要写 `averageNodeCount = ...`；应写模板容量和约束。地图硬验收统一为每个受支持的 `theme × zone` 组合运行 2500 个固定种子，验证可达性、边完整性、节点上限、结局占位和同种子复现；每组合 10000 个种子仅用于发布前非阻塞分布审计，不作为单元测试或合并门槛。推荐生成器接口为：
+这些约束仍应由当前客户端表或同版本样本复核后再推广到其他主题。实现时不要写 `averageNodeCount = ...`；应写模板容量和约束。地图硬验收统一为每个受支持的 `theme × zone` 组合运行 2500 个固定种子，验证可达性、边完整性、节点上限、结局占位和同种子复现；本轮 36 组使用 `hard-property-0..2499`，共 90000 张地图、849924 个节点已经全部通过。每组合 10000 个种子仅用于发布前非阻塞分布审计，不作为单元测试或合并门槛。推荐生成器接口为：
 
 ```text
 generate_map(theme_rules, floor_context, run_state, rng)
@@ -209,8 +218,8 @@ SQLite 已解决已知串档与两文件非事务提交问题，不应再把 JSO
 | --- | --- | --- |
 | P0 数据安全（基线已落地） | SQLite 按 UID 保存 run、种子与 revision，同事务提交；`SyncData` 合并唯一真源；Legacy 唯一 owner 迁移 | 现有 UID/迁移/CAS/事务测试保持通过；补完整接口、跨进程故障注入、重登和动作 request-id 幂等回归 |
 | P1 状态机 | 将 handler 收敛为 command；建立 `state + pending` 转移矩阵；统一邻接、访问、库存和余额校验 | 非法顺序全部返回 4xx 且状态不变；合法主流程五主题均可重放；重复请求结果一致 |
-| P2 公共表驱动规则 | 完成物品效果解释器、奖励池、事件 eligibility、招募特殊规则、难度/藏品/灵感独立乘区 | 当前表所有引用可解析；资源账本无负数；每个未支持 Buff key 在启动或测试中显式报出，不静默忽略 |
-| P3 地图生成 | 建立拓扑适配器和槽位分配器；先落实可证实的 RO3 紧急节点约束，再逐主题扩展 | 每个受支持的 `theme × zone` 组合以 2500 个固定种子通过硬性质测试；10000 个种子仅作发布前非阻塞分布审计 |
+| P2 公共表驱动规则 | 在现有关键物品、事件 overlay 和核心 EndingRoute 上补完整物品解释器、奖励池、eligibility 与历史解锁 | 当前表所有引用可解析；资源账本无负数；每个未支持 Buff key 显式报出，不静默忽略 |
+| P3 地图生成 | 在 36 个核心区域和 zone 6/7/8 路由上补特殊/平面区域、拓扑适配器和真实槽位分配 | 每个受支持的 `theme × zone` 组合以 2500 个固定种子通过硬性质测试；特殊区域另有状态/拓扑 fixture |
 | P4 主题模块 | 依次完成 RO1 剧目、RO2 灯火/骰子、RO3 坍缩/密文板、RO4 构想/时代、RO5 通宝交换图及其余模块 | 每个模块都有状态转移表、表驱动 fixture、边界与回放测试；空 `202` 路由清零或明确返回“不支持” |
 | P5 原版协议回归 | 收集同版本、去标识化的合法真实请求/响应；建立 golden fixtures 和版本差异清单 | 五主题普通、月队、挑战各至少一条完整局流程；升级客户端表时自动报告字段和行为差异 |
 
@@ -224,6 +233,7 @@ P2 和 P3 可以在 P1 的接口设计稳定后并行；所有新增可变主题
 | 招募 | 所有初始组、随机组、特殊组、RO5 `_init/_vip_init` | 职业/星级过滤正确；希望守恒；首次招募与进阶唯一；不可留存券不残留 |
 | 战斗 | 本轮覆盖普通/紧急、完美/漏怪/失败、临时生命/护盾；Boss 后续独立覆盖 | HP/护盾/经验/升级收益正确；失败进入不可继续终态；奖励不能重复领取；Boss 不回退到普通/紧急矩阵 |
 | 事件 | 每个 choice 的满足/不满足条件各一例 | 未满足条件不下发；消耗与奖励原子；空场景仍有合法离开路径 |
+| 结局路线 | 五主题每个 ending、触发前后当前 zone、目标路线包含当前 zone 的手工 `toEnding` | `orderedZones`、逐层 Boss、`chgEnding` 和事件战奖励一致；终点在身后的改线被拒绝；私有 `_server` 不下发；历史解锁另测 |
 | 地图 | 每个受支持的 `theme × zone` 组合 2500 个确定性种子 | 可达性、入/出边、节点上限、结局占位、一次性节点、主题专属节点约束及同种子复现；每组合 10000 个种子只生成发布前非阻塞分布报告 |
 | 主题模块 | 每个 DomainEvent 对模块状态的测试 | RO1 剧目只触发一次；RO2 灯火区间影响检定；RO3 范式不超过四个；RO5 交换只走合法边 |
 | 持久化 | 两 UID、两进程、请求重试、提交中断、重登 | 不串档、不双发、不丢种子、不回到旧 current |
@@ -236,10 +246,10 @@ P2 和 P3 可以在 P1 的接口设计稳定后并行；所有新增可变主题
 在完整重构前，以下改动投入小且能明显降低错误面：
 
 1. UID 隔离、SQLite 事务、revision/CAS、Legacy 唯一 owner 迁移和 `SyncData` 合并已经落地；下一步补完整接口、跨进程故障注入、重登和 request-id 幂等回归。
-2. 已让 `_rlv2.add_item()` 传播即时券副作用并补齐 `level_life_point_add`；下一步把 RO4/RO5 暂存资源接入各自模块，而不是长期停留在通用账本。
-3. 事件已在展示和提交时校验余额、持有物与当前场景；下一步实现 `eligible_scenes(context)` 的楼层、结局、藏品和模块条件。
+2. 已让 `_rlv2.add_item()` 传播即时券副作用并补齐 `level_life_point_add`，RO3 净化资源和 RO4 构想/负荷已进入各自模块；下一步补 RO4 其余资源与 RO5 `module.sky`，而不是长期停留在通用账本。
+3. 事件已校验楼层、节点、余额、持有物和当前场景，并接入严格 overlay；下一步补模式、历史、完整结局/模块 eligibility、随机权重和事务 handler 回归。
 4. 五主题普通/紧急基础经验与源石锭已按固定矩阵接入；下一步收集真实协议 fixture，并独立实现 Boss、RO4 旗帜变体、特殊区域、紧急额外掉落、藏品增益和灵感等乘区，禁止宽松回退。
-5. RO3 紧急节点上限和 RO1 二层主题 `wish` 已修正；下一步用同版本协议样本校准拓扑模板与其他主题约束。
+5. RO3 紧急节点上限、核心有序路线和逐层 Boss 已接入；下一步用同版本样本校准问号节点与连线，并分别实现 RO3/4/5 特殊区域，禁止用核心 zone 跳转代替特殊区状态机。
 6. 所有仍为空的接口返回明确的 `501 unsupported` 和不支持的机制名，避免客户端把“HTTP 202 空对象”误判为成功并继续污染状态。
 
 ## 12. 资料链接
