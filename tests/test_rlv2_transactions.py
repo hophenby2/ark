@@ -1,8 +1,10 @@
 import importlib.util
+import json
 import sys
 import tempfile
 import types
 import unittest
+from copy import deepcopy
 from pathlib import Path
 
 
@@ -483,7 +485,7 @@ class Rlv2TransactionIntegrationTest(unittest.TestCase):
             )
         )
 
-    def test_map_battle_start_uses_ten_percent_gopnik_chance(self):
+    def test_map_battle_start_rolls_a_zero_or_one_mimic_group_count(self):
         run = self._battle_run()
         run["player"]["state"] = "WAIT_MOVE"
         run["player"]["pending"] = []
@@ -507,9 +509,10 @@ class Rlv2TransactionIntegrationTest(unittest.TestCase):
         self.assertIn("playerDataDelta", response)
         snapshot = self.repository.load("alice")
         battle = snapshot.run["player"]["pending"][0]["content"]["battle"]
-        self.assertEqual(battle["goldTrapCnt"], 10)
+        self.assertIn(battle["chestCnt"], {0, 1})
+        self.assertEqual(battle["goldTrapCnt"], 100)
 
-    def test_event_battle_uses_ten_percent_gopnik_chance(self):
+    def test_generic_event_battle_does_not_force_a_mimic_group(self):
         run = self._battle_run()
         run["player"]["pending"] = [
             {
@@ -562,7 +565,614 @@ class Rlv2TransactionIntegrationTest(unittest.TestCase):
         self.assertIn("playerDataDelta", response)
         snapshot = self.repository.load("alice")
         battle = snapshot.run["player"]["pending"][0]["content"]["battle"]
-        self.assertEqual(battle["goldTrapCnt"], 10)
+        self.assertEqual(battle["chestCnt"], 0)
+        self.assertEqual(battle["goldTrapCnt"], 100)
+
+    def test_event_requirements_check_items_and_module_without_consuming(self):
+        run = self._battle_run()
+        run["inventory"]["relic"]["r_0"] = {
+            "id": "required_relic",
+            "count": 1,
+        }
+        run["module"]["san"] = {"sanity": 49}
+        choice = {
+            "require": {
+                "items": {"required_relic": 1},
+                "moduleMin": {"san": {"sanity": 50}},
+            }
+        }
+
+        self.assertFalse(self.rlv2._rlv2.canPayChoice(run, choice))
+        run["module"]["san"]["sanity"] = 50
+        self.assertTrue(self.rlv2._rlv2.canPayChoice(run, choice))
+        self.assertIn("r_0", run["inventory"]["relic"])
+
+    def test_event_consume_all_clears_gold(self):
+        run = self._battle_run()
+        run["player"]["pending"] = [
+            {
+                "type": "SCENE",
+                "content": {"scene": {"choices": {"choice_all": True}}},
+            }
+        ]
+        self.topic_table["details"]["rogue_1"].update(
+            {"choices": {"choice_all": {"nextSceneId": None}}}
+        )
+        event_choices = {
+            "rogue_1": {
+                "choices": {
+                    "choice_all": {
+                        "choices": [],
+                        "lose": None,
+                        "lose_all": ["gold"],
+                        "get": None,
+                    }
+                }
+            }
+        }
+        self.rlv2.get_memory = lambda key: (
+            self.topic_table
+            if key == "roguelike_topic_table"
+            else event_choices
+            if key == "event_choices"
+            else {}
+        )
+        self.repository.save(
+            "alice", run, {"rlv2_seed": "seed", "seed_list": []}
+        )
+        self.request.headers = {"Uid": "alice"}
+        self.request.get_json = lambda: {"choice": "choice_all"}
+
+        response = self.rlv2.rlv2SelectChoice()
+
+        self.assertIn("playerDataDelta", response)
+        self.assertEqual(
+            self.repository.load("alice").run["player"]["property"]["gold"],
+            0,
+        )
+
+    def test_event_probability_always_pays_cost_and_only_rolls_reward(self):
+        class FixedRandom:
+            roll = 0
+
+            def __init__(self, seed):
+                self.seed = seed
+
+            def randrange(self, stop):
+                return self.roll
+
+        original_random = self.rlv2.random.Random
+        self.addCleanup(setattr, self.rlv2.random, "Random", original_random)
+        self.rlv2.random.Random = FixedRandom
+        event_choices = {
+            "rogue_1": {
+                "choices": {
+                    "choice_prob": {
+                        "choices": [],
+                        "lose": {"gold": 3},
+                        "get": {"gold": 8},
+                        "probability": {"percent": 70, "appliesTo": "get"},
+                    }
+                }
+            }
+        }
+        self.topic_table["details"]["rogue_1"].update(
+            {"choices": {"choice_prob": {"nextSceneId": None}}}
+        )
+        self.rlv2.get_memory = lambda key: (
+            self.topic_table
+            if key == "roguelike_topic_table"
+            else event_choices
+            if key == "event_choices"
+            else {}
+        )
+
+        for uid, roll, expected_gold in (
+            ("success", 69, 11),
+            ("failure", 70, 3),
+        ):
+            with self.subTest(uid=uid):
+                run = self._battle_run()
+                run["player"]["pending"] = [
+                    {
+                        "type": "SCENE",
+                        "content": {
+                            "scene": {"choices": {"choice_prob": True}}
+                        },
+                    }
+                ]
+                FixedRandom.roll = roll
+                self.repository.save(
+                    uid, run, {"rlv2_seed": "seed", "seed_list": []}
+                )
+                self.request.headers = {"Uid": uid}
+                self.request.get_json = lambda: {"choice": "choice_prob"}
+
+                response = self.rlv2.rlv2SelectChoice()
+
+                self.assertIn("playerDataDelta", response)
+                gold = self.repository.load(uid).run["player"]["property"]["gold"]
+                self.assertEqual(gold, expected_gold)
+
+    def test_event_probability_branch_exposes_only_the_selected_result(self):
+        class FixedRandom:
+            roll = 0
+
+            def __init__(self, seed):
+                self.seed = seed
+
+            def randrange(self, stop):
+                return self.roll
+
+        original_random = self.rlv2.random.Random
+        self.addCleanup(setattr, self.rlv2.random, "Random", original_random)
+        self.rlv2.random.Random = FixedRandom
+        event_choices = {
+            "rogue_1": {
+                "choices": {
+                    "choice_branch": {
+                        "choices": [],
+                        "lose": {"gold": 3},
+                        "get": None,
+                        "branches": [
+                            {
+                                "weight": 20,
+                                "scene": "success_scene",
+                                "choices": ["collect"],
+                            },
+                            {
+                                "weight": 80,
+                                "scene": "retry_scene",
+                                "choices": ["again", "choice_leave"],
+                            },
+                        ],
+                    },
+                    "collect": {"choices": [], "lose": None, "get": None},
+                    "again": {"choices": [], "lose": None, "get": None},
+                }
+            }
+        }
+        self.topic_table["details"]["rogue_1"].update(
+            {"choices": {"choice_branch": {"nextSceneId": None}}}
+        )
+        self.rlv2.get_memory = lambda key: (
+            self.topic_table
+            if key == "roguelike_topic_table"
+            else event_choices
+            if key == "event_choices"
+            else {}
+        )
+
+        for uid, roll, expected_scene, expected_choices in (
+            ("success", 19, "success_scene", {"collect"}),
+            ("retry", 20, "retry_scene", {"again", "choice_leave"}),
+        ):
+            with self.subTest(uid=uid):
+                run = self._battle_run()
+                run["player"]["pending"] = [
+                    {
+                        "type": "SCENE",
+                        "content": {
+                            "scene": {"choices": {"choice_branch": True}}
+                        },
+                    }
+                ]
+                FixedRandom.roll = roll
+                self.repository.save(
+                    uid, run, {"rlv2_seed": "seed", "seed_list": []}
+                )
+                self.request.headers = {"Uid": uid}
+                self.request.get_json = lambda: {"choice": "choice_branch"}
+
+                response = self.rlv2.rlv2SelectChoice()
+
+                self.assertIn("playerDataDelta", response)
+                pending = self.repository.load(uid).run["player"]["pending"][0]
+                scene = pending["content"]["scene"]
+                self.assertEqual(scene["id"], expected_scene)
+                self.assertEqual(set(scene["choices"]), expected_choices)
+
+    def test_empty_event_data_completes_without_a_fake_leave_scene(self):
+        run = self._battle_run()
+        run["player"]["state"] = "WAIT_MOVE"
+        run["player"]["pending"] = []
+        run["player"]["cursor"]["position"] = None
+        run["map"]["zones"]["1"]["nodes"]["0"].update(
+            {"type": 32, "stage": None}
+        )
+        event_choices = {
+            "rogue_1": {
+                "enter": {"scene_empty_enter": []},
+                "choices": {},
+            }
+        }
+        self.topic_table["details"]["rogue_1"]["choices"] = {}
+        self.rlv2.get_memory = lambda key: (
+            self.topic_table
+            if key == "roguelike_topic_table"
+            else event_choices
+            if key == "event_choices"
+            else {}
+        )
+        self.repository.save(
+            "alice", run, {"rlv2_seed": "seed", "seed_list": []}
+        )
+        self.request.headers = {"Uid": "alice"}
+        self.request.get_json = lambda: {"to": {"x": 0, "y": 0}}
+
+        response = self.rlv2.rlv2MoveTo()
+
+        self.assertIn("playerDataDelta", response)
+        player = self.repository.load("alice").run["player"]
+        self.assertEqual(player["state"], "WAIT_MOVE")
+        self.assertEqual(player["pending"], [])
+
+    def test_event_entry_requirements_filter_the_scene_pool(self):
+        run = self._battle_run()
+        run["player"]["state"] = "WAIT_MOVE"
+        run["player"]["pending"] = []
+        run["player"]["cursor"]["position"] = None
+        run["map"]["zones"]["1"]["nodes"]["0"].update(
+            {"type": 32, "stage": None}
+        )
+        choice_rule = {"choices": [], "lose": None, "get": None}
+        event_choices = {
+            "rogue_1": {
+                "enter": {
+                    "scene_locked_enter": ["choice_locked"],
+                    "scene_safe_enter": ["choice_safe"],
+                },
+                "sceneRules": {
+                    "scene_locked_enter": {
+                        "require": {"items": {"missing_relic": 1}}
+                    }
+                },
+                "choices": {
+                    "choice_locked": choice_rule,
+                    "choice_safe": choice_rule,
+                },
+            }
+        }
+        self.topic_table["details"]["rogue_1"]["choices"] = {
+            "choice_locked": {"nextSceneId": None},
+            "choice_safe": {"nextSceneId": None},
+        }
+        self.rlv2.get_memory = lambda key: (
+            self.topic_table
+            if key == "roguelike_topic_table"
+            else event_choices
+            if key == "event_choices"
+            else {}
+        )
+        original_candidates = self.rlv2.event_scene_candidates
+        self.addCleanup(
+            setattr,
+            self.rlv2,
+            "event_scene_candidates",
+            original_candidates,
+        )
+        self.rlv2.event_scene_candidates = (
+            lambda theme, depth, node_type, available: list(available)
+        )
+        self.repository.save(
+            "alice", run, {"rlv2_seed": "seed", "seed_list": []}
+        )
+        self.request.headers = {"Uid": "alice"}
+        self.request.get_json = lambda: {"to": {"x": 0, "y": 0}}
+
+        response = self.rlv2.rlv2MoveTo()
+
+        self.assertIn("playerDataDelta", response)
+        pending = self.repository.load("alice").run["player"]["pending"][0]
+        self.assertEqual(
+            pending["content"]["scene"]["id"], "scene_safe_enter"
+        )
+
+    def test_nonrepeatable_event_history_survives_across_zones(self):
+        run = self._battle_run()
+        run["player"]["state"] = "WAIT_MOVE"
+        run["player"]["pending"] = []
+        run["player"]["cursor"] = {"zone": 2, "position": None}
+        current_node = deepcopy(run["map"]["zones"]["1"]["nodes"]["0"])
+        current_node.update({"type": 32, "stage": None})
+        run["map"]["zones"] = {
+            "1": {
+                "id": "zone_1",
+                "nodes": {
+                    "0": {
+                        "index": "0",
+                        "pos": {"x": 0, "y": 0},
+                        "next": [],
+                        "type": 32,
+                        "visited": True,
+                        "scene": "scene_once_enter",
+                    }
+                },
+                "variation": [],
+            },
+            "2": {
+                "id": "zone_2",
+                "nodes": {"0": current_node},
+                "variation": [],
+            },
+        }
+        choice_rule = {"choices": [], "lose": None, "get": None}
+        event_choices = {
+            "rogue_1": {
+                "enter": {
+                    "scene_once_enter": ["choice_once"],
+                    "scene_hp_enter": ["choice_repeat"],
+                },
+                "choices": {
+                    "choice_once": choice_rule,
+                    "choice_repeat": choice_rule,
+                },
+            }
+        }
+        self.topic_table["details"]["rogue_1"]["choices"] = {
+            "choice_once": {"nextSceneId": None},
+            "choice_repeat": {"nextSceneId": None},
+        }
+        self.rlv2.get_memory = lambda key: (
+            self.topic_table
+            if key == "roguelike_topic_table"
+            else event_choices
+            if key == "event_choices"
+            else {}
+        )
+        original_candidates = self.rlv2.event_scene_candidates
+        self.addCleanup(
+            setattr,
+            self.rlv2,
+            "event_scene_candidates",
+            original_candidates,
+        )
+        self.rlv2.event_scene_candidates = (
+            lambda theme, depth, node_type, available: list(available)
+        )
+        self.repository.save(
+            "alice", run, {"rlv2_seed": "seed", "seed_list": []}
+        )
+        self.request.headers = {"Uid": "alice"}
+        self.request.get_json = lambda: {"to": {"x": 0, "y": 0}}
+
+        response = self.rlv2.rlv2MoveTo()
+
+        self.assertIn("playerDataDelta", response)
+        snapshot = self.repository.load("alice").run
+        scene = snapshot["player"]["pending"][0]["content"]["scene"]
+        self.assertEqual(scene["id"], "scene_hp_enter")
+        self.assertEqual(
+            snapshot["map"]["zones"]["2"]["nodes"]["0"]["scene"],
+            "scene_hp_enter",
+        )
+
+    def test_generated_maps_apply_reviewed_fixed_columns(self):
+        with (ROOT / "data/excel/roguelike_topic_table.json").open(
+            encoding="utf-8"
+        ) as file:
+            topic_table = json.load(file)
+        self.rlv2.get_memory = lambda key: (
+            topic_table if key == "roguelike_topic_table" else {}
+        )
+
+        def columns(theme, zone, ending, seed="fixed-column"):
+            generated, _ = self.rlv2._rlv2.getMap_new(
+                theme, seed, zone, ending
+            )
+            result = {}
+            for node in generated[str(zone)]["nodes"].values():
+                result.setdefault(node["pos"]["x"], []).append(node)
+            return result
+
+        ro1_first = columns("rogue_1", 1, "ro_ending_1")
+        self.assertIn(len(ro1_first[1]), {2, 3})
+        self.assertLessEqual(
+            {node["type"] for node in ro1_first[1]}, {32, 128}
+        )
+
+        ro4_third = columns("rogue_4", 3, "ro4_ending_1")
+        self.assertEqual(
+            {node["type"] for node in ro4_third[4]}, {131072}
+        )
+
+        ro4_fourth = columns("rogue_4", 4, "ro4_ending_1")
+        battle_columns = {
+            x
+            for x in range(4)
+            if any(node["type"] in {1, 2} for node in ro4_fourth[x])
+        }
+        self.assertEqual(battle_columns, {0, 1})
+
+        for zone, ending, battle_column in (
+            (6, "ro5_ending_3", 2),
+            (7, "ro5_ending_4", 1),
+        ):
+            with self.subTest(zone=zone):
+                stage_depths = set()
+                for seed_index in range(64):
+                    generated = columns(
+                        "rogue_5",
+                        zone,
+                        ending,
+                        f"stage-depth-{seed_index}",
+                    )
+                    stage_depths.update(
+                        int(node["stage"].split("_")[2])
+                        for node in generated[battle_column]
+                    )
+                self.assertEqual(stage_depths, {6, 7})
+
+    def test_generated_bosses_do_not_randomize_conditional_variants(self):
+        with (ROOT / "data/excel/roguelike_topic_table.json").open(
+            encoding="utf-8"
+        ) as file:
+            topic_table = json.load(file)
+        self.rlv2.get_memory = lambda key: (
+            topic_table if key == "roguelike_topic_table" else {}
+        )
+
+        for theme, ending, depth, expected_stage in (
+            ("rogue_3", "ro3_ending_1", 5, "ro3_b_4"),
+            ("rogue_4", "ro4_ending_1", 5, "ro4_b_4"),
+            ("rogue_5", "ro5_ending_1", 5, "ro5_b_4"),
+        ):
+            observed = set()
+            for seed_index in range(32):
+                generated, _ = self.rlv2._rlv2.getMap_new(
+                    theme, f"boss-variant-{seed_index}", depth, ending
+                )
+                observed.update(
+                    node["stage"]
+                    for node in generated[str(depth)]["nodes"].values()
+                    if node["type"] == 4
+                )
+            with self.subTest(theme=theme, ending=ending):
+                self.assertEqual(observed, {expected_stage})
+
+        for theme, ending in (
+            ("rogue_2", "ro2_ending_1"),
+            ("rogue_3", "ro3_ending_1"),
+            ("rogue_4", "ro4_ending_1"),
+            ("rogue_5", "ro5_ending_1"),
+        ):
+            observed = set()
+            for seed_index in range(32):
+                generated, _ = self.rlv2._rlv2.getMap_new(
+                    theme, f"mid-boss-{seed_index}", 3, ending
+                )
+                observed.update(
+                    node["stage"]
+                    for node in generated["3"]["nodes"].values()
+                    if node["type"] == 4
+                )
+            with self.subTest(theme=theme):
+                self.assertTrue(observed)
+                self.assertTrue(
+                    all(stage_id.count("_") == 2 for stage_id in observed)
+                )
+
+    def test_all_verified_routes_generate_reachable_canonical_maps(self):
+        with (ROOT / "data/excel/roguelike_topic_table.json").open(
+            encoding="utf-8"
+        ) as file:
+            topic_table = json.load(file)
+        self.rlv2.get_memory = lambda key: (
+            topic_table if key == "roguelike_topic_table" else {}
+        )
+
+        checked = 0
+        for theme, theme_data in topic_table["details"].items():
+            for ending in theme_data["endings"]:
+                final_depth = self.rlv2.terminal_depth(theme, ending)
+                if final_depth is None:
+                    continue
+                for depth in range(1, final_depth + 1):
+                    with self.subTest(
+                        theme=theme, ending=ending, depth=depth
+                    ):
+                        generated, seed = self.rlv2._rlv2.getMap_new(
+                            theme, "map-seed", depth, ending
+                        )
+                        repeated, repeated_seed = self.rlv2._rlv2.getMap_new(
+                            theme, "map-seed", depth, ending
+                        )
+                        self.assertEqual(seed, "map-seed")
+                        self.assertEqual(repeated_seed, seed)
+                        self.assertEqual(repeated, generated)
+
+                        zone = generated[str(depth)]
+                        layout = self.rlv2.area_layout(theme, depth)
+                        columns = {}
+                        for node in zone["nodes"].values():
+                            columns.setdefault(node["pos"]["x"], []).append(node)
+                        self.assertEqual(
+                            len(columns), layout["baseNodeLength"]
+                        )
+                        self.assertTrue(
+                            all(
+                                len(nodes) <= layout["maximumBranches"]
+                                for nodes in columns.values()
+                            )
+                        )
+
+                        last_x = max(columns)
+                        incoming = {
+                            node_id: 0 for node_id in zone["nodes"]
+                        }
+                        for node in zone["nodes"].values():
+                            x = node["pos"]["x"]
+                            self.assertEqual(
+                                bool(node.get("zone_end")), x == last_x
+                            )
+                            if node["type"] in {1, 2, 4}:
+                                self.assertIn(
+                                    node.get("stage"), theme_data["stages"]
+                                )
+                            if node["type"] == 4:
+                                self.assertEqual(x, last_x)
+                            for edge in node["next"]:
+                                self.assertEqual(edge["x"], x + 1)
+                                target_id = str(
+                                    edge["x"] * 100 + edge["y"]
+                                )
+                                self.assertIn(target_id, zone["nodes"])
+                                incoming[target_id] += 1
+
+                        for node_id, count in incoming.items():
+                            if zone["nodes"][node_id]["pos"]["x"] > 0:
+                                self.assertGreater(count, 0)
+                        checked += 1
+
+        self.assertEqual(checked, 129)
+
+    def test_finish_node_uses_the_selected_ending_terminal_depth(self):
+        with (ROOT / "data/excel/roguelike_topic_table.json").open(
+            encoding="utf-8"
+        ) as file:
+            topic_table = json.load(file)
+        self.rlv2.get_memory = lambda key: (
+            topic_table if key == "roguelike_topic_table" else {}
+        )
+        run = self._battle_run()
+        run["game"]["theme"] = "rogue_2"
+        run["player"]["toEnding"] = "ro2_ending_3"
+        run["player"]["cursor"] = {
+            "zone": 5,
+            "position": {"x": 0, "y": 0},
+        }
+        run["map"]["zones"] = {
+            "5": {
+                "id": "zone_5",
+                "nodes": {
+                    "0": {
+                        "index": "0",
+                        "pos": {"x": 0, "y": 0},
+                        "type": 4,
+                        "stage": "ro2_b_4",
+                        "next": [],
+                        "zone_end": True,
+                    }
+                },
+            }
+        }
+        server_data = {"rlv2_seed": "seed"}
+
+        self.assertTrue(self.rlv2._rlv2.finishNode(run, server_data))
+
+        self.assertEqual(run["player"]["cursor"]["zone"], 6)
+        self.assertIsNone(run["player"]["cursor"]["position"])
+        self.assertIn("5", run["map"]["zones"])
+        self.assertEqual(run["map"]["zones"]["6"]["id"], "zone_6")
+        boss_nodes = [
+            node
+            for node in run["map"]["zones"]["6"]["nodes"].values()
+            if node["type"] == 4
+        ]
+        self.assertTrue(boss_nodes)
+        self.assertEqual(
+            {node["stage"] for node in boss_nodes}, {"ro2_b_6"}
+        )
 
     def test_battle_finish_grants_exp_and_queues_gold_as_a_separate_reward(self):
         initial = self.repository.save(

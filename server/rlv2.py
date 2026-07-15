@@ -7,7 +7,6 @@ from virtualtime import time
 import random
 import os
 import re
-import hashlib
 
 from constants import (
     SYNC_DATA_TEMPLATE_PATH,
@@ -19,19 +18,24 @@ from constants import (
 from utils import read_json, decrypt_battle_data, writeLog, get_memory
 from rlv2_logic import (
     apply_numeric_delta,
+    battle_mimic_group_count,
     battle_base_reward,
     battle_resource_item_ids,
     build_ending_result,
     build_initial_property,
     clamp_player_property,
+    clamp_sanity_module,
     collect_difficulty_buffs,
     enforce_emergency_node_limits,
-    GOPNIK_SPAWN_PERCENT,
+    event_relic_pool_candidates,
+    event_probability_succeeds,
     has_numeric_cost,
     normalize_current_run,
     prepare_recruit_candidates,
     prepare_predefined_characters,
     recruit_group_ticket_ids,
+    sample_event_choices,
+    select_weighted_event_branch,
     queue_game_settlement,
     resolve_player_levels,
     select_equivalent_grade,
@@ -47,10 +51,32 @@ from rlv2_repository import (
     empty_run,
     get_run_repository,
 )
+from rlv2_rules import (
+    area_column_specs,
+    area_layout,
+    boss_stage_ids,
+    event_scene_candidates,
+    event_scene_is_repeatable,
+    terminal_depth,
+)
 import data.rlv2_data
 
 
 _ACTIVE_RUN_TRANSACTION = ContextVar("active_rlv2_transaction", default=None)
+
+
+def _map_battle_mimic_count(
+    server_seed: str | None,
+    theme: str,
+    stage_id: str,
+    cursor: dict,
+) -> int:
+    position = cursor.get("position") or {}
+    rng = random.Random(
+        f"{server_seed}:gopnik:{theme}:{stage_id}:{cursor.get('zone')}:"
+        f"{position.get('x')}:{position.get('y')}"
+    )
+    return battle_mimic_group_count(theme, stage_id, rng)
 
 
 def _response_status(result) -> int:
@@ -101,7 +127,16 @@ def _active_transaction():
 
 def _load_run() -> dict:
     run = _active_transaction().run
-    normalize_current_run(run, int(time()))
+    game = run.get("game") if isinstance(run, dict) else None
+    theme = game.get("theme") if isinstance(game, dict) else None
+    event_choices = get_memory("event_choices")
+    choice_rules = event_choices.get(theme, {}).get("choices", {})
+    disabled_choice_ids = {
+        choice_id
+        for choice_id, rule in choice_rules.items()
+        if isinstance(rule, dict) and rule.get("runtimeEnabled") is False
+    }
+    normalize_current_run(run, int(time()), disabled_choice_ids)
     return run
 
 
@@ -620,6 +655,9 @@ def rlv2SelectChoice():
     rlv2_table = get_memory("roguelike_topic_table")
     event_choices = get_memory("event_choices")
     theme = rlv2["game"]["theme"]
+    theme_events = event_choices.get(theme, {})
+    choice_rules = theme_events.get("choices", {})
+    scene_rules = theme_events.get("sceneRules", {})
     pending = rlv2["player"]["pending"]
     if (
         rlv2["player"]["state"] != "PENDING"
@@ -631,12 +669,14 @@ def rlv2SelectChoice():
     if not current_choices.get(choice):
         return {"error": f"choice is not available in the current scene: {choice}"}, 400
 
-    choice_data = event_choices.get(theme, {}).get("choices", {}).get(choice)
+    choice_data = choice_rules.get(choice)
     if choice == "choice_leave" and choice_data is None:
         choice_data = {"choices": [], "lose": None, "get": None}
     table_choice = rlv2_table["details"][theme]["choices"].get(choice)
     if choice_data is None or table_choice is None:
         return {"error": f"invalid roguelike choice: {choice}"}, 400
+    if choice_data.get("runtimeEnabled") is False:
+        return {"error": f"roguelike choice is disabled: {choice}"}, 400
 
     cursor = rlv2["player"]["cursor"]
     rng = random.Random(
@@ -649,8 +689,16 @@ def rlv2SelectChoice():
         _rlv2.finishNode(rlv2, server_data)
 
     def add_scene_event(scene_id: str, choices: list):
+        choices = [
+            choice_id
+            for choice_id in choices
+            if choice_id == "choice_leave"
+            or choice_rules.get(choice_id, {}).get("runtimeEnabled") is not False
+        ]
+        choices = sample_event_choices(choices, scene_rules.get(scene_id), rng)
         if not choices:
-            choices = ["choice_leave"]
+            leave()
+            return
         pending_event = {
             "type": "SCENE",
             "content": {
@@ -666,7 +714,7 @@ def rlv2SelectChoice():
         for choice_id in choices:
             available = choice_id == "choice_leave" or _rlv2.canPayChoice(
                 rlv2,
-                event_choices.get(theme, {}).get("choices", {}).get(choice_id, {}),
+                choice_rules.get(choice_id, {}),
             )
             pending_event["content"]["scene"]["choices"][choice_id] = available
             pending_event["content"]["scene"]["choiceAdditional"][choice_id] = {
@@ -681,8 +729,38 @@ def rlv2SelectChoice():
 
     def resolve_item(item_pattern: str, curse: bool = False) -> str:
         item_ids = rlv2_table["details"][theme]["items"]
-        candidates = [item_id for item_id in item_ids if item_pattern in item_id]
-        if theme == "rogue_2" and "_relic_" in item_pattern:
+        if item_pattern in item_ids:
+            candidates = [item_pattern]
+        elif item_pattern in {
+            f"{theme}_relic_",
+            f"{theme}_relic_curse_",
+        }:
+            candidates = event_relic_pool_candidates(
+                theme, item_ids, curse
+            )
+        elif item_pattern.endswith("_"):
+            candidates = [
+                item_id for item_id in item_ids if item_id.startswith(item_pattern)
+            ]
+        else:
+            candidates = []
+        if "_relic_" in item_pattern:
+            candidates = [
+                item_id
+                for item_id in candidates
+                if item_ids[item_id].get("type") == "RELIC"
+            ]
+        elif "_recruit_ticket_" in item_pattern:
+            candidates = [
+                item_id
+                for item_id in candidates
+                if item_ids[item_id].get("type") == "RECRUIT_TICKET"
+            ]
+        if (
+            theme == "rogue_2"
+            and "_relic_" in item_pattern
+            and item_pattern not in {f"{theme}_relic_", f"{theme}_relic_curse_"}
+        ):
             if curse:
                 candidates = [item_id for item_id in candidates if "curse_" in item_id]
             else:
@@ -712,6 +790,20 @@ def rlv2SelectChoice():
                     item_info["get"], item_info.get("curse", False)
                 )
                 add_event_item(item_id)
+
+    try:
+        probability_succeeded = (
+            event_probability_succeeds(choice_data["probability"], rng)
+            if "probability" in choice_data
+            else True
+        )
+        selected_branch = (
+            select_weighted_event_branch(choice_data["branches"], rng)
+            if "branches" in choice_data
+            else None
+        )
+    except ValueError as exc:
+        return {"error": str(exc)}, 400
 
     if not _rlv2.canPayChoice(rlv2, choice_data):
         return {"error": f"choice cost cannot be paid: {choice}"}, 400
@@ -743,9 +835,14 @@ def rlv2SelectChoice():
                 "content": {
                     "battle": {
                         "boxInfo": [],
-                        "chestCnt": 100,
+                        "chestCnt": _map_battle_mimic_count(
+                            server_data.get("rlv2_seed"),
+                            theme,
+                            stage_id,
+                            rlv2["player"]["cursor"],
+                        ),
                         "diceRoll": [],
-                        "goldTrapCnt": GOPNIK_SPAWN_PERCENT,
+                        "goldTrapCnt": 100,
                         "sanity": 0,
                         "state": 1,
                         "tmpChar": [],
@@ -772,7 +869,10 @@ def rlv2SelectChoice():
         elif isinstance(lose, str):
             _rlv2.remove_item(rlv2, lose)
 
-        reward = choice_data.get("get")
+        for property_key in choice_data.get("lose_all", []):
+            rlv2["player"]["property"][property_key] = 0
+
+        reward = choice_data.get("get") if probability_succeeded else None
         if isinstance(reward, dict):
             apply_numeric_delta(rlv2["player"]["property"], reward)
         elif reward is not None:
@@ -786,8 +886,13 @@ def rlv2SelectChoice():
         )
         resolve_player_levels(rlv2["player"]["property"], player_level_table)
         clamp_player_property(rlv2["player"]["property"])
+        clamp_sanity_module(rlv2["module"])
         if rlv2["player"]["property"]["hp"]["current"] <= 0:
             _rlv2.endRun(rlv2, False, "LIFE_POINT_ZERO")
+        elif selected_branch is not None:
+            add_scene_event(
+                selected_branch["scene"], selected_branch["choices"]
+            )
         else:
             scene_id = table_choice["nextSceneId"]
             if scene_id is None:
@@ -1050,7 +1155,12 @@ def rlv2FinishEvent():
     else:
         # too large, do not send it every time
         # rlv2["map"]["zones"] = _rlv2.getMap(theme)
-        rlv2["map"]["zones"], seed = _rlv2.getMap_new(theme, server_data["rlv2_seed"], rlv2["player"]["cursor"]["zone"])
+        rlv2["map"]["zones"], seed = _rlv2.getMap_new(
+            theme,
+            server_data["rlv2_seed"],
+            rlv2["player"]["cursor"]["zone"],
+            rlv2["player"].get("toEnding"),
+        )
         server_data["rlv2_seed"] = seed
         
         match theme:
@@ -1226,8 +1336,13 @@ def rlv2MoveAndBattleStart():
             "content": {
                 "battle": {
                     "state": 1,
-                    "chestCnt": 100,
-                    "goldTrapCnt": GOPNIK_SPAWN_PERCENT,
+                    "chestCnt": _map_battle_mimic_count(
+                        server_data.get("rlv2_seed"),
+                        theme,
+                        stage_id,
+                        rlv2["player"]["cursor"],
+                    ),
+                    "goldTrapCnt": 100,
                     "diceRoll": dice_roll,
                     "boxInfo": box_info,
                     "tmpChar": [],
@@ -1521,39 +1636,100 @@ def rlv2MoveTo():
         case 16 | 32 | 64 | 128 | 256 | 512 | 1024 | 2048 | 8192 | 16384 | 32768 | 65536 | 131072 | 262144 | 524288 | 1048576:
             choices = {}
             choiceAdditional = {}
-            scene_id_list = []
-            # 获取当前theme全部不期而遇事件
-            scene_id_list = list(event_choices[theme]["enter"].keys())
-            # 抽一个不期而遇事件
-            scene_id:str = rng.choice(scene_id_list)
-            # 获取当前不期而遇事件所有选项
-            choices_list:list = event_choices[theme]["enter"][scene_id]
-            if not choices_list:
-                choices_list = ["choice_leave"]
-            # 添加全部可选项
-            for choices_id in choices_list:
-                available = choices_id == "choice_leave" or _rlv2.canPayChoice(
-                    rlv2,
-                    event_choices[theme]["choices"].get(choices_id, {}),
+            theme_events = event_choices.get(theme, {})
+            choice_rules = theme_events.get("choices", {})
+            scene_rules = theme_events.get("sceneRules", {})
+            raw_enter_scenes = theme_events.get("enter", {})
+            table_choices = rlv2_table["details"][theme]["choices"]
+
+            def executable_entry(scene_id, choice_ids):
+                scene_rule = scene_rules.get(scene_id, {})
+                if (
+                    not isinstance(choice_ids, list)
+                    or not choice_ids
+                    or scene_rule.get("runtimeEnabled") is False
+                ):
+                    return None
+                enabled = [
+                    choice_id
+                    for choice_id in choice_ids
+                    if choice_rules.get(choice_id, {}).get("runtimeEnabled")
+                    is not False
+                ]
+                if not enabled or not all(
+                    choice_id in choice_rules and choice_id in table_choices
+                    for choice_id in enabled
+                ):
+                    return None
+                requirement = scene_rule.get("require")
+                if requirement is not None and not _rlv2.canPayChoice(
+                    rlv2, {"require": requirement}
+                ):
+                    return None
+                return enabled
+
+            enter_scenes = {
+                scene_id: enabled
+                for scene_id, choice_ids in raw_enter_scenes.items()
+                if (enabled := executable_entry(scene_id, choice_ids)) is not None
+            }
+            fixed_scene_id = target_node.get("scene")
+            if fixed_scene_id in enter_scenes:
+                scene_id_list = [fixed_scene_id]
+            else:
+                seen_scene_ids = {
+                    node.get("scene")
+                    for zone_data in rlv2["map"]["zones"].values()
+                    for node in zone_data.get("nodes", {}).values()
+                    if node is not target_node
+                    and node.get("visited")
+                    and isinstance(node.get("scene"), str)
+                }
+                scene_id_list = event_scene_candidates(
+                    theme,
+                    int(zone),
+                    node_type,
+                    enter_scenes,
                 )
-                choices.update({choices_id: available})
-                choiceAdditional.update({choices_id: {"rewards": []}})
-            if not any(choices.values()):
-                choices["choice_leave"] = True
-                choiceAdditional["choice_leave"] = {"rewards": []}
-            pending_event = {
-                "type": "SCENE",
-                "content": {
-                    "scene": {
-                        "id": scene_id,
-                        "choices": choices,
-                        "choiceAdditional": choiceAdditional,
-                        "popReport": False,
-                        "done": False
+                scene_id_list = [
+                    scene_id
+                    for scene_id in scene_id_list
+                    if scene_id not in seen_scene_ids
+                    or event_scene_is_repeatable(theme, scene_id)
+                ]
+            if not scene_id_list:
+                rlv2["player"]["state"] = "WAIT_MOVE"
+                _rlv2.finishNode(rlv2, server_data)
+            else:
+                scene_id: str = rng.choice(scene_id_list)
+                target_node["scene"] = scene_id
+                choices_list = sample_event_choices(
+                    enter_scenes[scene_id], scene_rules.get(scene_id), rng
+                )
+                # 添加全部可选项
+                for choices_id in choices_list:
+                    available = choices_id == "choice_leave" or _rlv2.canPayChoice(
+                        rlv2,
+                        choice_rules.get(choices_id, {}),
+                    )
+                    choices.update({choices_id: available})
+                    choiceAdditional.update({choices_id: {"rewards": []}})
+                if not any(choices.values()):
+                    choices["choice_leave"] = True
+                    choiceAdditional["choice_leave"] = {"rewards": []}
+                pending_event = {
+                    "type": "SCENE",
+                    "content": {
+                        "scene": {
+                            "id": scene_id,
+                            "choices": choices,
+                            "choiceAdditional": choiceAdditional,
+                            "popReport": False,
+                            "done": False
+                        }
                     }
                 }
-            }
-            rlv2["player"]["pending"].insert(0, pending_event)
+                rlv2["player"]["pending"].insert(0, pending_event)
         case 8 | 4096:
             goods = getGoods()
             pending_event = {
@@ -1949,6 +2125,35 @@ class _rlv2:
         )
 
     def canPayChoice(rlv2: dict, choice_data: dict) -> bool:
+        if not isinstance(choice_data, dict):
+            return False
+        requirement = choice_data.get("require")
+        if requirement is not None:
+            if not isinstance(requirement, dict) or set(requirement) - {
+                "items",
+                "moduleMin",
+            }:
+                return False
+            items = requirement.get("items", {})
+            if not isinstance(items, dict) or any(
+                not isinstance(item_id, str)
+                or type(count) is not int
+                or count <= 0
+                or not _rlv2.hasItem(rlv2, item_id, count)
+                for item_id, count in items.items()
+            ):
+                return False
+            module_minimum = requirement.get("moduleMin", {})
+            if not isinstance(module_minimum, dict) or not has_numeric_cost(
+                rlv2["module"], module_minimum
+            ):
+                return False
+
+        lose_all = choice_data.get("lose_all", [])
+        if not isinstance(lose_all, list) or any(
+            property_key != "gold" for property_key in lose_all
+        ):
+            return False
         lose = choice_data.get("lose")
         if isinstance(lose, dict) and not has_numeric_cost(
             rlv2["player"]["property"], lose
@@ -1975,16 +2180,23 @@ class _rlv2:
         node = rlv2["map"]["zones"].get(zone_id, {}).get("nodes", {}).get(node_id)
         if not node or not node.get("zone_end"):
             return False
-        if cursor["zone"] >= 5:
+        ending = rlv2["player"].get("toEnding")
+        final_depth = terminal_depth(rlv2["game"]["theme"], ending)
+        if final_depth is None:
+            final_depth = 5
+        if cursor["zone"] >= final_depth:
             _rlv2.endRun(rlv2, True, "ENDING_REACHED")
             return True
 
         cursor["zone"] += 1
         cursor["position"] = None
         zones, seed = _rlv2.getMap_new(
-            rlv2["game"]["theme"], server_data.get("rlv2_seed"), cursor["zone"]
+            rlv2["game"]["theme"],
+            server_data.get("rlv2_seed"),
+            cursor["zone"],
+            ending,
         )
-        rlv2["map"]["zones"] = zones
+        rlv2["map"].setdefault("zones", {}).update(zones)
         server_data["rlv2_seed"] = seed
         return True
 
@@ -2172,306 +2384,241 @@ class _rlv2:
             zone += 1
         return map
         
-    def getMap_new(theme: str, seed: str = None, zone: int = 1):
-        rlv2_table = get_memory("roguelike_topic_table")
-        theme_data = rlv2_table["details"][theme]
-        stages_list: list[str] = theme_data["stages"].keys()
+    def getMap_new(
+        theme: str,
+        seed: str = None,
+        zone: int = 1,
+        ending: str = None,
+    ):
+        theme_data = get_memory("roguelike_topic_table")["details"][theme]
+        layout = area_layout(theme, zone)
+        column_specs = area_column_specs(theme, zone)
+        if layout is None or column_specs is None:
+            raise ValueError(
+                f"unsupported core roguelike area: {theme}/zone_{zone}"
+            )
 
-        # 随机种子
-        if seed is None:
-            randomseed = os.urandom(16).hex()
-            writeLog(f"本次种子：{randomseed}")
-        else:
-            randomseed = seed
+        randomseed = seed or os.urandom(16).hex()
+        if ending is None:
+            ending = min(
+                theme_data["endings"].values(),
+                key=lambda item: item.get("priority", 999),
+            )["id"]
+        rng = random.Random(f"{randomseed}_{zone}_{theme}_{ending}")
 
-        rng = random.Random(f"{randomseed}_{zone}_{theme}")
-
-        # 商店类型
-        shop = 4096 if theme != "rogue_1" else 8
-        wish = 512 if theme != "rogue_1" else 64
-
-        zone_map = {
-            str(zone): {
-                "id": f"zone_{zone}",
-                "nodes": {},
-                "variation": []
-            }
-        }
-
+        ro_num = theme.removeprefix("rogue_")
+        stage_table = theme_data["stages"]
+        shop_type = 8 if theme == "rogue_1" else 4096
         refresh_count = 1 if theme == "rogue_4" else 0
-        nodetemp = {
-            "pos": {"x": 0, "y": 0},
-            "next": [],
-            "type": 0,
-            "refresh": {"usedCount": 0, "count": refresh_count, "cost": 1}
+        branch_limit = int(layout["maximumBranches"])
+        final_depth = terminal_depth(theme, ending)
+
+        def stage_pool(node_type: int, logical_depth: int) -> list[str]:
+            kind = "n" if node_type == 1 else "e"
+            prefix = f"ro{ro_num}_{kind}_{logical_depth}_"
+            return [
+                stage_id
+                for stage_id in stage_table
+                if stage_id.startswith(prefix)
+            ]
+
+        def mid_boss_pool() -> list[str]:
+            last_index = 5 if theme == "rogue_1" else 3
+            pattern = re.compile(rf"ro{ro_num}_b_([1-{last_index}])")
+            return [
+                stage_id
+                for stage_id, stage in stage_table.items()
+                if stage.get("isBoss") and pattern.fullmatch(stage_id)
+            ]
+
+        def boss_pool() -> list[str]:
+            terminal = zone == final_depth
+            candidates = boss_stage_ids(theme, ending) if terminal else mid_boss_pool()
+            verified = [
+                stage_id
+                for stage_id in candidates
+                if stage_id in stage_table
+                and stage_table[stage_id].get("isBoss")
+            ]
+            # Shared specialNodeId only proves boss identity. Variant selection
+            # needs difficulty/event state that this generator does not model.
+            return verified[:1] if terminal else verified
+
+        def weighted_type(kind: str) -> int:
+            type_weights = {
+                "default": {1: 60, 2: 15, 32: 25},
+                "battle": {1: 80, 2: 20},
+                "battle_or_incident": {1: 60, 2: 15, 32: 25},
+                "battle_incident_wish": {
+                    1: 50,
+                    2: 10,
+                    32: 25,
+                    512: 15,
+                },
+                "non_battle": {16: 20, 32: 60, 512: 20},
+                "shop": {shop_type: 1},
+                "rest": {16: 1},
+                "incident": {32: 1},
+                "entertainment": {128: 1},
+                "gift": {64: 1},
+                "wish": {512: 1},
+                "sacrifice": {1024: 1},
+                "story": {65536: 1},
+                "alchemy": {131072: 1},
+                "duel": {262144: 1},
+                "stashed_recruit": {524288: 1},
+                "special_zone": {
+                    1048576 if zone == 1 else 8192: 1
+                },
+                "boss": {4: 1},
+            }.get(kind)
+            if type_weights is None:
+                raise ValueError(
+                    f"unsupported roguelike column kind: {kind}"
+                )
+            return rng.choices(
+                list(type_weights),
+                weights=list(type_weights.values()),
+                k=1,
+            )[0]
+
+        zone_data = {
+            "id": layout["zoneId"],
+            "nodes": {},
+            "variation": [],
         }
-
-        # 节点类型权重
-        type_weight: dict[int, int] = {}
-        type_weight.update({1:60, 2:15, 32:20, wish:20})
-
-        if zone > 1:
-            type_weight.setdefault(16, 20)
-            match theme:
-                case "rogue_1":
-                    type_weight.update({
-                        4: 10, 8: 10, 64: 10, 128: 10, 256: 10
-                    })
-                case "rogue_2":
-                    type_weight.update({
-                        4: 10, 1024: 10, 2048: 10, 4096: 10, 8192: 10, 16384: 10
-                    })
-                case "rogue_3":
-                    type_weight.update({
-                        4: 10, 1024: 10, 2048: 10, 4096: 10, 8192: 10, 65536: 10
-                    })
-                case "rogue_4":
-                    type_weight.update({
-                        4: 10, 128: 10, 256: 10, 1024: 10, 2048: 10, 
-                        4096: 10, 8192: 10, 131072: 10, 262144: 10
-                    })
-                case "rogue_5":
-                    type_weight.update({
-                        4: 10, 1024: 10, 2048: 10, 4096: 10, 8192: 10, 
-                        262144: 10, 524288: 10
-                    })
-                case _:
-                    pass
-
-        items = sorted(type_weight.items())
-        type_list = [k for k, _ in items]
-        type_weight = [v for _, v in items]
-
-
-        # 坐标最大值
-        y_max = [None, 2, 3, 4, 4, 4, 4, 4, 4]
-
-        ro_num = theme.split("_")[1]
-        normal_list = [s for s in stages_list if s.startswith(f"ro{ro_num}_n_{zone}_")]
-        elite_list  = [s for s in stages_list if s.startswith(f"ro{ro_num}_e_{zone}_")]
-        boss_list   = [
-            s for s in stages_list
-            if re.fullmatch(rf"ro{ro_num}_b_[1-9]", s)
-        ]
-
-        # 路径数据
         nodes_by_x: dict[int, list[int]] = {}
-        can_add_shop = True
-        zone_1 = True if zone == 1 else False
 
-        # 可复现非random随机
-        def rand_by_key(seed: str, *keys, mod: int) -> int:
-            h = hashlib.md5(f"{seed}_{'_'.join(map(str, keys))}".encode()).hexdigest()
-            return int(h, 16) % mod
-
-        # 随机节点生成
-        for x in range(0, zone * 2):
-            nodes_by_x[x] = []
-            is_end_col = (not zone_1 and x == zone * 2 - 1)
-
-            # end_node 单独生成
-            if is_end_col:
-                match zone:
-                    case 2:
-                        end_type = wish
-                        end_count = 2
-                    case 3 | 5:
-                        end_type = 4
-                        end_count = 1
-                    case 4:
-                        end_type = wish
-                        end_count = 1
-                    case _:
-                        end_type = 0
-                        end_count = 1
-
-                for y in range(end_count):
-                    node = deepcopy(nodetemp)
-                    node_index = x * 100 + y
-
-                    node["pos"]["x"] = x
-                    node["pos"]["y"] = y
-                    node["index"] = str(node_index)
-                    node["type"] = end_type
-                    node["zone_end"] = True
-
-                    if end_type == 4:
-                        node["stage"] = rng.choice(boss_list)
-
-                    zone_map[str(zone)]["nodes"][node["index"]] = node
-                    nodes_by_x[x].append(y)
-
-                continue
-
-            #普通列，正常 y_size 随机
-            y_size = rand_by_key(randomseed, zone, x, mod=y_max[zone]) + 1
-
-            if can_add_shop and x > 0:
-                type_list.append(shop)
-                type_weight.append(10)
-                can_add_shop = False
-
-            for y in range(y_size):
-                node = deepcopy(nodetemp)
-                node_index = x * 100 + y
-
-                node_type = rng.choices(type_list, weights=type_weight, k=1)[0]
-
-                node["pos"]["x"] = x
-                node["pos"]["y"] = y
-                node["index"] = str(node_index)
-                node["type"] = node_type
-
-                match node_type:
-                    case 1:
-                        node["stage"] = rng.choice(normal_list)
-                    case 2:
-                        node["stage"] = rng.choice(elite_list)
-
-                zone_map[str(zone)]["nodes"][node["index"]] = node
-                nodes_by_x[x].append(y)
-
-        # 第一层固定节点
-        if zone_1:
-            end_type = 1048576 if ro_num == "5" else shop
-            z1_node = shop if ro_num == "5" else 32
-            zone1_nodes = {
-                "200": {
-                    "index": "200",
-                    "pos": {"x": 2, "y": 0},
-                    "next": [{"x": 3, "y": 0}],
-                    "type": z1_node,
-                    "refresh": {"usedCount": 0, "count": refresh_count, "cost": 1}
-                },
-                "201": {
-                    "index": "201",
-                    "pos": {"x": 2, "y": 1},
-                    "next": [{"x": 3, "y": 0}],
-                    "type": z1_node,
-                    "refresh": {"usedCount": 0, "count": refresh_count, "cost": 1}
-                },
-                "300": {
-                    "index": "300",
-                    "pos": {"x": 3, "y": 0},
-                    "next": [],
-                    "type": end_type,
-                    "zone_end": True
-                }
+        for x, reviewed_spec in enumerate(column_specs):
+            spec = reviewed_spec or {
+                "minimum": 1,
+                "maximum": branch_limit,
+                "kinds": ("default",),
             }
+            count = rng.randint(spec["minimum"], spec["maximum"])
+            forced_battle_rows = set(
+                rng.sample(
+                    range(count),
+                    min(int(spec.get("minimum_battle_nodes", 0)), count),
+                )
+            )
+            nodes_by_x[x] = list(range(count))
+            for y in range(count):
+                kind = (
+                    "battle"
+                    if y in forced_battle_rows
+                    else rng.choice(spec["kinds"])
+                )
+                node_type = weighted_type(kind)
+                node = {
+                    "index": str(x * 100 + y),
+                    "pos": {"x": x, "y": y},
+                    "next": [],
+                    "type": node_type,
+                    "refresh": {
+                        "usedCount": 0,
+                        "count": refresh_count,
+                        "cost": 1,
+                    },
+                }
+                if x == len(column_specs) - 1:
+                    node["zone_end"] = True
+                if spec.get("scene_id"):
+                    node["scene"] = spec["scene_id"]
 
-            zone_map[str(zone)]["nodes"].update(zone1_nodes)
-            nodes_by_x[2] = [0, 1]
-            nodes_by_x[3] = [0]
+                if node_type in {1, 2}:
+                    logical_depths = spec.get("stage_depths")
+                    if logical_depths is None:
+                        logical_depths = (int(spec.get("stage_depth", zone)),)
+                    candidates = [
+                        stage_id
+                        for logical_depth in logical_depths
+                        for stage_id in stage_pool(
+                            node_type, int(logical_depth)
+                        )
+                    ]
+                    if not candidates and node_type == 2:
+                        node_type = 1
+                        node["type"] = 1
+                        candidates = [
+                            stage_id
+                            for logical_depth in logical_depths
+                            for stage_id in stage_pool(
+                                1, int(logical_depth)
+                            )
+                        ]
+                    if not candidates:
+                        raise ValueError(
+                            f"no stage pool for "
+                            f"{theme}/zone_{zone}/type_{node_type}"
+                        )
+                    node["stage"] = rng.choice(candidates)
+                elif node_type == 4:
+                    candidates = boss_pool()
+                    if not candidates:
+                        raise ValueError(
+                            f"no verified boss for "
+                            f"{theme}/zone_{zone}/{ending}"
+                        )
+                    node["stage"] = rng.choice(candidates)
 
+                zone_data["nodes"][node["index"]] = node
+
+        normal_stages = stage_pool(1, zone)
+        elite_stages = stage_pool(2, zone)
         enforce_emergency_node_limits(
             theme,
             zone,
-            zone_map[str(zone)]["nodes"],
-            normal_list,
-            elite_list,
+            zone_data["nodes"],
+            normal_stages,
+            elite_stages,
             rng,
         )
 
-        # 路径分配
-        for idx, node in zone_map[str(zone)]["nodes"].items():
-            x:int = node["pos"]["x"]
-            y:int = node["pos"]["y"]
+        for x in range(len(column_specs) - 1):
+            next_y_values = nodes_by_x[x + 1]
+            for y in nodes_by_x[x]:
+                node = zone_data["nodes"][str(x * 100 + y)]
+                ordered = sorted(
+                    next_y_values,
+                    key=lambda next_y: (abs(next_y - y), next_y),
+                )
+                edge_count = rng.randint(1, min(2, len(ordered)))
+                for next_y in rng.sample(ordered, edge_count):
+                    node["next"].append(
+                        {"x": x + 1, "y": next_y}
+                    )
 
-            # zone1 固定节点，跳过
-            if zone == 1 and x >= 2:
-                continue
-
-            node["next"] = []
-
-            # 横向
-            if x + 1 in nodes_by_x:
-                candidates = []
-                for ny in (y - 1, y, y + 1):
-                    if ny in nodes_by_x[x + 1]:
-                        candidates.append({"x": x + 1, "y": ny})
-
-                if candidates:
-                    k = rng.randint(1, min(2, len(candidates)))
-                    node["next"].extend(rng.sample(candidates, k))
-
-            # 纵向
-            if x != 0:
-                for ny in (y - 1, y + 1):
-                    if ny in nodes_by_x.get(x, []):
-                        if rng.random() < 0.3:
-                            edge = {"x": x, "y": ny}
-                            if (
-                                theme_data["gameConst"].get("unlockRouteItemId")
-                                and rng.random() < 0.5
-                            ):
-                                edge["key"] = True
-                            node["next"].append(edge)
-
-        # 路径检查
-        incoming = {idx: False for idx in zone_map[str(zone)]["nodes"]}
-
-        for src in zone_map[str(zone)]["nodes"].values():
-            sx = src["pos"]["x"]
-            for e in src.get("next", []):
-                if e["x"] == sx + 1:
-                    tidx = str(e["x"] * 100 + e["y"])
-                    if tidx in incoming:
-                        incoming[tidx] = True
-        def has_outgoing(node):
-            x = node["pos"]["x"]
-            return any(e["x"] == x + 1 for e in node.get("next", []))
-        x_last = max(nodes_by_x.keys())
-        for idx, node in zone_map[str(zone)]["nodes"].items():
-            x = node["pos"]["x"]
-            y = node["pos"]["y"]
-
-            in_ok  = incoming.get(idx, False)
-            out_ok = has_outgoing(node)
-            # x为0时只要求 outgoing
-            if x == 0:
-                if out_ok:
+            reached = {
+                edge["y"]
+                for y in nodes_by_x[x]
+                for edge in zone_data["nodes"][
+                    str(x * 100 + y)
+                ]["next"]
+            }
+            for next_y in next_y_values:
+                if next_y in reached:
                     continue
+                previous_y = min(
+                    nodes_by_x[x],
+                    key=lambda value: abs(value - next_y),
+                )
+                zone_data["nodes"][
+                    str(x * 100 + previous_y)
+                ]["next"].append(
+                    {"x": x + 1, "y": next_y}
+                )
 
-                ny = min(nodes_by_x[x + 1], key=lambda v: abs(v - y))
-                node["next"].append({"x": x + 1, "y": ny})
-                continue
+        for node in zone_data["nodes"].values():
+            unique_edges = {
+                (edge["x"], edge["y"]): edge
+                for edge in node["next"]
+            }
+            node["next"] = [
+                unique_edges[key] for key in sorted(unique_edges)
+            ]
 
-            # x为last时只要求 incoming
-            if x == x_last:
-                if in_ok:
-                    continue
-
-                py = min(nodes_by_x[x - 1], key=lambda v: abs(v - y))
-                prev_idx = str((x - 1) * 100 + py)
-                zone_map[str(zone)]["nodes"][prev_idx]["next"].append({
-                    "x": x,
-                    "y": y
-                })
-                continue
-
-            # 中间列的 incoming 和 outgoing 都要有横向连接
-            if not in_ok:
-                py = min(nodes_by_x[x - 1], key=lambda v: abs(v - y))
-                prev_idx = str((x - 1) * 100 + py)
-                zone_map[str(zone)]["nodes"][prev_idx]["next"].append({
-                    "x": x,
-                    "y": y
-                })
-
-            if not out_ok:
-                ny = min(nodes_by_x[x + 1], key=lambda v: abs(v - y))
-                node["next"].append({
-                    "x": x + 1,
-                    "y": ny
-                })
-
-
-        # 节点排序
-        for node in zone_map[str(zone)]["nodes"].values():
-            if "next" in node and node["next"]:
-                node["next"].sort(key=lambda e: (e["x"], e["y"]))
-
-        return zone_map, randomseed
+        return {str(zone): zone_data}, randomseed
 
     def activateTicket(rlv2, ticket_id):
         rlv2["player"]["pending"].insert(

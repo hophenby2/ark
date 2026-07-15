@@ -1,6 +1,6 @@
 # RLV2 离线规则数据
 
-本目录是 `2.7.51` Roguelike 规则的版本化离线事实层，当前没有被运行时加载。新增或修改这里的 JSON 不会改变服务器行为。
+本目录是 `2.7.51` Roguelike 规则的版本化离线事实层。运行时通过 `server/rlv2_rules.py` 只读加载已审核的核心区域尺寸、逐列约束、结局终点/Boss 和事件类型/楼层子集；其余 `runtimeEnabled=false`、空值或 quarantine 记录仍不会执行。运行时不访问外部来源。
 
 ## 文件分层
 
@@ -66,7 +66,7 @@
 | `rogue_5` | 8 | 5 | 5 | 2 |
 | 合计 | 36 | 22 | 20 | 6 |
 
-`sourceLayoutText` 只保存页面布局摘要，尚未转成生成器图约束；`entryConditionText` 只保存入口原文，全部 `entryConditionAst=null`。Boss stage 仅按客户端 `ending.bossIconId == stage.specialNodeId` 推导；RO1 基础结局没有 `bossIconId`，因此不猜测 stage。`ro3_ending_c` 和不能唯一绑定的线性/平面特殊区域保留在 quarantine。完整边界见 [ROGUELIKE_REGION_RULES.md](../../../docs/ROGUELIKE_REGION_RULES.md)。
+`sourceLayoutText` 中能够逐列确认的核心线性区域已人工复核为生成器约束；问号列仍只使用区域级长度和最大分支边界。`entryConditionText` 只保存入口原文，全部 `entryConditionAst=null`，因此完整隐藏路线仍未自动执行。Boss stage 主要按客户端 `ending.bossIconId == stage.specialNodeId` 推导；RO1 基础结局另有固定 PRTS“覆水难收”证据映射到 `ro1_b_6`。`ro3_ending_c` 和不能唯一绑定的线性/平面特殊区域保留在 quarantine。完整边界见 [ROGUELIKE_REGION_RULES.md](../../../docs/ROGUELIKE_REGION_RULES.md)。
 
 ## 空值语义
 
@@ -105,4 +105,4 @@ python3 tools/sync_rlv2_prts_regions.py --check
 
 脚本只访问 manifest 已登记且由工具固定的 MediaWiki revision，并同时校验 revision SHA-1 与客户端 topic table 的规范化 LF 哈希。事件同步另校验 scene 标题/开场描述、254/250/4 总数和 171 条楼层映射；区域同步另校验 36/22/20/6 总数及 zone/ending/stage 引用。CRLF/LF 只在 topic table 哈希前规范化，其他内容差异仍会失败。
 
-当前只新增维护期同步工具，不包含运行时 adapter；接线工作按 [ROGUELIKE_RULES_PLAN.md](../../../docs/ROGUELIKE_RULES_PLAN.md) 后续阶段单独实施。
+运行时 adapter 采用严格子集：事件必须匹配主题、节点类别和明确楼层，空入口、禁用规则及 quarantine 不进入候选池；区域生成只使用 36 个已审核核心布局。未知事件效果、完整条件 AST、特殊/平面区域和有序隐藏路线继续按 [ROGUELIKE_RULES_PLAN.md](../../../docs/ROGUELIKE_RULES_PLAN.md) 分阶段实施。

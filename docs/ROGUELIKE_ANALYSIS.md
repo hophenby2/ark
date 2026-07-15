@@ -127,9 +127,9 @@
 - RO4 旗帜挑战在 zone 2-5 有独立升级行，但当前 run/node 没有可靠的奖励 variant 标志；`levelReplaceIds` 在普通关卡中也广泛存在，不能作为旗帜判据。本轮只发基础行。
 - Boss 不纳入本轮矩阵。RO2-RO5 存在 Boss 关卡变体、特殊险路恶敌或额外减半条件；当前 handler 明确不发矩阵 EXP/gold，只保留占位全职业券，后续必须进入独立规则分支。
 
-当前 `_rlv2.finishNode()` 在 zone 5 结束标准流程，隐藏第六层和 RO4/RO5 的替代 zone 7 尚无结局改线生成逻辑。因此第六档和显式 alias 已能正确结算合法状态，但自产地图尚不能自然覆盖这些路线；这是地图/多结局缺口，不应通过放宽收益 lookup 掩盖。
+当前 `_rlv2.finishNode()` 已按所选 ending 的终点层判断，生成器也能构造核心 zone 6/7/8 和 canonical Boss；但 `toEnding` 的事件/藏品触发及完整有序路线仍未建模，不能把所有隐藏路线简化为连续 `zone + 1`。第六档和显式 alias 能正确结算合法状态，这仍不能替代 EndingRoute 状态机。
 
-当前 `event_choices.json` 包含五主题条目，但“存在数据”不等于“已实现条件”：审计快照中 `rogue_1` 到 `rogue_5` 分别有 107、176、923、357、1788 个 choice。运行时仍从主题的全部 `enter` 场景中直接随机选择，未先计算完整 eligibility。本轮已阻止无法支付的选项提交，但错误楼层事件、结局事件提前出现等偏差仍然存在。
+当前 `event_choices.json` 包含五主题条目，但“存在数据”不等于“已实现条件”：审计快照中 `rogue_1` 到 `rogue_5` 分别有 107、176、923、357、1788 个 choice。运行时现已按主题、节点类别、明确楼层、quarantine 和已录入持有条件过滤，并禁用空入口及若干未知掷骰/路线场景；模式、历史、完整结局条件与 RO3-5 效果仍未实现。
 
 客户端 `PlayerRoguelikePlayerState` 只有 `NONE/INIT/PENDING/WAIT_MOVE`，因此终局必须直接生成 `PENDING + GAME_SETTLE + content.result`，不能写入 `GAME_OVER` 或不存在的 `status.gameResult`。`gameSettle` 以对象型零分和字段完整的零外层收益结构清空当前局，并在同一事务回收 seed；旧的 `GAME_OVER`、错误 `GAME_SETTLE` 和旧战斗奖励会在登录/动作入口自动迁移。该闭环不改全局外层进度，不能当作原版终局奖励实现；分数、BP、记录和奖励仍必须依据同版本抓包补齐。
 

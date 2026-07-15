@@ -34,7 +34,15 @@ def _merge_rlv2_current(player_data):
     uid = repository.uid_from_headers(request.headers)
     snapshot = repository.load(uid)
     current_run = snapshot.run
-    if normalize_current_run(current_run, int(time())):
+    game = current_run.get("game") if isinstance(current_run, dict) else None
+    theme = game.get("theme") if isinstance(game, dict) else None
+    choice_rules = get_memory("event_choices").get(theme, {}).get("choices", {})
+    disabled_choice_ids = {
+        choice_id
+        for choice_id, rule in choice_rules.items()
+        if isinstance(rule, dict) and rule.get("runtimeEnabled") is False
+    }
+    if normalize_current_run(current_run, int(time()), disabled_choice_ids):
         snapshot = repository.save(
             uid,
             current_run,

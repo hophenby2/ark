@@ -81,6 +81,17 @@ after_this_request 回调触发
                 //事件起始时可用的选项
             ]
         },
+        "sceneRules": {
+            "scene_ro?_???_enter": {
+                "runtimeEnabled": true, //false 时不进入运行时候选池
+                "sample": 3, //或 [min, max]，从本场景选项中抽取的数量
+                "required": ["choice_ro?_???_leave"], //抽取时必定保留
+                "require": { //场景进入条件，只检查、不消耗
+                    "items": {"relic_id": 1},
+                    "moduleMin": {"san": {"sanity": 50}}
+                }
+            }
+        },
         "choices": {//每个选择的效果和下一个可用选项
             "choice_ro?_???_1": { //choice的id
                 "choices": ["choice_leave", "choice_ro?_???_?"], //list类型，接下来可选的选项。str类型，战斗关卡id
@@ -99,7 +110,13 @@ after_this_request 回调触发
                 ],
                 "curse": false, //curse为水月肉鸽（rogue_2）独有，控制是否是 受诅藏品（debuff藏品）
                 "i_get": {}, //dict类型，给["inventory"]["consumable"]添加道具，通常为每个肉鸽专属资源（水月的钥匙、界园的票券）
-                "i_lose": {} //dict类型，扣除["inventory"]["consumable"]对应的道具
+                "i_lose": {}, //dict类型，扣除["inventory"]["consumable"]对应的道具
+                "require": {}, //和 sceneRules.require 相同，只检查、不消耗
+                "lose_all": ["gold"], //清空指定的已审核属性
+                "probability": {"percent": 70, "appliesTo": "get"}, //成本必付，仅 get 按概率生效
+                "branches": [ //NEXT_PROB 的互斥服务端分支
+                    {"weight": 20, "scene": "scene_success", "choices": ["choice_collect"]}
+                ]
             }
         }
     }

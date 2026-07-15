@@ -34,6 +34,103 @@ LATE_THEME_UPGRADE_COST = {
 
 GOPNIK_SPAWN_PERCENT = 10
 
+# chestCnt is a retained mimic-group count, not a percentage. Current normal
+# and emergency stage groups give each listed mimic equal weight after the
+# group is retained, so these rates make enemy_2002_bearmi occur about 10%.
+MIMIC_GROUP_SPAWN_PERCENT = {
+    "rogue_1": 2 * GOPNIK_SPAWN_PERCENT,
+    "rogue_2": 4 * GOPNIK_SPAWN_PERCENT,
+    "rogue_3": 3 * GOPNIK_SPAWN_PERCENT,
+    "rogue_4": 4 * GOPNIK_SPAWN_PERCENT,
+    # Most RO5 base stages have four candidates. Their DLC replacements have
+    # five, but the current run protocol does not expose the active variant.
+    "rogue_5": 4 * GOPNIK_SPAWN_PERCENT,
+}
+
+MANDATORY_MIMIC_GROUP_STAGES = frozenset(
+    {"ro1_t_1", "ro1_t_2", "ro1_t_4", "ro2_t_1"}
+)
+
+# These RO5 stages have five mimic candidates in every available level
+# variant, so retaining the group 50% of the time gives bearmi a 10% rate.
+RO5_ALWAYS_FIVE_MIMIC_STAGES = frozenset(
+    {
+        "ro5_n_1_5",
+        "ro5_e_1_5",
+        "ro5_n_1_6",
+        "ro5_e_1_6",
+        "ro5_n_2_5",
+        "ro5_e_2_5",
+        "ro5_n_2_6",
+        "ro5_e_2_6",
+        "ro5_n_3_6",
+        "ro5_e_3_6",
+        "ro5_n_4_7",
+        "ro5_e_4_7",
+        "ro5_n_5_7",
+        "ro5_e_5_7",
+        "ro5_n_7_1",
+        "ro5_e_7_1",
+        "ro5_n_7_2",
+        "ro5_e_7_2",
+    }
+)
+
+# Narrative relics bound to a specific event, reward, or ending must never
+# leak from the generic random-relic pool.
+RESERVED_EVENT_RELIC_IDS = frozenset(
+    {
+        "rogue_1_relic_m01",
+        "rogue_1_relic_m02",
+        "rogue_1_relic_m03",
+        "rogue_1_relic_m04",
+        "rogue_1_relic_m05",
+        "rogue_1_relic_m06",
+        "rogue_1_relic_m07",
+        "rogue_1_relic_m08",
+        "rogue_1_relic_m09",
+        "rogue_1_relic_m10",
+        "rogue_1_relic_m11",
+        "rogue_1_relic_m12",
+        "rogue_1_relic_m13",
+        "rogue_1_relic_m14",
+        "rogue_1_relic_m15",
+        "rogue_1_relic_m16",
+        "rogue_1_relic_m17",
+        "rogue_1_relic_m18",
+        "rogue_1_relic_m19",
+        "rogue_1_relic_m20",
+        "rogue_1_relic_m21",
+        "rogue_1_relic_n01",
+        "rogue_1_relic_n02",
+        "rogue_2_relic_grace_60",
+        "rogue_2_relic_grace_76",
+        "rogue_2_relic_grace_79",
+        "rogue_2_relic_grace_80",
+        "rogue_2_relic_grace_81",
+        "rogue_2_relic_grace_82",
+        "rogue_2_relic_grace_83",
+        "rogue_2_relic_grace_84",
+        "rogue_2_relic_grace_85",
+        "rogue_2_relic_grace_86",
+        "rogue_2_relic_grace_87",
+        "rogue_2_relic_grace_88",
+        "rogue_2_relic_grace_89",
+        "rogue_2_relic_grace_90",
+        "rogue_2_relic_curse_7",
+        "rogue_2_relic_curse_8",
+        "rogue_2_relic_curse_9",
+        "rogue_2_relic_curse_10",
+        "rogue_2_relic_fight_38",
+        "rogue_2_relic_fight_39",
+        "rogue_2_relic_fight_40",
+        "rogue_2_relic_fight_41",
+        "rogue_2_relic_fight_42",
+        "rogue_2_relic_fight_45",
+        "rogue_2_relic_fight_46",
+    }
+)
+
 PROFESSION_SUFFIXES = (
     "pioneer",
     "warrior",
@@ -130,6 +227,7 @@ BATTLE_BASE_REWARDS = {
 }
 
 BATTLE_REWARD_ZONE_ALIASES = {
+    ("rogue_3", 7): 6,
     ("rogue_4", 7): 6,
     ("rogue_5", 7): 6,
 }
@@ -303,10 +401,150 @@ def has_numeric_cost(target: dict, cost: dict) -> bool:
             return False
         if value >= 0 and current < value:
             return False
+        if (
+            value >= 0
+            and key == "max"
+            and type(target.get("cost")) in {int, float}
+            and current - value < target["cost"]
+        ):
+            return False
         if value < 0 and key == "cost" and "max" in target:
             if current - value > target["max"]:
                 return False
     return True
+
+
+def roll_mimic_group_count(theme: str, rng: Random) -> int:
+    """Return the 0/1 chestCnt needed for a 10% Gopnik target rate."""
+    percent = MIMIC_GROUP_SPAWN_PERCENT.get(theme, 0)
+    return int(rng.randrange(100) < percent)
+
+
+def battle_mimic_group_count(theme: str, stage_id: str, rng: Random) -> int:
+    """Resolve chestCnt by stage semantics instead of treating it as a rate."""
+    if stage_id in MANDATORY_MIMIC_GROUP_STAGES:
+        return 1
+    theme_number = theme.removeprefix("rogue_")
+    for kind in ("n", "e"):
+        prefix = f"ro{theme_number}_{kind}_"
+        if not stage_id.startswith(prefix):
+            continue
+        logical_depth, separator, _ = stage_id.removeprefix(prefix).partition("_")
+        if not separator or not logical_depth.isdigit():
+            return 0
+        if stage_id in RO5_ALWAYS_FIVE_MIMIC_STAGES:
+            return int(rng.randrange(100) < 5 * GOPNIK_SPAWN_PERCENT)
+        return roll_mimic_group_count(theme, rng)
+    return 0
+
+
+def event_relic_pool_candidates(
+    theme: str,
+    item_table: dict,
+    curse: bool = False,
+) -> list[str]:
+    """Build a generic event pool without event-chain or ending relics."""
+    if not isinstance(theme, str) or not isinstance(item_table, dict):
+        return []
+    prefix = f"{theme}_relic_"
+    candidates = [
+        item_id
+        for item_id, item in item_table.items()
+        if item_id.startswith(prefix)
+        and isinstance(item, dict)
+        and item.get("type") == "RELIC"
+        and item_id not in RESERVED_EVENT_RELIC_IDS
+    ]
+    if theme == "rogue_2":
+        candidates = [
+            item_id
+            for item_id in candidates
+            if ("_relic_curse_" in item_id) is curse
+        ]
+    return candidates
+
+
+def event_probability_succeeds(probability: dict, rng: Random) -> bool:
+    """Resolve a validated event effect probability."""
+    if not isinstance(probability, dict):
+        raise ValueError("event probability must be an object")
+    percent = probability.get("percent")
+    if type(percent) is not int or not 0 <= percent <= 100:
+        raise ValueError("event probability percent must be an integer from 0 to 100")
+    if probability.get("appliesTo") != "get":
+        raise ValueError("only probabilistic event get effects are supported")
+    return rng.randrange(100) < percent
+
+
+def select_weighted_event_branch(branches: list, rng: Random) -> dict:
+    """Select one explicit event branch without exposing other outcomes."""
+    if not isinstance(branches, list) or not branches:
+        raise ValueError("event branches must be a non-empty list")
+    total = 0
+    for branch in branches:
+        if not isinstance(branch, dict) or type(branch.get("weight")) is not int:
+            raise ValueError("event branch weight must be an integer")
+        if branch["weight"] <= 0:
+            raise ValueError("event branch weight must be positive")
+        if not isinstance(branch.get("scene"), str):
+            raise ValueError("event branch scene must be a string")
+        choices = branch.get("choices")
+        if not isinstance(choices, list) or not all(
+            isinstance(choice, str) for choice in choices
+        ):
+            raise ValueError("event branch choices must be a string list")
+        total += branch["weight"]
+
+    roll = rng.randrange(total)
+    for branch in branches:
+        if roll < branch["weight"]:
+            return deepcopy(branch)
+        roll -= branch["weight"]
+    raise AssertionError("weighted event branch selection did not terminate")
+
+
+def sample_event_choices(choice_ids: list, rule: dict | None, rng: Random) -> list[str]:
+    """Apply a reviewed fixed/random option-count rule to one scene."""
+    if not isinstance(choice_ids, list) or not all(
+        isinstance(choice_id, str) for choice_id in choice_ids
+    ):
+        raise ValueError("event scene choices must be a string list")
+    if not isinstance(rule, dict):
+        return list(choice_ids)
+    if rule.get("runtimeEnabled") is False:
+        return []
+
+    required = rule.get("required", [])
+    if not isinstance(required, list) or not all(
+        isinstance(choice_id, str) for choice_id in required
+    ):
+        raise ValueError("required event choices must be a string list")
+    if not set(required).issubset(choice_ids):
+        raise ValueError("required event choice is absent from the scene")
+
+    sample = rule.get("sample")
+    if sample is None:
+        return list(choice_ids)
+    if type(sample) is int:
+        minimum = maximum = sample
+    elif (
+        isinstance(sample, list)
+        and len(sample) == 2
+        and all(type(value) is int for value in sample)
+    ):
+        minimum, maximum = sample
+    else:
+        raise ValueError("event choice sample must be an integer or [min, max]")
+    if not 0 <= minimum <= maximum <= len(choice_ids):
+        raise ValueError("event choice sample is outside the scene choice count")
+    if len(required) > minimum:
+        raise ValueError("required event choices exceed the sample size")
+
+    count = rng.randint(minimum, maximum)
+    optional = [choice_id for choice_id in choice_ids if choice_id not in required]
+    selected = set(required)
+    selected.update(rng.sample(optional, count - len(required)))
+    return [choice_id for choice_id in choice_ids if choice_id in selected]
 
 
 def clamp_player_property(player_property: dict) -> None:
@@ -322,6 +560,16 @@ def clamp_player_property(player_property: dict) -> None:
     population = player_property["population"]
     population["max"] = max(0, population["max"])
     population["cost"] = min(max(0, population["cost"]), population["max"])
+
+
+def clamp_sanity_module(module: dict) -> None:
+    """Keep RO2 light within the client resource range."""
+    sanity = module.get("san") if isinstance(module, dict) else None
+    if not isinstance(sanity, dict):
+        return
+    value = sanity.get("sanity")
+    if isinstance(value, (int, float)) and not isinstance(value, bool):
+        sanity["sanity"] = min(max(0, value), 100)
 
 
 def collect_difficulty_buffs(theme_buffs: list, mode_grade: int) -> list[dict]:
@@ -798,7 +1046,11 @@ def queue_game_settlement(
     return result
 
 
-def normalize_current_run(run: dict, end_ts: int) -> bool:
+def normalize_current_run(
+    run: dict,
+    end_ts: int,
+    disabled_choice_ids: set[str] | frozenset[str] | None = None,
+) -> bool:
     """Upgrade persisted response shapes that older server revisions emitted."""
     if not isinstance(run, dict):
         return False
@@ -831,11 +1083,67 @@ def normalize_current_run(run: dict, end_ts: int) -> bool:
                 reward["show"] = None
                 changed = True
 
-    if isinstance(first_pending, dict) and first_pending.get("type") == "BATTLE":
-        content = first_pending.get("content")
+    disabled_choice_ids = (
+        disabled_choice_ids
+        if isinstance(disabled_choice_ids, (set, frozenset))
+        else frozenset()
+    )
+    if disabled_choice_ids:
+        for pending_entry in pending if isinstance(pending, list) else ():
+            if not isinstance(pending_entry, dict) or pending_entry.get("type") != "SCENE":
+                continue
+            content = pending_entry.get("content")
+            scene = content.get("scene") if isinstance(content, dict) else None
+            choices = scene.get("choices") if isinstance(scene, dict) else None
+            if not isinstance(choices, dict):
+                continue
+            removed = disabled_choice_ids.intersection(choices)
+            if not removed:
+                continue
+            for choice_id in removed:
+                choices.pop(choice_id, None)
+            additional = scene.get("choiceAdditional")
+            if isinstance(additional, dict):
+                for choice_id in removed:
+                    additional.pop(choice_id, None)
+            if not any(value is True for value in choices.values()):
+                choices["choice_leave"] = True
+                if isinstance(additional, dict):
+                    additional["choice_leave"] = {"rewards": []}
+            changed = True
+
+    pending_entries = pending if isinstance(pending, list) else ()
+    for pending_entry in pending_entries:
+        if not isinstance(pending_entry, dict) or pending_entry.get("type") != "BATTLE":
+            continue
+        content = pending_entry.get("content")
         battle = content.get("battle") if isinstance(content, dict) else None
-        if isinstance(battle, dict) and battle.get("goldTrapCnt") == 100:
-            battle["goldTrapCnt"] = GOPNIK_SPAWN_PERCENT
+        if not isinstance(battle, dict):
+            continue
+        if battle.get("chestCnt") not in {0, 1}:
+            cursor = player.get("cursor")
+            position = cursor.get("position") if isinstance(cursor, dict) else None
+            zone = str(cursor.get("zone")) if isinstance(cursor, dict) else None
+            node_id = (
+                str(position["x"] * 100 + position["y"])
+                if isinstance(position, dict)
+                and type(position.get("x")) is int
+                and type(position.get("y")) is int
+                else None
+            )
+            zones = run.get("map", {}).get("zones", {})
+            node = (
+                zones.get(zone, {}).get("nodes", {}).get(node_id)
+                if zone is not None and node_id is not None
+                else None
+            )
+            # Existing random battles cannot be fairly rerolled without their
+            # server seed. Only preserve stages whose mimic group is mandatory.
+            stage_id = node.get("stage") if isinstance(node, dict) else None
+            battle["chestCnt"] = int(stage_id in MANDATORY_MIMIC_GROUP_STAGES)
+            changed = True
+        if battle.get("goldTrapCnt") == 10:
+            battle["goldTrapCnt"] = 100
             changed = True
 
     status = player.get("status")

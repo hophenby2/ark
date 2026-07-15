@@ -10,18 +10,26 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "server"))
 
 from rlv2_logic import (  # noqa: E402
+    RO5_ALWAYS_FIVE_MIMIC_STAGES,
     apply_numeric_delta,
     battle_base_reward,
+    battle_mimic_group_count,
     battle_resource_item_ids,
     build_initial_property,
     clamp_player_property,
+    clamp_sanity_module,
     collect_difficulty_buffs,
     enforce_emergency_node_limits,
+    event_relic_pool_candidates,
+    event_probability_succeeds,
     has_numeric_cost,
     normalize_current_run,
     prepare_predefined_characters,
     prepare_recruit_candidates,
     recruit_group_ticket_ids,
+    roll_mimic_group_count,
+    sample_event_choices,
+    select_weighted_event_branch,
     resolve_player_levels,
     select_equivalent_grade,
     select_init_config,
@@ -140,14 +148,20 @@ class Rlv2LogicTest(unittest.TestCase):
         self.assertEqual(reward["state"], 3)
         self.assertEqual(reward["isPerfect"], 1)
 
-    def test_legacy_battle_gopnik_chance_is_normalized(self):
+    def test_legacy_battle_mimic_chance_is_normalized(self):
         run = {
             "player": {
                 "state": "PENDING",
                 "pending": [
+                    {"type": "RECRUIT", "content": {}},
                     {
                         "type": "BATTLE",
-                        "content": {"battle": {"goldTrapCnt": 100}},
+                        "content": {
+                            "battle": {
+                                "chestCnt": 100,
+                                "goldTrapCnt": 10,
+                            }
+                        },
                     }
                 ],
                 "status": {},
@@ -155,9 +169,302 @@ class Rlv2LogicTest(unittest.TestCase):
         }
 
         self.assertTrue(normalize_current_run(run, 1))
-        battle = run["player"]["pending"][0]["content"]["battle"]
-        self.assertEqual(battle["goldTrapCnt"], 10)
+        battle = run["player"]["pending"][1]["content"]["battle"]
+        self.assertEqual(battle["chestCnt"], 0)
+        self.assertEqual(battle["goldTrapCnt"], 100)
         self.assertFalse(normalize_current_run(run, 2))
+
+    def test_legacy_mandatory_mimic_battle_preserves_one_group(self):
+        run = {
+            "player": {
+                "state": "PENDING",
+                "cursor": {"zone": 1, "position": {"x": 0, "y": 0}},
+                "pending": [
+                    {
+                        "type": "BATTLE",
+                        "content": {
+                            "battle": {"chestCnt": 100, "goldTrapCnt": 100}
+                        },
+                    }
+                ],
+                "status": {},
+            },
+            "map": {
+                "zones": {
+                    "1": {"nodes": {"0": {"stage": "ro1_t_1"}}}
+                }
+            },
+        }
+
+        self.assertTrue(normalize_current_run(run, 1))
+        battle = run["player"]["pending"][0]["content"]["battle"]
+        self.assertEqual(battle["chestCnt"], 1)
+        self.assertEqual(battle["goldTrapCnt"], 100)
+
+    def test_legacy_scene_removes_disabled_choices_and_adds_leave(self):
+        run = {
+            "player": {
+                "state": "PENDING",
+                "pending": [
+                    {
+                        "type": "SCENE",
+                        "content": {
+                            "scene": {
+                                "choices": {"choice_disabled": True},
+                                "choiceAdditional": {
+                                    "choice_disabled": {"rewards": []}
+                                },
+                            }
+                        },
+                    }
+                ],
+                "status": {},
+            }
+        }
+
+        self.assertTrue(
+            normalize_current_run(run, 1, {"choice_disabled"})
+        )
+        scene = run["player"]["pending"][0]["content"]["scene"]
+        self.assertEqual(scene["choices"], {"choice_leave": True})
+        self.assertEqual(
+            scene["choiceAdditional"],
+            {"choice_leave": {"rewards": []}},
+        )
+
+    def test_gopnik_target_rate_is_encoded_as_a_mimic_group_roll(self):
+        class SequentialRolls:
+            def __init__(self):
+                self.value = 0
+                self.stop = None
+
+            def randrange(self, stop):
+                self.stop = stop
+                value = self.value
+                self.value += 1
+                return value
+
+        expected_hits = {
+            "rogue_1": 20,
+            "rogue_2": 40,
+            "rogue_3": 30,
+            "rogue_4": 40,
+            "rogue_5": 40,
+        }
+        for theme, expected in expected_hits.items():
+            with self.subTest(theme=theme):
+                rng = SequentialRolls()
+                hits = sum(
+                    roll_mimic_group_count(theme, rng) for _ in range(100)
+                )
+                self.assertEqual(rng.stop, 100)
+                self.assertEqual(hits, expected)
+
+    def test_mimic_group_count_distinguishes_random_and_event_stages(self):
+        class FixedRoll:
+            def __init__(self, value):
+                self.value = value
+
+            def randrange(self, stop):
+                return self.value
+
+        self.assertEqual(
+            battle_mimic_group_count("rogue_1", "ro1_n_1_1", FixedRoll(19)),
+            1,
+        )
+        self.assertEqual(
+            battle_mimic_group_count("rogue_1", "ro1_n_1_1", FixedRoll(20)),
+            0,
+        )
+        for stage_id in ("ro1_t_1", "ro1_t_2", "ro1_t_4", "ro2_t_1"):
+            with self.subTest(stage=stage_id):
+                theme = "rogue_1" if stage_id.startswith("ro1_") else "rogue_2"
+                self.assertEqual(
+                    battle_mimic_group_count(theme, stage_id, FixedRoll(99)),
+                    1,
+                )
+        for stage_id in ("ro1_t_3", "ro2_t_3", "ro1_ev_1", "ro2_ev_1"):
+            with self.subTest(stage=stage_id):
+                theme = "rogue_1" if stage_id.startswith("ro1_") else "rogue_2"
+                self.assertEqual(
+                    battle_mimic_group_count(theme, stage_id, FixedRoll(0)),
+                    0,
+                )
+
+        for stage_id in ("ro4_e_t_2", "ro5_e_t_1"):
+            with self.subTest(stage=stage_id):
+                theme = "rogue_4" if stage_id.startswith("ro4_") else "rogue_5"
+                self.assertEqual(
+                    battle_mimic_group_count(theme, stage_id, FixedRoll(0)),
+                    0,
+                )
+
+    def test_ro5_always_five_mimic_stages_use_a_fifty_percent_group_roll(self):
+        expected = {
+            "ro5_n_1_5",
+            "ro5_e_1_5",
+            "ro5_n_1_6",
+            "ro5_e_1_6",
+            "ro5_n_2_5",
+            "ro5_e_2_5",
+            "ro5_n_2_6",
+            "ro5_e_2_6",
+            "ro5_n_3_6",
+            "ro5_e_3_6",
+            "ro5_n_4_7",
+            "ro5_e_4_7",
+            "ro5_n_5_7",
+            "ro5_e_5_7",
+            "ro5_n_7_1",
+            "ro5_e_7_1",
+            "ro5_n_7_2",
+            "ro5_e_7_2",
+        }
+        self.assertEqual(RO5_ALWAYS_FIVE_MIMIC_STAGES, expected)
+
+        class FixedRoll:
+            def __init__(self, value):
+                self.value = value
+
+            def randrange(self, stop):
+                self.assert_stop = stop
+                return self.value
+
+        for stage_id in expected:
+            with self.subTest(stage=stage_id):
+                self.assertEqual(
+                    battle_mimic_group_count("rogue_5", stage_id, FixedRoll(49)),
+                    1,
+                )
+                self.assertEqual(
+                    battle_mimic_group_count("rogue_5", stage_id, FixedRoll(50)),
+                    0,
+                )
+
+        self.assertEqual(
+            battle_mimic_group_count("rogue_5", "ro5_n_1_1", FixedRoll(39)),
+            1,
+        )
+        self.assertEqual(
+            battle_mimic_group_count("rogue_5", "ro5_n_1_1", FixedRoll(40)),
+            0,
+        )
+
+    def test_event_probability_only_applies_the_declared_get_effect(self):
+        class FixedRoll:
+            def __init__(self, value):
+                self.value = value
+
+            def randrange(self, stop):
+                self.assert_stop = stop
+                return self.value
+
+        probability = {"percent": 70, "appliesTo": "get"}
+        success = FixedRoll(69)
+        failure = FixedRoll(70)
+        self.assertTrue(event_probability_succeeds(probability, success))
+        self.assertFalse(event_probability_succeeds(probability, failure))
+        self.assertEqual(success.assert_stop, 100)
+
+    def test_population_max_cost_requires_unspent_hope(self):
+        self.assertFalse(
+            has_numeric_cost({"cost": 6, "max": 6}, {"max": 2})
+        )
+        self.assertFalse(
+            has_numeric_cost({"cost": 5, "max": 6}, {"max": 2})
+        )
+        self.assertTrue(
+            has_numeric_cost({"cost": 4, "max": 6}, {"max": 2})
+        )
+
+    def test_sanity_module_is_clamped_to_client_range(self):
+        module = {"san": {"sanity": 140}}
+        clamp_sanity_module(module)
+        self.assertEqual(module["san"]["sanity"], 100)
+        module["san"]["sanity"] = -15
+        clamp_sanity_module(module)
+        self.assertEqual(module["san"]["sanity"], 0)
+
+    def test_generic_event_relic_pool_excludes_route_and_explicit_rewards(self):
+        ro1_items = self.topic_table["details"]["rogue_1"]["items"]
+        ro1_candidates = event_relic_pool_candidates(
+            "rogue_1", ro1_items
+        )
+        self.assertIn("rogue_1_relic_a01", ro1_candidates)
+        self.assertNotIn("rogue_1_relic_m16", ro1_candidates)
+        self.assertNotIn("rogue_1_relic_m20", ro1_candidates)
+        self.assertNotIn("rogue_1_relic_n01", ro1_candidates)
+        self.assertNotIn("rogue_1_relic_m07", ro1_candidates)
+        self.assertFalse(
+            any(
+                item_id.startswith("rogue_1_relic_m")
+                for item_id in ro1_candidates
+            )
+        )
+
+        ro2_items = self.topic_table["details"]["rogue_2"]["items"]
+        grace_candidates = event_relic_pool_candidates(
+            "rogue_2", ro2_items, False
+        )
+        curse_candidates = event_relic_pool_candidates(
+            "rogue_2", ro2_items, True
+        )
+        self.assertIn("rogue_2_relic_grace_1", grace_candidates)
+        self.assertNotIn("rogue_2_relic_grace_83", grace_candidates)
+        self.assertNotIn("rogue_2_relic_grace_84", grace_candidates)
+        self.assertNotIn("rogue_2_relic_grace_60", grace_candidates)
+        self.assertNotIn("rogue_2_relic_grace_76", grace_candidates)
+        self.assertNotIn("rogue_2_relic_grace_79", grace_candidates)
+        self.assertNotIn("rogue_2_relic_grace_80", grace_candidates)
+        self.assertNotIn("rogue_2_relic_grace_81", grace_candidates)
+        self.assertNotIn("rogue_2_relic_grace_82", grace_candidates)
+        self.assertNotIn("rogue_2_relic_fight_38", grace_candidates)
+        self.assertIn("rogue_2_relic_grace_77", grace_candidates)
+        self.assertIn("rogue_2_relic_grace_78", grace_candidates)
+        self.assertIn("rogue_2_relic_curse_1", curse_candidates)
+        self.assertNotIn("rogue_2_relic_curse_7", curse_candidates)
+        self.assertTrue(
+            all("_relic_curse_" not in item_id for item_id in grace_candidates)
+        )
+        self.assertTrue(
+            all("_relic_curse_" in item_id for item_id in curse_candidates)
+        )
+
+    def test_event_probability_branch_selects_only_one_outcome(self):
+        class FixedRoll:
+            def __init__(self, value):
+                self.value = value
+
+            def randrange(self, stop):
+                self.assert_stop = stop
+                return self.value
+
+        branches = [
+            {"weight": 20, "scene": "success", "choices": ["collect"]},
+            {"weight": 80, "scene": "retry", "choices": ["again", "leave"]},
+        ]
+        self.assertEqual(
+            select_weighted_event_branch(branches, FixedRoll(19))["scene"],
+            "success",
+        )
+        self.assertEqual(
+            select_weighted_event_branch(branches, FixedRoll(20))["scene"],
+            "retry",
+        )
+
+    def test_event_scene_sampling_keeps_required_choices(self):
+        choices = ["one", "two", "three", "four", "leave"]
+        sampled = sample_event_choices(
+            choices,
+            {"sample": 4, "required": ["leave"]},
+            Random(7),
+        )
+        self.assertEqual(len(sampled), 4)
+        self.assertIn("leave", sampled)
+        ranged = sample_event_choices(
+            choices[:4], {"sample": [2, 3]}, Random(8)
+        )
+        self.assertIn(len(ranged), {2, 3})
 
     def test_init_property_uses_table_level_and_resource_limits(self):
         config = select_init_config(
@@ -447,8 +754,8 @@ class Rlv2LogicTest(unittest.TestCase):
                         checked += 1
         self.assertEqual(checked, 60)
 
-    def test_battle_base_reward_aliases_late_ro4_and_ro5_zones(self):
-        for theme in ("rogue_4", "rogue_5"):
+    def test_battle_base_reward_aliases_late_ro3_ro4_and_ro5_zones(self):
+        for theme in ("rogue_3", "rogue_4", "rogue_5"):
             for node_type in (1, 2):
                 with self.subTest(theme=theme, node_type=node_type):
                     self.assertEqual(
@@ -464,7 +771,7 @@ class Rlv2LogicTest(unittest.TestCase):
 
         for theme in tuple(f"rogue_{index}" for index in range(1, 6)):
             invalid_zones = (-1, 0, 8, True, "1")
-            if theme not in {"rogue_4", "rogue_5"}:
+            if theme not in {"rogue_3", "rogue_4", "rogue_5"}:
                 invalid_zones = (*invalid_zones, 7)
             for zone in invalid_zones:
                 with self.subTest(theme=theme, zone=zone):
@@ -706,6 +1013,196 @@ class Rlv2LogicTest(unittest.TestCase):
             {char["charId"]: char["population"] for char in result},
             {"four": 0, "five": 2},
         )
+
+    def test_verified_ro1_event_entries_and_rewards(self):
+        events = self.event_choices["rogue_1"]
+        choices = events["choices"]
+        self.assertEqual(
+            choices["choice_hp_1"]["get"], {"hp": {"current": 3}}
+        )
+        self.assertEqual(choices["choice_gold_1"]["get"], {"gold": 5})
+        self.assertEqual(
+            choices["choice_population_1"]["get"],
+            {"population": {"max": 2}},
+        )
+        self.assertEqual(
+            events["enter"]["scene_bottle4_enter"],
+            [
+                "choice_bottle4_1",
+                "choice_bottle4_2",
+                "choice_bottle4_3",
+                "choice_bottle4_4",
+            ],
+        )
+        for index in range(1, 5):
+            self.assertEqual(
+                events["enter"][f"scene_t{index}_enter"],
+                [
+                    f"choice_t{index}_1",
+                    f"choice_t{index}_2",
+                ],
+            )
+
+        expected_items = {
+            "choice_recruit2_2": "rogue_1_recruit_ticket_all_premium",
+            "choice_6_6": "rogue_1_relic_m12",
+            "choice_6_7": "rogue_1_relic_m10",
+            "choice_6_8": "rogue_1_relic_m11",
+        }
+        table_choices = self.topic_table["details"]["rogue_1"]["choices"]
+        for choice_id, item_id in expected_items.items():
+            with self.subTest(choice=choice_id):
+                self.assertEqual(choices[choice_id]["get"], item_id)
+                self.assertEqual(
+                    table_choices[choice_id]["displayData"]["itemId"],
+                    item_id,
+                )
+
+    def test_verified_event_requirements_and_consume_all_are_explicit(self):
+        ro1 = self.event_choices["rogue_1"]["choices"]
+        expected_item_requirements = {
+            "choice_blood2_1": {"rogue_1_relic_m07": 1},
+            "choice_bottle3_1": {"rogue_1_relic_m13": 1},
+            "choice_bottle4_1": {
+                "rogue_1_relic_m13": 1,
+                "rogue_1_relic_m14": 1,
+            },
+            "choice_bottle4_2": {"rogue_1_relic_m13": 1},
+            "choice_bottle4_3": {"rogue_1_relic_m14": 1},
+        }
+        theme_items = self.topic_table["details"]["rogue_1"]["items"]
+        for choice_id, items in expected_item_requirements.items():
+            self.assertEqual(ro1[choice_id]["require"], {"items": items})
+            for item_id in items:
+                self.assertIn(item_id, theme_items)
+
+        ro2 = self.event_choices["rogue_2"]["choices"]
+        self.assertEqual(
+            ro2["choice_ro2_san1_2"]["require"],
+            {"moduleMin": {"san": {"sanity": 50}}},
+        )
+        self.assertIn(
+            "50",
+            self.topic_table["details"]["rogue_2"]["choices"]
+            ["choice_ro2_san1_2"]["lockedCoverDesc"],
+        )
+        for choice in (ro1["choice_5_1"], ro2["choice_ro2_5_1"]):
+            self.assertIsNone(choice["lose"])
+            self.assertEqual(choice["lose_all"], ["gold"])
+
+    def test_verified_ro2_trade_and_resource_effects(self):
+        choices = self.event_choices["rogue_2"]["choices"]
+        self.assertEqual(
+            choices["choice_ro2_recruit2_2"]["get"],
+            "rogue_2_recruit_ticket_all_premium",
+        )
+        self.assertEqual(
+            self.topic_table["details"]["rogue_2"]["choices"]
+            ["choice_ro2_recruit2_2"]["displayData"]["itemId"],
+            choices["choice_ro2_recruit2_2"]["get"],
+        )
+        self.assertEqual(
+            choices["choice_ro2_exchange_6"]["get"], {"shield": 4}
+        )
+        self.assertEqual(
+            choices["choice_ro2_exchange_9"]["get"], {"shield": 3}
+        )
+        self.assertEqual(
+            choices["choice_ro2_trade4_1"]["get"], {"gold": 2}
+        )
+        self.assertEqual(
+            choices["choice_ro2_trade4_1"]["choices"],
+            ["choice_ro2_trade4_2", "choice_ro2_trade4_4"],
+        )
+        self.assertEqual(
+            choices["choice_ro2_trade4_2"]["choices"],
+            ["choice_ro2_trade4_3", "choice_ro2_trade4_4"],
+        )
+        expected_probability = {
+            "choice_ro2_trade4_2": (3, 8, 70),
+            "choice_ro2_trade4_3": (10, 25, 50),
+        }
+        table_choices = self.topic_table["details"]["rogue_2"]["choices"]
+        for choice_id, (cost, reward, percent) in expected_probability.items():
+            with self.subTest(choice=choice_id):
+                choice = choices[choice_id]
+                self.assertEqual(choice["lose"], {"gold": cost})
+                self.assertEqual(choice["get"], {"gold": reward})
+                self.assertEqual(
+                    choice["probability"],
+                    {"percent": percent, "appliesTo": "get"},
+                )
+                self.assertEqual(table_choices[choice_id]["type"], "TRADE_PROB")
+                self.assertIn(
+                    f"{percent}%", table_choices[choice_id]["description"]
+                )
+
+    def test_verified_ro1_population_effects_use_available_hope(self):
+        choices = self.event_choices["rogue_1"]["choices"]
+        self.assertEqual(
+            choices["choice_side1_1"]["lose"],
+            {"population": {"max": 1}},
+        )
+        self.assertEqual(
+            choices["choice_side1_2"]["get"],
+            {"population": {"max": 1}},
+        )
+
+    def test_verified_event_menu_and_probability_rules_are_explicit(self):
+        ro1 = self.event_choices["rogue_1"]
+        self.assertEqual(
+            ro1["enter"]["scene_3_enter"],
+            ["choice_3_1", "choice_3_8"],
+        )
+        self.assertEqual(
+            ro1["sceneRules"]["scene_exchange_enter"],
+            {"sample": 4, "required": ["choice_exchange_6"]},
+        )
+        self.assertEqual(ro1["sceneRules"]["scene_6_1"], {"sample": 3})
+        for index, percent in enumerate((20, 40, 60, 80, 100), 1):
+            branches = ro1["choices"][f"choice_3_{index}"]["branches"]
+            self.assertEqual(sum(branch["weight"] for branch in branches), 100)
+            self.assertEqual(branches[0]["weight"], percent)
+            self.assertEqual(branches[0]["scene"], "scene_3_5")
+            self.assertEqual(branches[0]["choices"], ["choice_3_6"])
+
+        ro2 = self.event_choices["rogue_2"]
+        self.assertEqual(
+            ro2["sceneRules"]["scene_ro2_6_1"], {"sample": [2, 3]}
+        )
+        self.assertEqual(
+            ro2["sceneRules"]["scene_ro2_8_1"], {"sample": 3}
+        )
+        feed_branches = ro2["choices"]["choice_ro2_8_3"]["branches"]
+        self.assertEqual([branch["weight"] for branch in feed_branches], [50, 50])
+        self.assertEqual(
+            {branch["scene"] for branch in feed_branches},
+            {"scene_ro2_8_1", "scene_ro2_8_4"},
+        )
+
+    def test_random_two_profession_event_tickets_use_exact_client_pool(self):
+        choice_ids = {
+            "rogue_1": ["choice_recruit1_1", "choice_recruit2_1"],
+            "rogue_2": [
+                "choice_ro2_recruit1_1",
+                "choice_ro2_recruit2_1",
+                "choice_ro2_8_7",
+            ],
+        }
+        for theme, theme_choice_ids in choice_ids.items():
+            expected_pool = [
+                f"{theme}_recruit_ticket_double_{index}"
+                for index in range(1, 5)
+            ]
+            tickets = self.topic_table["details"][theme]["recruitTickets"]
+            for item_id in expected_pool:
+                self.assertEqual(len(tickets[item_id]["professionList"]), 2)
+            for choice_id in theme_choice_ids:
+                with self.subTest(theme=theme, choice=choice_id):
+                    self.assertEqual(
+                        self.event_choices[theme]["choices"][choice_id]["get"],
+                        expected_pool,
+                    )
 
     def test_all_implemented_event_deltas_match_runtime_shapes(self):
         module = {
